@@ -1,9 +1,13 @@
 import express from 'express'
 import cors from 'cors'
-// const manejadorErrores = require('../../helpers/manejoErrores')
 
+// Get Routes
+import usuariosRoutes from './routes/usuariosRoutes.js'
+
+// App
 const app = express()
 
+// Middlewares
 app.use(cors({
   credentials: true,
   origin: ['https://jekuaapy.com', 'https://jekuaa-py.web.app', 'http://localhost:3000'],
@@ -13,19 +17,12 @@ app.use(cors({
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
-app.use('/', require('./routes/estudiante'))
+// Routes
+app.use('/usuarios', usuariosRoutes)
 
-/**
- *  MANEJO DE ERRORES: Para enviar una respuesta con la 
- *  estructura establecida al cliente cuando haya algun 
- *  error. 
- */ 
+// Manejo de errores
 app.use((err, req, res, next) => { 
   console.log('Error en middleware: ', err)
-  
-//   const respuesta = manejadorErrores( err )
-//   return res.status( respuesta.estado ).json( respuesta.getRespuesta() )
 })
-
 
 export default app

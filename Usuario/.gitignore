@@ -63,7 +63,10 @@ node_modules/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+envs/.*
+
+# Firebase Credentials
+firebase-service/credentials/serviceAccountKey*
 
 #
 ui-debug.log
