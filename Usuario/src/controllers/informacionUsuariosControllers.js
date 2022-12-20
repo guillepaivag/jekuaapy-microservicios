@@ -8,15 +8,15 @@ const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreI
 
 controllerInformacionUsuario = {}
 
-controllerInformacionUsuario.obtenerInformacionUsuario = async (req, res) => {
+controllerInformacionUsuario.obtener = async (req, res) => {
     try {
-        const { datos, params } = req
+        const { params } = req
         const { tipo, valor } = params
 
         let informacionUsuario = null
 
         if (tipo === 'nombreUsuario') {
-            informacionUsuario = informacionUsuariosUseCase.obtenerInformacionUsuarioPorNombre(valor)
+            informacionUsuario = informacionUsuariosUseCase.obtenerPorNombre(valor)
 
             if (!informacionUsuario) {
                 throw new RespuestaError({
@@ -28,7 +28,7 @@ controllerInformacionUsuario.obtenerInformacionUsuario = async (req, res) => {
 
         } else if (tipo === 'correo') {
             
-            const informacionUsuario = informacionUsuariosUseCase.obtenerInformacionUsuarioPorCorreo(valor)
+            const informacionUsuario = informacionUsuariosUseCase.obtenerPorCorreo(valor)
 
             if (!informacionUsuario) {
                 throw new RespuestaError({
@@ -39,7 +39,7 @@ controllerInformacionUsuario.obtenerInformacionUsuario = async (req, res) => {
             }
 
         } else if (tipo === 'uid') {
-            const informacionUsuario = informacionUsuariosUseCase.obtenerInformacionUsuarioPorUID(valor)
+            const informacionUsuario = informacionUsuariosUseCase.obtenerPorUID(valor)
 
             if (!informacionUsuario) {
                 throw new RespuestaError({
@@ -52,6 +52,106 @@ controllerInformacionUsuario.obtenerInformacionUsuario = async (req, res) => {
         } else {
             throw new TypeError('No hay datos para buscar el usuario.')
         }
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'exito',
+            resultado: informacionUsuario
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - obtenerMiUsuario: ', error)
+
+        const respuesta =  new Respuesta({
+            estado: 500,
+            mensajeCliente: 'error_servidor',
+            mensajeServidor: 'error en el servidor',
+            resultado: null
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    }
+
+}
+
+
+controllerInformacionUsuario.crearInformacionUsuario = async (req, res) => {
+    try {
+        const { params, body } = req
+        const { uid } = params
+
+        let informacionUsuario = informacionUsuariosUseCase.crearInformacionUsuario(uid, body)
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'exito',
+            resultado: informacionUsuario
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - obtenerMiUsuario: ', error)
+
+        const respuesta =  new Respuesta({
+            estado: 500,
+            mensajeCliente: 'error_servidor',
+            mensajeServidor: 'error en el servidor',
+            resultado: null
+        })
+        
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    }
+
+}
+
+controllerInformacionUsuario.actualizarInformacionUsuario = async (req, res) => {
+    try {
+        const { params, body } = req
+        const { uid } = params
+
+        let informacionUsuario = informacionUsuariosUseCase.actualizarInformacionUsuario(uid, body)
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'exito',
+            resultado: informacionUsuario
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - obtenerMiUsuario: ', error)
+
+        const respuesta =  new Respuesta({
+            estado: 500,
+            mensajeCliente: 'error_servidor',
+            mensajeServidor: 'error en el servidor',
+            resultado: null
+        })
+        
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    }
+
+}
+
+controllerInformacionUsuario.eliminarInformacionUsuario = async (req, res) => {
+    try {
+        const { params } = req
+        const { uid } = params
+
+        let informacionUsuario = informacionUsuariosUseCase.eliminarInformacionUsuario(uid)
 
         // Retornar respuesta
         const respuesta = new Respuesta({

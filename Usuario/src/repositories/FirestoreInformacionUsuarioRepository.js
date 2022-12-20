@@ -18,43 +18,47 @@ class FirestoreInformacionUsuarioRepository {
     
       }
     
-      async obtenerInformacionUsuarioPorUID (uid = '') {
+      async obtenerPorUID (uid = '') {
     
         const doc = await this.collection.doc(uid).get()
     
         if (!doc.exists) return null
         
-        return this._obtenerInformacionUsuarioDeDocumento(doc)
+        return this._obtenerDeDocumento(doc)
       
       }
 
-      async obtenerInformacionUsuarioPorNombre (nombreUsuario = '') {
+      async obtenerPorNombre (nombreUsuario = '') {
     
         const snapshot = await db
         .collection('Usuarios')
         .where('nombreUsuario', '==', nombreUsuario)
+        .where('eliminado', '!=', true)
         .get()
     
         if (snapshot.empty) return null
 
+
+
         const uid = snapshot.docs[0].uid
         
-        return this.obtenerInformacionUsuarioPorUID(uid)
+        return this.obtenerPorUID(uid)
       
       }
 
-      async obtenerInformacionUsuarioPorCorreo (correo = '') {
+      async obtenerPorCorreo (correo = '') {
     
         const snapshot = await db
         .collection('Usuarios')
         .where('correo', '==', correo)
+        .where('eliminado', '!=', true)
         .get()
     
         if (snapshot.empty) return null
 
         const uid = snapshot.docs[0].uid
         
-        return this.obtenerInformacionUsuarioPorUID(uid)
+        return this.obtenerPorUID(uid)
       
       }
     
@@ -98,7 +102,7 @@ class FirestoreInformacionUsuarioRepository {
     
       }
     
-      _obtenerInformacionUsuarioDeDocumento(doc) {
+      _obtenerDeDocumento(doc) {
     
         // Retorna una instancia User desde una instancia Document de Firestore.
         const data = doc.data()

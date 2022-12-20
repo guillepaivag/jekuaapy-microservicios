@@ -11,22 +11,22 @@ class InformacionUsuariosUseCase {
         this.informacionUsuarioRepository = informacionUsuarioRepository
     }
 
-    async obtenerInformacionUsuarioPorUID(uid) {
-        return await this.informacionUsuarioRepository.obtenerInformacionUsuarioPorUID(uid);
+    async obtenerPorUID(uid) {
+        return await this.informacionUsuarioRepository.obtenerPorUID(uid);
     }
 
-    async obtenerInformacionUsuarioPorNombre(nombreUsuario) {
-        return await this.informacionUsuarioRepository.obtenerInformacionUsuarioPorNombre(nombreUsuario);
+    async obtenerPorNombre(nombreUsuario) {
+        return await this.informacionUsuarioRepository.obtenerPorNombre(nombreUsuario);
     }
 
-    async obtenerInformacionUsuarioPorCorreo(correo) {
-        return await this.informacionUsuarioRepository.obtenerInformacionUsuarioPorCorreo(correo);
+    async obtenerPorCorreo(correo) {
+        return await this.informacionUsuarioRepository.obtenerPorCorreo(correo);
     }
 
-    async crearInformacionUsuario(data = {}) {
+    async crearInformacionUsuario(uid, data = {}) {
 
         const informacionUsuario = new InformacionUsuario({
-            uid: data.uid,
+            uid: uid,
             descripcion: data.descripcion,
             especializaciones: data.especializaciones,
             intereses: data.intereses,
