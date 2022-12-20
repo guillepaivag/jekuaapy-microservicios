@@ -79,79 +79,12 @@ controllerInformacionUsuario.obtener = async (req, res) => {
 
 }
 
-
-controllerInformacionUsuario.crearInformacionUsuario = async (req, res) => {
-    try {
-        const { params, body } = req
-        const { uid } = params
-
-        let informacionUsuario = informacionUsuariosUseCase.crearInformacionUsuario(uid, body)
-
-        // Retornar respuesta
-        const respuesta = new Respuesta({
-            estado: 200,
-            mensajeCliente: 'exito',
-            mensajeServidor: 'exito',
-            resultado: informacionUsuario
-        })
-
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
-
-    } catch (error) {
-        console.log('Error - obtenerMiUsuario: ', error)
-
-        const respuesta =  new Respuesta({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'error en el servidor',
-            resultado: null
-        })
-        
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
-
-    }
-
-}
-
 controllerInformacionUsuario.actualizar = async (req, res) => {
     try {
         const { params, body } = req
         const { uid } = params
 
         let informacionUsuario = informacionUsuariosUseCase.actualizar(uid, body)
-
-        // Retornar respuesta
-        const respuesta = new Respuesta({
-            estado: 200,
-            mensajeCliente: 'exito',
-            mensajeServidor: 'exito',
-            resultado: informacionUsuario
-        })
-
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
-
-    } catch (error) {
-        console.log('Error - obtenerMiUsuario: ', error)
-
-        const respuesta =  new Respuesta({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'error en el servidor',
-            resultado: null
-        })
-        
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
-
-    }
-
-}
-
-controllerInformacionUsuario.eliminar = async (req, res) => {
-    try {
-        const { params } = req
-        const { uid } = params
-
-        let informacionUsuario = informacionUsuariosUseCase.eliminar(uid)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
