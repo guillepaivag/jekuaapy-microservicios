@@ -31,7 +31,7 @@ class FirestoreUsuariosRepository {
   
   }
 
-  async crear (usuario = new Usuario()) {
+  async crear (usuario = Usuario.params) {
 
     await this.collection.doc(usuario.uid).set({
       uid: usuario.uid,
@@ -48,7 +48,7 @@ class FirestoreUsuariosRepository {
 
   }
 
-  async actualizar (uid = '', datosActualizados = {}) {
+  async actualizar (uid = '', datosActualizados = Usuario.params) {
     
     const doc = this.collection.doc(uid)
     

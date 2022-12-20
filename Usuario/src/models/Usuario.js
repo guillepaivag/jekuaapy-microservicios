@@ -25,6 +25,8 @@ class Usuario {
         required: ['nombreUsuario', 'correo'],
         additionalProperties: false,
     }
+
+    static params = paramsObject
     
     constructor (data = paramsObject) {
         const { uid, nombreUsuario, correo, fechaNacimiento, rol, fotoPerfil, eliminado, datosAuthenticationEliminados } = data
@@ -38,6 +40,7 @@ class Usuario {
         this.eliminado = eliminado ? eliminado : false
         this.datosAuthenticationEliminados = datosAuthenticationEliminados ? datosAuthenticationEliminados : null
     }
+
 }
 
 export default Usuario

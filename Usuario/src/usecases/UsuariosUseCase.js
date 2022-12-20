@@ -14,7 +14,7 @@ class UsuariosUseCase {
     return await this.usuariosRepository.obtener(uid)
   }
 
-  async crearUsuario (data = {}) {
+  async crearUsuario (data = Usuario.params) {
 
     const usuario = new Usuario({
       uid: data.uid,
@@ -33,8 +33,22 @@ class UsuariosUseCase {
 
   }
 
-  async actualizarUsuario (uid = '', datosActualizados = {}) {
+  async actualizarUsuario (uid = '', datosActualizados = Usuario.params) {
     
+    const { uid, correo, nombreUsuario, fechaNacimiento, rol, 
+      fotoPerfil, eliminado, datosAuthenticationEliminados, } = datosActualizados 
+
+    await this.usuariosRepository.actualizar(uid, {
+      uid,
+      correo,
+      nombreUsuario,
+      fechaNacimiento,
+      rol,
+      fotoPerfil,
+      eliminado,
+      datosAuthenticationEliminados,
+    })
+
   }
 
   async eliminarUsuario (uid = '') {
