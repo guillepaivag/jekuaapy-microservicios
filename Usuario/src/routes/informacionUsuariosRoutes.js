@@ -1,12 +1,17 @@
 import { Router } from 'express'
+import controllerInformacionUsuario from '../controllers/informacionUsuariosControllers.js'
+
+const { obtener, actualizar } = controllerInformacionUsuario
+
 const router = Router()
 
-router.post('/:uid/informacion')
+router.get('/:tipo/:valor/informacion', 
+    obtener
+)
 
-router.get('/:tipo/:valor/informacion')
+router.put('/:uid/informacion',
+    actualizar
+)
 
-router.put('/:uid/informacion')
-
-router.delete('/:uid/informacion')
 
 export default router
