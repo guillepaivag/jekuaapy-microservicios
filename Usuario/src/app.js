@@ -3,6 +3,7 @@ import cors from 'cors'
 
 // Get Routes
 import usuariosRoutes from './routes/usuariosRoutes.js'
+import informacionUsuarioRoutes from './routes/informacionUsuariosRoutes.js'
 
 // App
 const app = express()
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }))
 
 // Routes
 app.use('/usuarios', usuariosRoutes)
+app.use('/usuarios', informacionUsuarioRoutes)
 
 // Manejo de errores
 app.use((err, req, res, next) => { 
