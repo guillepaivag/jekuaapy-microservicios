@@ -6,7 +6,7 @@ const paramsObject = {
     rol: '',
     fotoPerfil: '',
     eliminado: false,
-    datosAuth: null,
+    datosAuthenticationEliminados: null,
 }
 
 class Usuario {
@@ -20,14 +20,14 @@ class Usuario {
             rol: { type: 'string', errorMessage: 'must be of boolean type' },
             fotoPerfil: { type: 'string', errorMessage: 'must be of string type' },
             eliminado: { type: 'boolean', errorMessage: 'must be of boolean type' },
-            datosAuth: { type: 'object', errorMessage: 'must be of boolean type' },
+            datosAuthenticationEliminados: { type: 'object', errorMessage: 'must be of boolean type' },
         },
         required: ['nombreUsuario', 'correo'],
         additionalProperties: false,
     }
     
     constructor (data = paramsObject) {
-        const { uid, nombreUsuario, correo, fechaNacimiento, rol, fotoPerfil, eliminado, datosAuth } = data
+        const { uid, nombreUsuario, correo, fechaNacimiento, rol, fotoPerfil, eliminado, datosAuthenticationEliminados } = data
         
         this.uid = uid ? uid : ''
         this.nombreUsuario = nombreUsuario ? nombreUsuario : ''
@@ -36,7 +36,7 @@ class Usuario {
         this.rol = rol ? rol : 'estudiante'
         this.fotoPerfil = fotoPerfil ? fotoPerfil : ''
         this.eliminado = eliminado ? eliminado : false
-        this.datosAuth = datosAuth ? datosAuth : null
+        this.datosAuthenticationEliminados = datosAuthenticationEliminados ? datosAuthenticationEliminados : null
     }
 }
 

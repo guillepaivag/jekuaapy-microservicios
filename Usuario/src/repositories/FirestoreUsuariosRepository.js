@@ -41,7 +41,7 @@ class FirestoreUsuariosRepository {
       rol: usuario.rol,
       fotoPerfil: usuario.fotoPerfil,
       eliminado: usuario.eliminado,
-      datosAuth: usuario.datosAuth,
+      datosAuthenticationEliminados: usuario.datosAuthenticationEliminados,
     })
 
     return usuario
@@ -60,7 +60,7 @@ class FirestoreUsuariosRepository {
       rol: datosActualizados.rol,
       fotoPerfil: datosActualizados.fotoPerfil,
       eliminado: datosActualizados.eliminado,
-      datosAuth: datosActualizados.datosAuth,
+      datosAuthenticationEliminados: datosActualizados.datosAuthenticationEliminados,
     })
 
     return datosActualizados
@@ -88,7 +88,7 @@ class FirestoreUsuariosRepository {
       rol: data.rol, 
       fotoPerfil: data.fotoPerfil,
       eliminado: data.eliminado, 
-      datosAuth: data.datosAuth, 
+      datosAuthenticationEliminados: data.datosAuthenticationEliminados, 
     })
   }
 

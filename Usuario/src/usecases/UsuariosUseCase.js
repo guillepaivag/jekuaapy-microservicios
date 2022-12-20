@@ -16,12 +16,6 @@ class UsuariosUseCase {
 
   async crearUsuario (data = {}) {
 
-    // Creacion del usuario en Firebase Authentication
-
-
-    // Creacion del usuario en Firebase Firestore
-    data.uid = ''
-
     const usuario = new Usuario({
       uid: data.uid,
       correo: data.correo,
@@ -30,12 +24,10 @@ class UsuariosUseCase {
       rol: data.rol,
       fotoPerfil: data.fotoPerfil,
       eliminado: data.eliminado,
-      datosAuth: data.datosAuth,
+      datosAuthenticationEliminados: data.datosAuthenticationEliminados,
     })
 
     await this.usuariosRepository.crear(usuario)
-
-    // Creacion de la informacion del usuario en Firebase Firestore
 
     return usuario
 
