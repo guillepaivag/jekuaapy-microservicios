@@ -33,7 +33,7 @@ class FirestoreInformacionUsuarioRepository {
         const snapshot = await db
         .collection('Usuarios')
         .where('nombreUsuario', '==', nombreUsuario)
-        .where('eliminado', '!=', true)
+        .where('eliminado', '==', false)
         .get()
     
         if (snapshot.empty) return null
@@ -49,7 +49,7 @@ class FirestoreInformacionUsuarioRepository {
         const snapshot = await db
         .collection('Usuarios')
         .where('correo', '==', correo)
-        .where('eliminado', '!=', true)
+        .where('eliminado', '==', false)
         .get()
     
         if (snapshot.empty) return null
@@ -60,7 +60,7 @@ class FirestoreInformacionUsuarioRepository {
       
       }
     
-      async crearInformacionUsuario (informacionUsuario = new InformacionUsuario()) {
+      async crear (informacionUsuario = InformacionUsuario.params) {
     
         await this.collection.doc(informacionUsuario.uid).set({
           uid: informacionUsuario.uid,
@@ -75,7 +75,7 @@ class FirestoreInformacionUsuarioRepository {
     
       }
     
-      async actualizar (uid = '', datosActualizados = {}) {
+      async actualizar (uid = '', datosActualizados = InformacionUsuario.params) {
         
         const doc = this.collection.doc(uid)
         
