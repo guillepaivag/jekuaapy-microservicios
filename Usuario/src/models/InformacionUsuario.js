@@ -22,6 +22,8 @@ class InformacionUsuario {
         additionalProperties: false,
     }
 
+    static params = paramsObject
+
     constructor ( data = paramsObject ) {
         const { uid, descripcion, especializaciones, intereses, rolDescriptivo, redesSociales } = data
         

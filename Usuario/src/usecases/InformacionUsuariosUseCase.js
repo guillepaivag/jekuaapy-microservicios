@@ -23,7 +23,7 @@ class InformacionUsuariosUseCase {
         return await this.informacionUsuarioRepository.obtenerPorCorreo(correo);
     }
 
-    async crearInformacionUsuario(uid, data = {}) {
+    async crear(uid, data = InformacionUsuario.params) {
 
         const informacionUsuario = new InformacionUsuario({
             uid: uid,
@@ -34,13 +34,13 @@ class InformacionUsuariosUseCase {
             redesSociales: data.redesSociales,
         });
 
-        await this.informacionUsuarioRepository.crearInformacionUsuario(informacionUsuario)
+        await this.informacionUsuarioRepository.crear(informacionUsuario)
 
         return informacionUsuario;
 
     }
 
-    async actualizar(uid, datosActualizados) {
+    async actualizar(uid, datosActualizados = InformacionUsuario.params) {
         const informacionUsuario = await this.informacionUsuarioRepository.actualizar(uid, datosActualizados);
         return informacionUsuario;
     }
