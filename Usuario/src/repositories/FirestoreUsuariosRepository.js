@@ -21,13 +21,43 @@ class FirestoreUsuariosRepository {
 
   }
 
-  async obtener (uid = '') {
+  async obtenerPorUID (uid = '') {
 
     const doc = await this.collection.doc(uid).get()
 
     if (!doc.exists) return null
     
-    return this._obtenerUsuarioDeDocumento(doc)
+    return this._obtenerDeDocumento(doc)
+  
+  }
+
+  async obtenerPorCorreo (correo = '') {
+
+    const query = this.collection
+    .where('correo', '==', correo)
+    .where('eliminado', '==', false)
+
+    const snapshot = await query.get()
+    if (snapshot.empty) return null
+    
+    const doc = snapshot.docs[0]
+    
+    return this._obtenerDeDocumento(doc)
+  
+  }
+
+  async obtenerPorNombreUsuario (nombreUsuario = '') {
+
+    const query = this.collection
+    .where('nombreUsuario', '==', nombreUsuario)
+    .where('eliminado', '==', false)
+
+    const snapshot = await query.get()
+    if (snapshot.empty) return null
+    
+    const doc = snapshot.docs[0]
+    
+    return this._obtenerDeDocumento(doc)
   
   }
 
@@ -75,7 +105,7 @@ class FirestoreUsuariosRepository {
 
   }
 
-  _obtenerUsuarioDeDocumento (doc) {
+  _obtenerDeDocumento (doc) {
 
     // Retorna una instancia User desde una instancia Document de Firestore.
     const data = doc.data()

@@ -10,21 +10,32 @@ class UsuariosUseCase {
     this.usuariosRepository = usuariosRepository
   }
 
-  async obtenerUsuario (uid = '') {
-    return await this.usuariosRepository.obtener(uid)
+  async obtenerPorUID (uid = '') {
+    return await this.usuariosRepository.obtenerPorUID(uid)
   }
 
-  async crearUsuario (data = Usuario.params) {
+  async obtenerPorCorreo (correo = '') {
+    return await this.usuariosRepository.obtenerPorCorreo(correo)
+  }
+
+  async obtenerPorNombreUsuario (nombreUsuario = '') {
+    return await this.usuariosRepository.obtenerPorNombreUsuario(nombreUsuario)
+  }
+
+  async crear (usuarioNuevo = Usuario.params) {
+
+    const { uid, correo, nombreUsuario, fechaNacimiento, rol, 
+      fotoPerfil, eliminado, datosAuthenticationEliminados, } = usuarioNuevo 
 
     const usuario = new Usuario({
-      uid: data.uid,
-      correo: data.correo,
-      nombreUsuario: data.nombreUsuario,
-      fechaNacimiento: data.fechaNacimiento,
-      rol: data.rol,
-      fotoPerfil: data.fotoPerfil,
-      eliminado: data.eliminado,
-      datosAuthenticationEliminados: data.datosAuthenticationEliminados,
+      uid,
+      correo,
+      nombreUsuario,
+      fechaNacimiento,
+      rol,
+      fotoPerfil,
+      eliminado,
+      datosAuthenticationEliminados,
     })
 
     await this.usuariosRepository.crear(usuario)
@@ -33,8 +44,8 @@ class UsuariosUseCase {
 
   }
 
-  async actualizarUsuario (uid = '', datosActualizados = Usuario.params) {
-    
+  async actualizar (uid = '', datosActualizados = Usuario.params) {
+
     const { uid, correo, nombreUsuario, fechaNacimiento, rol, 
       fotoPerfil, eliminado, datosAuthenticationEliminados, } = datosActualizados 
 
@@ -51,7 +62,7 @@ class UsuariosUseCase {
 
   }
 
-  async eliminarUsuario (uid = '') {
+  async eliminar (uid = '') {
     await this.usuariosRepository.eliminar(uid)
   }
 
