@@ -1,4 +1,4 @@
-import defaultApp from './firebase-default-app.js'
+import defaultApp from './firebase-app.js'
 import { getFirestore } from 'firebase-admin/firestore'
 
 const db = getFirestore(defaultApp)

@@ -3,10 +3,10 @@ const router = Router()
 
 router.post('/')
 
-router.get('/:uid')
+router.get('/:tipo/:valor')
 
-router.put('/:uid')
+router.put('/:tipo/:valor')
 
-router.delete('/:uid')
+router.delete('/:tipo/:valor')
 
 export default router

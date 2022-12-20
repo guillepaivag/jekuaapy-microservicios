@@ -1,4 +1,4 @@
-import db from '../../firebase-service/firestore-service.js'
+import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
 import Usuario from '../models/Usuario.js'
 
 // Implementación con Firestore para el repositorio de libros.
@@ -16,12 +16,12 @@ class FirestoreUsuariosRepository {
 
     if (test) collection_name += '_test'
 
-    this.collection = db.collection(collection_name)
+    this.collection = firebaseFirestoreService.collection(collection_name)
     this.isTest = isTest
 
   }
 
-  async obtenerUsuario (uid = '') {
+  async obtener (uid = '') {
 
     const doc = await this.collection.doc(uid).get()
 
@@ -31,7 +31,7 @@ class FirestoreUsuariosRepository {
   
   }
 
-  async crearUsuario (usuario = new Usuario()) {
+  async crear (usuario = new Usuario()) {
 
     await this.collection.doc(usuario.uid).set({
       uid: usuario.uid,
@@ -48,7 +48,7 @@ class FirestoreUsuariosRepository {
 
   }
 
-  async actualizarUsuario (uid = '', datosActualizados = {}) {
+  async actualizar (uid = '', datosActualizados = {}) {
     
     const doc = this.collection.doc(uid)
     
@@ -67,7 +67,7 @@ class FirestoreUsuariosRepository {
 
   }
 
-  async deleteUser(uid = '') {
+  async eliminar (uid = '') {
 
     await this.collection.doc(uid).delete()
 
@@ -75,7 +75,7 @@ class FirestoreUsuariosRepository {
 
   }
 
-  _obtenerUsuarioDeDocumento(doc) {
+  _obtenerUsuarioDeDocumento (doc) {
 
     // Retorna una instancia User desde una instancia Document de Firestore.
     const data = doc.data()

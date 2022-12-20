@@ -1,41 +1,54 @@
-// // Casos de uso para el manejo de usuarios.
-// // Acá va la lógica de negocio agnóstica a los frameworks,
-// // recibiendo como parámetros las dependencias necesarias.
+import Usuario from '../models/Usuario.js'
 
-// class UsuariosUseCase {
+// Casos de uso para el manejo de usuarios.
+// Acá va la lógica de negocio agnóstica a los frameworks,
+// recibiendo como parámetros las dependencias necesarias.
 
-//   constructor(usersRepository) {
-//     this.usersRepository = usersRepository;
-//   }
+class UsuariosUseCase {
 
-//   async getUsers() {
-//     return await this.usersRepository.getUsers();
-//   }
+  constructor (usuariosRepository) {
+    this.usuariosRepository = usuariosRepository
+  }
 
-//   async getUser(id) {
-//     return await this.usersRepository.getUser(id);
-//   }
+  async obtenerUsuario (uid = '') {
+    return await this.usuariosRepository.obtener(uid)
+  }
 
-//   async createUser(data) {
+  async crearUsuario (data = {}) {
+
+    // Creacion del usuario en Firebase Authentication
+
+
+    // Creacion del usuario en Firebase Firestore
+    data.uid = ''
+
+    const usuario = new Usuario({
+      uid: data.uid,
+      correo: data.correo,
+      nombreUsuario: data.nombreUsuario,
+      fechaNacimiento: data.fechaNacimiento,
+      rol: data.rol,
+      fotoPerfil: data.fotoPerfil,
+      eliminado: data.eliminado,
+      datosAuth: data.datosAuth,
+    })
+
+    await this.usuariosRepository.crear(usuario)
+
+    // Creacion de la informacion del usuario en Firebase Firestore
+
+    return usuario
+
+  }
+
+  async actualizarUsuario (uid = '', datosActualizados = {}) {
     
-//     const user = new User(undefined, data.title, data.author, data.pages);
-//     const id = await this.usersRepository.createUser(user);
-//     user.id = id;
+  }
 
-//     return user;
+  async eliminarUsuario (uid = '') {
+    await this.usuariosRepository.eliminar(uid)
+  }
 
-//   }
+}
 
-//   async updateUser(id, data) {
-//     const user = new User(id, data.name, data.email, data.password, data.is_admin);
-//     await this.usersRepository.updateUser(user);
-//     return user;
-//   }
-
-//   async deleteUser(id) {
-//     await this.usersRepository.deleteUser(id);
-//   }
-
-// }
-
-// export default UsuariosUseCase
+export default UsuariosUseCase
