@@ -97,9 +97,12 @@ class FirestoreUsuariosRepository {
 
   }
 
-  async eliminar (uid = '') {
+  async eliminar (uid = '', datosAuthenticationEliminados = null) {
 
-    await this.collection.doc(uid).delete()
+    await this.collection.doc(uid).update({
+      eliminado: true,
+      datosAuthenticationEliminados,
+    })
 
     return true
 

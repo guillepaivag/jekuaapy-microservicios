@@ -62,8 +62,8 @@ class UsuariosUseCase {
 
   }
 
-  async eliminar (uid = '') {
-    await this.usuariosRepository.eliminar(uid)
+  async eliminar (uid = '', datosAuthenticationEliminados = null) {
+    await this.usuariosRepository.eliminar(uid, datosAuthenticationEliminados)
   }
 
 }
