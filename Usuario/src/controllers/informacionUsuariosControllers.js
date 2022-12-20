@@ -66,7 +66,13 @@ controllerInformacionUsuario.obtenerInformacionUsuario = async (req, res) => {
     } catch (error) {
         console.log('Error - obtenerMiUsuario: ', error)
 
-        const respuesta = manejadorErrores(error)
+        const respuesta =  new Respuesta({
+            estado: 500,
+            mensajeCliente: 'error_servidor',
+            mensajeServidor: 'error en el servidor',
+            resultado: null
+        })
+        
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     }
