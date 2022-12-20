@@ -28,7 +28,7 @@ class FirestoreInformacionUsuarioRepository {
       
       }
 
-      async obtenerPorNombre (nombreUsuario = '') {
+      async obtenerPorNombreUsuario (nombreUsuario = '') {
     
         const snapshot = await db
         .collection('Usuarios')
@@ -37,8 +37,6 @@ class FirestoreInformacionUsuarioRepository {
         .get()
     
         if (snapshot.empty) return null
-
-
 
         const uid = snapshot.docs[0].uid
         
@@ -77,7 +75,7 @@ class FirestoreInformacionUsuarioRepository {
     
       }
     
-      async actualizarInformacionUsuario (uid = '', datosActualizados = {}) {
+      async actualizar (uid = '', datosActualizados = {}) {
         
         const doc = this.collection.doc(uid)
         
@@ -94,7 +92,7 @@ class FirestoreInformacionUsuarioRepository {
     
       }
     
-      async eliminarInformacionUsuario(uid = '') {
+      async eliminar(uid = '') {
     
         await this.collection.doc(uid).delete()
     

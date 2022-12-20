@@ -16,7 +16,7 @@ controllerInformacionUsuario.obtener = async (req, res) => {
         let informacionUsuario = null
 
         if (tipo === 'nombreUsuario') {
-            informacionUsuario = informacionUsuariosUseCase.obtenerPorNombre(valor)
+            informacionUsuario = informacionUsuariosUseCase.obtenerPorNombreUsuario(valor)
 
             if (!informacionUsuario) {
                 throw new RespuestaError({
@@ -113,12 +113,12 @@ controllerInformacionUsuario.crearInformacionUsuario = async (req, res) => {
 
 }
 
-controllerInformacionUsuario.actualizarInformacionUsuario = async (req, res) => {
+controllerInformacionUsuario.actualizar = async (req, res) => {
     try {
         const { params, body } = req
         const { uid } = params
 
-        let informacionUsuario = informacionUsuariosUseCase.actualizarInformacionUsuario(uid, body)
+        let informacionUsuario = informacionUsuariosUseCase.actualizar(uid, body)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -146,12 +146,12 @@ controllerInformacionUsuario.actualizarInformacionUsuario = async (req, res) => 
 
 }
 
-controllerInformacionUsuario.eliminarInformacionUsuario = async (req, res) => {
+controllerInformacionUsuario.eliminar = async (req, res) => {
     try {
         const { params } = req
         const { uid } = params
 
-        let informacionUsuario = informacionUsuariosUseCase.eliminarInformacionUsuario(uid)
+        let informacionUsuario = informacionUsuariosUseCase.eliminar(uid)
 
         // Retornar respuesta
         const respuesta = new Respuesta({

@@ -15,8 +15,8 @@ class InformacionUsuariosUseCase {
         return await this.informacionUsuarioRepository.obtenerPorUID(uid);
     }
 
-    async obtenerPorNombre(nombreUsuario) {
-        return await this.informacionUsuarioRepository.obtenerPorNombre(nombreUsuario);
+    async obtenerPorNombreUsuario(nombreUsuario) {
+        return await this.informacionUsuarioRepository.obtenerPorNombreUsuario(nombreUsuario);
     }
 
     async obtenerPorCorreo(correo) {
@@ -40,13 +40,13 @@ class InformacionUsuariosUseCase {
 
     }
 
-    async actualizarInformacionUsuario(uid, datosActualizados) {
-        const informacionUsuario = await this.informacionUsuarioRepository.actualizarInformacionUsuario(uid, datosActualizados);
+    async actualizar(uid, datosActualizados) {
+        const informacionUsuario = await this.informacionUsuarioRepository.actualizar(uid, datosActualizados);
         return informacionUsuario;
     }
 
-    async eliminarInformacionUsuario(uid) {
-       await this.informacionUsuarioRepository.eliminarInformacionUsuario(uid);
+    async eliminar(uid) {
+       await this.informacionUsuarioRepository.eliminar(uid);
     }
 
 }
