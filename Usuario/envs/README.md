@@ -1,8 +1,11 @@
 .env
 ------------------------------------------
-ALGOLIA_APP_ID=------
-ALGOLIA_API_KEY=------
+ALGOLIA_APP_ID=[esto-es-un-secreto-shhh]
+
+ALGOLIA_API_KEY=[esto-es-un-secreto-shhh]
+
 FIRESTORE_COLLECTION_NAME_USUARIOS=Usuarios
+
 FIRESTORE_COLLECTION_NAME_IU=InformacionUsuarios
 
 
