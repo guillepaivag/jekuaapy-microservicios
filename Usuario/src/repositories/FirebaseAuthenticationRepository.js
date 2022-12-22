@@ -16,20 +16,38 @@ class FirebaseAuthenticationRepository {
     
     }
     
-    async obtener (uid = '') {
+    async obtenerPorUID (uid = '') {
+        const usuarioAuth = await firebaseAuthenticationService.getUser(uid)
+        return usuarioAuth
+    }
+
+    async obtenerPorCorreo (correo = '') {
+        const usuarioAuth = await firebaseAuthenticationService.getUserByEmail(correo)
+        return usuarioAuth
+    }
+    
+    async crear (correo = '', nombreCompleto = '', contrasena = '') {
+
+        const usuarioAuth = await firebaseAuthenticationService.createUser({
+            email: correo,
+            password: contrasena,
+            displayName: nombreCompleto,
+        })
+
+        return usuarioAuth
     
     }
     
-    async crear () {
-    
+    async actualizar (uid = '', usuarioAuth = {}) {
+        await firebaseAuthenticationService.updateUser(uid, usuarioAuth)
     }
-    
-    async actualizar () {
-    
+
+    async actualizarCustomClaims (uid = '', claims = {}) {
+        await firebaseAuthenticationService.setCustomUserClaims(uid, claims)
     }
     
     async eliminar (uid = '') {
-    
+        await firebaseAuthenticationService.deleteUser(uid)
     }
     
 }

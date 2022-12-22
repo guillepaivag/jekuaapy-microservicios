@@ -1,7 +1,9 @@
 import { Router } from 'express'
+import { crear } from '../controllers/usuariosControllers.js'
+
 const router = Router()
 
-router.post('/')
+router.post('/', crear)
 
 router.get('/:tipo/:valor')
 
