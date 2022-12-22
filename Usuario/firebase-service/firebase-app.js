@@ -1,19 +1,18 @@
 import { initializeApp, cert } from 'firebase-admin/app'
-import serviceAccountKey from './credentials/serviceAccountKey.json'
+import serviceAccountKeyProd from './credentials/serviceAccountKeyProd.json'
 import serviceAccountKeyDev from './credentials/serviceAccountKeyDev.json'
+import serviceAccountKeyTest from './credentials/serviceAccountKeyTest.json'
 
-const isProduction = process.env.ENVIRONMENT === 'production'
+const environment = process.env.ENVIRONMENT
 let serviceAccount = null
 
-if (isProduction) serviceAccount = serviceAccountKey
-else serviceAccount = serviceAccountKeyDev
+if (environment === 'production') serviceAccount = serviceAccountKeyProd
+else if (environment === 'development') serviceAccount = serviceAccountKeyDev
+else serviceAccount = serviceAccountKeyTest
 
 const app = initializeApp({ credential: cert(serviceAccount) })
 
-console.log('process.env.ALGOLIA_APP_ID', process.env.ALGOLIA_APP_ID)
-console.log('process.env.ALGOLIA_API_KEY', process.env.ALGOLIA_API_KEY)
-console.log('process.env.ENVIRONMENT', process.env.ENVIRONMENT)
-
+console.log(`ENVIRONMENT = ${process.env.ENVIRONMENT}`)
 console.log('Administracion de firebase lista')
 
 export default app
