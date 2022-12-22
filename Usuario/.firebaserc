@@ -1,5 +1,10 @@
 {
   "projects": {
-    "default": "jekuaapydev2"
-  }
+    "default": "jekuaapydev2",
+    "dev": "jekuaapydev1",
+    "test": "jekuaapydev2",
+    "prod": "jekuaa-py"
+  },
+  "targets": {},
+  "etags": {}
 }

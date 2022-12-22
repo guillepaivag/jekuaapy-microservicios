@@ -5,7 +5,10 @@
   "main": "index.js",
   "scripts": {
     "serve": "",
-    "deploy": ""
+    "deploy": "",
+    "env_prod": "",
+    "env_dev": "",
+    "env_test": ""
   },
   "keywords": [],
   "author": "",
