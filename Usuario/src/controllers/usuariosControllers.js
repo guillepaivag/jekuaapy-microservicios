@@ -1,4 +1,4 @@
-// instanciamos el repositorio y el use case
+// Respuestas del servidor
 import Respuesta from "../models/Respuesta.js"
 import RespuestaError from "../models/RespuestaError.js"
 
@@ -17,25 +17,25 @@ import InformacionUsuariosUseCase from "../usecases/InformacionUsuariosUseCase.j
 const authenticationUseCase = new AuthenticationUseCase(new FirebaseAuthenticationRepository())
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
-const usuariosControllers = {}
 
-usuariosControllers.crear = async (req, res) => {
+export const crear = async (req, res) => {
     try {
         const { params, body } = req
         const { usuarioNuevo, contrasena } = body
 
         // Crear Usuario en Firebase Authentication
-        const usuarioAuth = await authenticationUseCase.crear(usuarioNuevo.correo, usuarioNuevo.nombreCompleto, contrasena)
-        await authenticationUseCase.actualizarCustomClaims({ rol: 'estudiante' })
+        const usuarioAuth = await authenticationUseCase.crear(usuarioNuevo.correo, contrasena)
+        await authenticationUseCase.actualizarCustomClaims(usuarioAuth.uid, { rol: 'estudiante' })
 
         // Crear Usuario
         const usuario = await usuariosUseCase.crear({
             uid: usuarioAuth.uid, 
             correo: usuarioNuevo.correo, 
             nombreUsuario: usuarioNuevo.nombreUsuario, 
+            nombreCompleto: usuarioNuevo.nombreCompleto, 
             fechaNacimiento: null, 
             rol: 'estudiante', 
-            fotoPerfil: usuarioNuevo.fotoPerfil, 
+            fotoPerfil: 'https://firebasestorage.googleapis.com/v0/b/jekuaapydev2.appspot.com/o/WhatsApp%20Image%202022-12-11%20at%2018.02.48.jpeg?alt=media&token=e6d0720e-cba4-4d11-836b-cfdef729eeef', 
             eliminado: false, 
             datosAuthenticationEliminados: null,
         })
@@ -65,9 +65,9 @@ usuariosControllers.crear = async (req, res) => {
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {
-        console.log('Error - obtenerMiUsuario: ', error)
+        console.log('Error - crear-usuario: ', error)
 
-        const respuesta =  new RespuestaError({
+        const respuesta = new RespuestaError({
             estado: 500,
             mensajeCliente: 'error_servidor',
             mensajeServidor: 'Error en el servidor.',
@@ -79,16 +79,62 @@ usuariosControllers.crear = async (req, res) => {
     }
 }
 
-usuariosControllers.obtener = async (req, res) => {
+export const obtener = async (req, res) => {
+    try {
+        const { params } = req
+        const { tipo, valor } = params
+
+        let usuario = null
+
+        if (tipo === 'uid') usuario = await usuariosUseCase.obtenerPorUID(valor)
+        else if (tipo === 'correo') usuario = await usuariosUseCase.obtenerPorCorreo(valor)
+        else if (tipo === 'nombreUsuario') usuario = await usuariosUseCase.obtenerPorNombreUsuario(valor)
+        else throw new TypeError('No hay datos para buscar el usuario.')
+
+        if (!usuario) {
+            throw new RespuestaError({
+                estado: 400,
+                mensajeCliente: 'no_existe_usuario',
+                mensajeServidor: 'No existe el usuario.'
+            })
+        }
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'Se encontró el usuario de manera correcta!',
+            resultado: usuario
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - obtener-usuario: ', error)
+
+        const respuesta =  new Respuesta({
+            estado: 500,
+            mensajeCliente: 'error_servidor',
+            mensajeServidor: 'Error en el servidor.',
+            resultado: null
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    }
+}
+
+export const actualizar = async (req, res) => {
     
 }
 
-usuariosControllers.actualizar = async (req, res) => {
+export const eliminar = async (req, res) => {
     
 }
 
-usuariosControllers.eliminar = async (req, res) => {
-    
+export default {
+    crear,
+    obtener,
+    actualizar,
+    eliminar
 }
-
-export default usuariosControllers

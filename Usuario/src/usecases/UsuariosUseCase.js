@@ -24,13 +24,14 @@ class UsuariosUseCase {
 
   async crear (usuarioNuevo = Usuario.params) {
 
-    const { uid, correo, nombreUsuario, fechaNacimiento, rol, 
+    const { uid, correo, nombreUsuario, nombreCompleto, fechaNacimiento, rol, 
       fotoPerfil, eliminado, datosAuthenticationEliminados, } = usuarioNuevo 
 
     const usuario = new Usuario({
       uid,
       correo,
       nombreUsuario,
+      nombreCompleto,
       fechaNacimiento,
       rol,
       fotoPerfil,
@@ -46,13 +47,14 @@ class UsuariosUseCase {
 
   async actualizar (uid = '', datosActualizados = Usuario.params) {
 
-    const { uid, correo, nombreUsuario, fechaNacimiento, rol, 
+    const { correo, nombreUsuario, nombreCompleto, fechaNacimiento, rol, 
       fotoPerfil, eliminado, datosAuthenticationEliminados, } = datosActualizados 
 
     await this.usuariosRepository.actualizar(uid, {
       uid,
       correo,
       nombreUsuario,
+      nombreCompleto,
       fechaNacimiento,
       rol,
       fotoPerfil,

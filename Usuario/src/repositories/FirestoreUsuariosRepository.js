@@ -1,3 +1,4 @@
+import collections_name_firestore from '../../firebase-service/collections_name_firestore/collections_name_firestore.js'
 import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
 import Usuario from '../models/Usuario.js'
 
@@ -12,9 +13,9 @@ class FirestoreUsuariosRepository {
     // Si "test" es true, se le agrega un sufijo, útil para que 
     // las pruebas de integración no sobreescriban los datos existentes.
 
-    let collection_name = process.env.FIRESTORE_COLLECTION_NAME_USUARIOS
+    let collection_name = collections_name_firestore.usuarios
 
-    if (test) collection_name += '_test'
+    if (isTest) collection_name += '_test'
 
     this.collection = firebaseFirestoreService.collection(collection_name)
     this.isTest = isTest
@@ -67,6 +68,7 @@ class FirestoreUsuariosRepository {
       uid: usuario.uid,
       nombreUsuario: usuario.nombreUsuario,
       correo: usuario.correo,
+      nombreCompleto: usuario.nombreCompleto,
       fechaNacimiento: usuario.fechaNacimiento,
       rol: usuario.rol,
       fotoPerfil: usuario.fotoPerfil,
@@ -86,6 +88,7 @@ class FirestoreUsuariosRepository {
       uid: datosActualizados.uid,
       nombreUsuario: datosActualizados.nombreUsuario,
       correo: datosActualizados.correo,
+      nombreCompleto: datosActualizados.nombreCompleto,
       fechaNacimiento: datosActualizados.fechaNacimiento,
       rol: datosActualizados.rol,
       fotoPerfil: datosActualizados.fotoPerfil,
@@ -117,6 +120,7 @@ class FirestoreUsuariosRepository {
       uid: data.uid, 
       nombreUsuario: data.nombreUsuario, 
       correo: data.correo, 
+      nombreCompleto: data.nombreCompleto,
       fechaNacimiento: data.fechaNacimiento, 
       rol: data.rol, 
       fotoPerfil: data.fotoPerfil,

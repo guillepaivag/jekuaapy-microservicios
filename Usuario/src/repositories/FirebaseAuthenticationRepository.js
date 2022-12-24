@@ -26,12 +26,11 @@ class FirebaseAuthenticationRepository {
         return usuarioAuth
     }
     
-    async crear (correo = '', nombreCompleto = '', contrasena = '') {
+    async crear (correo = '', contrasena = '') {
 
         const usuarioAuth = await firebaseAuthenticationService.createUser({
             email: correo,
             password: contrasena,
-            displayName: nombreCompleto,
         })
 
         return usuarioAuth

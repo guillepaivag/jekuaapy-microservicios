@@ -1,5 +1,3 @@
-import Authentication from '../models/Authentication.js'
-
 // Casos de uso para el manejo de usuarios.
 // Acá va la lógica de negocio agnóstica a los frameworks,
 // recibiendo como parámetros las dependencias necesarias.
@@ -18,8 +16,8 @@ class AuthenticationUseCase {
     return await this.authenticationRepository.obtenerPorCorreo(correo)
   }
 
-  async crear (correo = '', nombreCompleto = '', contrasena = '') {
-    return await this.authenticationRepository.crear(correo, nombreCompleto, contrasena)
+  async crear (correo = '', contrasena = '') {
+    return await this.authenticationRepository.crear(correo, contrasena)
   }
 
   async actualizar (uid = '', usuarioAuth = {}) {

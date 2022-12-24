@@ -2,6 +2,7 @@ const paramsObject = {
     uid: '',
     nombreUsuario: '',
     correo: '',
+    nombreCompleto: '',
     fechaNacimiento: null,
     rol: '',
     fotoPerfil: '',
@@ -16,6 +17,7 @@ class Usuario {
             uid: { type: 'string', errorMessage: 'must be of string type' },
             nombreUsuario: { type: 'string', errorMessage: 'must be of string type' },
             correo: { type: 'string', errorMessage: 'must be of string type' },
+            nombreCompleto: { type: 'string', errorMessage: 'must be of string type' },
             fechaNacimiento: { type: 'object', errorMessage: 'must be of string type' },
             rol: { type: 'string', errorMessage: 'must be of boolean type' },
             fotoPerfil: { type: 'string', errorMessage: 'must be of string type' },
@@ -29,11 +31,12 @@ class Usuario {
     static params = paramsObject
     
     constructor (data = paramsObject) {
-        const { uid, nombreUsuario, correo, fechaNacimiento, rol, fotoPerfil, eliminado, datosAuthenticationEliminados } = data
+        const { uid, nombreUsuario, correo, nombreCompleto, fechaNacimiento, rol, fotoPerfil, eliminado, datosAuthenticationEliminados } = data
         
         this.uid = uid ? uid : ''
         this.nombreUsuario = nombreUsuario ? nombreUsuario : ''
         this.correo = correo ? correo : ''
+        this.nombreCompleto = nombreCompleto ? nombreCompleto : ''
         this.fechaNacimiento = fechaNacimiento ? fechaNacimiento : null
         this.rol = rol ? rol : 'estudiante'
         this.fotoPerfil = fotoPerfil ? fotoPerfil : ''

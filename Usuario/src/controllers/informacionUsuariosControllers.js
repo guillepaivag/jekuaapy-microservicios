@@ -6,51 +6,24 @@ import FirestoreInformacionUsuarioRepository from "../repositories/FirestoreInfo
 import InformacionUsuariosUseCase from "../usecases/InformacionUsuariosUseCase.js"
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
 
-controllerInformacionUsuario = {}
-
-controllerInformacionUsuario.obtener = async (req, res) => {
+export const obtener = async (req, res) => {
     try {
         const { params } = req
         const { tipo, valor } = params
 
         let informacionUsuario = null
 
-        if (tipo === 'nombreUsuario') {
-            informacionUsuario = informacionUsuariosUseCase.obtenerPorNombreUsuario(valor)
+        if (tipo === 'uid') informacionUsuario = await informacionUsuariosUseCase.obtenerPorUID(valor)
+        else if (tipo === 'correo') informacionUsuario = await informacionUsuariosUseCase.obtenerPorCorreo(valor)
+        else if (tipo === 'nombreUsuario') informacionUsuario = await informacionUsuariosUseCase.obtenerPorNombreUsuario(valor)
+        else throw new TypeError('No hay datos para buscar el usuario.')
 
-            if (!informacionUsuario) {
-                throw new RespuestaError({
-                    estado: 400,
-                    mensajeCliente: 'no_existe_usuario',
-                    mensajeServidor: 'No existe el usuario.'
-                })
-            }
-
-        } else if (tipo === 'correo') {
-            
-            const informacionUsuario = informacionUsuariosUseCase.obtenerPorCorreo(valor)
-
-            if (!informacionUsuario) {
-                throw new RespuestaError({
-                    estado: 400,
-                    mensajeCliente: 'no_existe_usuario',
-                    mensajeServidor: 'No existe el usuario.'
-                })
-            }
-
-        } else if (tipo === 'uid') {
-            const informacionUsuario = informacionUsuariosUseCase.obtenerPorUID(valor)
-
-            if (!informacionUsuario) {
-                throw new RespuestaError({
-                    estado: 400,
-                    mensajeCliente: 'no_existe_usuario',
-                    mensajeServidor: 'No existe el usuario.'
-                })
-            }
-
-        } else {
-            throw new TypeError('No hay datos para buscar el usuario.')
+        if (!informacionUsuario) {
+            throw new RespuestaError({
+                estado: 400,
+                mensajeCliente: 'no_existe_usuario',
+                mensajeServidor: 'No existe el usuario.'
+            })
         }
 
         // Retornar respuesta
@@ -79,12 +52,12 @@ controllerInformacionUsuario.obtener = async (req, res) => {
 
 }
 
-controllerInformacionUsuario.actualizar = async (req, res) => {
+export const actualizar = async (req, res) => {
     try {
         const { params, body } = req
         const { uid } = params
 
-        let informacionUsuario = informacionUsuariosUseCase.actualizar(uid, body)
+        let informacionUsuario = await informacionUsuariosUseCase.actualizar(uid, body)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -112,4 +85,7 @@ controllerInformacionUsuario.actualizar = async (req, res) => {
 
 }
 
-export default controllerInformacionUsuario
+export default {
+    obtener,
+    actualizar,
+}

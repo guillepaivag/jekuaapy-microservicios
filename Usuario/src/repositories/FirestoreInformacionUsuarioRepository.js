@@ -1,4 +1,5 @@
-import db from '../../firebase-service/firestore-service.js'
+import collections_name_firestore from '../../firebase-service/collections_name_firestore/collections_name_firestore.js'
+import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
 import InformacionUsuario from '../models/InformacionUsuario.js'
 
 class FirestoreInformacionUsuarioRepository {
@@ -8,12 +9,12 @@ class FirestoreInformacionUsuarioRepository {
         // Obtener el nombre de la colección desde variables de entorno.
         // Si "test" es true, se le agrega un sufijo, útil para que 
         // las pruebas de integración no sobreescriban los datos existentes.
+        
+        let collection_name = collections_name_firestore.informacionUsuarios
     
-        let collection_name = process.env.FIRESTORE_COLLECTION_NAME_INFORMACION_USUARIO
+        if (isTest) collection_name += '_test'
     
-        if (test) collection_name += '_test'
-    
-        this.collection = db.collection(collection_name)
+        this.collection = firebaseFirestoreService.collection(collection_name)
         this.isTest = isTest
     
       }
@@ -30,7 +31,7 @@ class FirestoreInformacionUsuarioRepository {
 
       async obtenerPorNombreUsuario (nombreUsuario = '') {
     
-        const snapshot = await db
+        const snapshot = await firebaseFirestoreService
         .collection('Usuarios')
         .where('nombreUsuario', '==', nombreUsuario)
         .where('eliminado', '==', false)
@@ -46,7 +47,7 @@ class FirestoreInformacionUsuarioRepository {
 
       async obtenerPorCorreo (correo = '') {
     
-        const snapshot = await db
+        const snapshot = await firebaseFirestoreService
         .collection('Usuarios')
         .where('correo', '==', correo)
         .where('eliminado', '==', false)

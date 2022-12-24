@@ -1,6 +1,6 @@
-import defaultApp from './firebase-app.js'
 import { getFirestore } from 'firebase-admin/firestore'
+import defaultApp from './firebase-app.js'
 
-const db = getFirestore(defaultApp)
+const firebaseFirestoreService = getFirestore(defaultApp)
 
-export default db
+export default firebaseFirestoreService
