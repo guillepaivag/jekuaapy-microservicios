@@ -1,6 +1,6 @@
 // Respuestas del servidor
-import Respuesta from "../models/Respuesta.js"
-import RespuestaError from "../models/RespuestaError.js"
+import Respuesta from "../models/Respuestas/Respuesta.js"
+import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 // Authentication
 import FirebaseAuthenticationRepository from "../repositories/FirebaseAuthenticationRepository.js"
@@ -14,6 +14,12 @@ import UsuariosUseCase from "../usecases/UsuariosUseCase.js"
 import FirestoreInformacionUsuarioRepository from "../repositories/FirestoreInformacionUsuarioRepository.js"
 import InformacionUsuariosUseCase from "../usecases/InformacionUsuariosUseCase.js"
 
+// Servicio de mensajeria
+import sendEmailVerification from "../helpers/emails/email_verification/sendEmailVerification.service.js"
+
+// Manejo de errores
+import { errorHandler } from "../helpers/errors/error-handler.js"
+
 const authenticationUseCase = new AuthenticationUseCase(new FirebaseAuthenticationRepository())
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
@@ -21,7 +27,7 @@ const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreI
 export const crear = async (req, res) => {
     try {
         const { params, body } = req
-        const { usuarioNuevo, contrasena } = body
+        const { usuarioNuevo, contrasena, confirmacionContrasena } = body
 
         // Crear Usuario en Firebase Authentication
         const usuarioAuth = await authenticationUseCase.crear(usuarioNuevo.correo, contrasena)
@@ -50,6 +56,9 @@ export const crear = async (req, res) => {
             redesSociales: [],
         })
 
+        // Enviar correo de verificación
+        await sendEmailVerification( usuarioNuevo.correo )
+
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
@@ -67,14 +76,48 @@ export const crear = async (req, res) => {
     } catch (error) {
         console.log('Error - crear-usuario: ', error)
 
-        const respuesta = new RespuestaError({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'Error en el servidor.',
-            resultado: null
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+
+    }
+}
+
+export const obtenerAuthentication = async (req, res) => {
+    try {
+        const { params } = req
+        const { tipo, valor } = params
+
+        let usuarioAuth = null
+
+        if (tipo === 'uid') usuarioAuth = await authenticationUseCase.obtenerPorUID(valor)
+        else if (tipo === 'correo') usuarioAuth = await authenticationUseCase.obtenerPorCorreo(valor)
+        else throw new TypeError('No hay datos para buscar el usuario.')
+
+        if ( !usuarioAuth ) {
+            throw new RespuestaError({
+                estado: 400,
+                mensajeCliente: 'no_existe_usuario',
+                mensajeServidor: 'No existe el usuario.'
+            })
+        }
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'Se encontró el usuario de manera correcta!',
+            resultado: usuarioAuth
         })
-        
+
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - obtener-authentication: ', error)
+
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
 
     }
 }
@@ -112,14 +155,9 @@ export const obtener = async (req, res) => {
     } catch (error) {
         console.log('Error - obtener-usuario: ', error)
 
-        const respuesta =  new Respuesta({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'Error en el servidor.',
-            resultado: null
-        })
-
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
 
     }
 }
@@ -128,13 +166,36 @@ export const actualizar = async (req, res) => {
     
 }
 
-export const eliminar = async (req, res) => {
-    
+export const actualizarContrasena = async (req, res) => {
+    try {
+        const { params, body } = req
+        const { tipo, valor } = params
+        const { solicitante, contrasena } = body
+        const { authToken, uidSolicitante, authSolicitante } = solicitante
+
+        // Actualizacion de contrasena
+        await authenticationUseCase.actualizar(uidSolicitante, { password: contrasena })
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'Se actualizó la contraseña con éxito.',
+            resultado: null
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - actualizar_contrasena-authentication: ', error)
+
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+
+    }
 }
 
-export default {
-    crear,
-    obtener,
-    actualizar,
-    eliminar
+export const eliminar = async (req, res) => {
+    
 }

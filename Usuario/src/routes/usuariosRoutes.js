@@ -1,14 +1,24 @@
 import { Router } from 'express'
-import { crear, obtener } from '../controllers/usuariosControllers.js'
+import { estaAutenticado } from '../middlewares/estaAutenticado.js'
+import { verificarCreacionUsuario, verificarActualizacionUsuario, verificarActualizacionContrasena, verificarEliminacionUsuario } from '../middlewares/usuariosMiddlewares.js'
+import { crear, obtener, obtenerAuthentication, actualizar, actualizarContrasena, eliminar } from '../controllers/usuariosControllers.js'
 
 const router = Router()
 
-router.post('/', crear)
+router.post('/', verificarCreacionUsuario, crear)
 
 router.get('/:tipo/:valor', obtener)
 
-router.put('/:tipo/:valor')
+router.get('/:tipo/:valor/authentication', obtenerAuthentication)
 
-router.delete('/:tipo/:valor')
+router.put('/', estaAutenticado, verificarActualizacionUsuario, actualizar)
+
+// eliminarFotoPerfil
+
+// reeviarCorreoVerificacion
+
+router.put('/contrasena', estaAutenticado, verificarActualizacionContrasena, actualizarContrasena)
+
+router.delete('/', estaAutenticado, verificarEliminacionUsuario, eliminar)
 
 export default router

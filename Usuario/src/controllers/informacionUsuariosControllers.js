@@ -1,10 +1,13 @@
 
 // instanciamos el repositorio y el use case
-import Respuesta from "../models/Respuesta.js"
-import RespuestaError from "../models/RespuestaError.js"
+import Respuesta from "../models/Respuestas/Respuesta.js"
+import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import FirestoreInformacionUsuarioRepository from "../repositories/FirestoreInformacionUsuarioRepository.js"
 import InformacionUsuariosUseCase from "../usecases/InformacionUsuariosUseCase.js"
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
+
+// Manejo de errores
+import { errorHandler } from "../utils/error-handler.js"
 
 export const obtener = async (req, res) => {
     try {
@@ -39,14 +42,9 @@ export const obtener = async (req, res) => {
     } catch (error) {
         console.log('Error - obtenerMiUsuario: ', error)
 
-        const respuesta =  new Respuesta({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'error en el servidor',
-            resultado: null
-        })
-
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
 
     }
 
@@ -72,20 +70,10 @@ export const actualizar = async (req, res) => {
     } catch (error) {
         console.log('Error - obtenerMiUsuario: ', error)
 
-        const respuesta =  new Respuesta({
-            estado: 500,
-            mensajeCliente: 'error_servidor',
-            mensajeServidor: 'error en el servidor',
-            resultado: null
-        })
-        
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
 
     }
 
-}
-
-export default {
-    obtener,
-    actualizar,
 }

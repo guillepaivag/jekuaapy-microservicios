@@ -1,5 +1,4 @@
 import firebaseAuthenticationService from '../../firebase-service/firebase-authentication-service.js'
-import Authentication from '../models/Authentication.js'
 
 // Implementación con Firestore para el repositorio de libros.
 // Recibe la conexión con Firestore externamente.

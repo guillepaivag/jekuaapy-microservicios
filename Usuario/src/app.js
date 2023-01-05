@@ -2,7 +2,6 @@ import express from 'express'
 import cors from 'cors'
 
 // Get Routes
-import authenticationRoutes from './routes/authenticationRoutes.js'
 import usuariosRoutes from './routes/usuariosRoutes.js'
 import informacionUsuarioRoutes from './routes/informacionUsuariosRoutes.js'
 
@@ -21,7 +20,6 @@ app.use(express.urlencoded({ extended: false }))
 
 // Routes
 app.use('/usuarios', usuariosRoutes)
-app.use('/usuarios', authenticationRoutes)
 app.use('/usuarios', informacionUsuarioRoutes)
 
 // Manejo de errores

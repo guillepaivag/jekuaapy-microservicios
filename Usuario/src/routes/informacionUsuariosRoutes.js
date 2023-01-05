@@ -1,7 +1,5 @@
 import { Router } from 'express'
-import controllerInformacionUsuario from '../controllers/informacionUsuariosControllers.js'
-
-const { obtener, actualizar } = controllerInformacionUsuario
+import { obtener, actualizar } from '../controllers/informacionUsuariosControllers.js'
 
 const router = Router()
 

@@ -1,0 +1,1 @@
+export const esNombreUsuario = (cadena) => /^[a-zA-Z0-9_]+$/.test(cadena)
