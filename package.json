@@ -3,12 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {
-    "serve": "",
-    "deploy": "",
-    "env_prod": "",
-    "env_dev": "",
-    "env_test": ""
+  "scripts": { 
+    "iterador":"cd Usuario && npm run serve && cd ..",
+    "serve": "cd Usuario && npm run serve && cd ..",
+    "deploy": "cd Usuario && npm run deploy && cd ..",
+    "env_prod": "cd Usuario && firebase use prod && cd ..",
+    "env_dev": "cd Usuario && firebase use dev && cd ..",
+    "env_test": "cd Usuario && firebase use test && cd ..",
+    "npmi": "cd Usuario && npm i && cd .."
   },
   "keywords": [],
   "author": "",

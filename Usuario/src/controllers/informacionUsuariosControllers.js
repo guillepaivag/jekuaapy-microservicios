@@ -66,7 +66,7 @@ controllerInformacionUsuario.obtener = async (req, res) => {
     } catch (error) {
         console.log('Error - obtenerMiUsuario: ', error)
 
-        const respuesta =  new Respuesta({
+        const respuesta =  new RespuestaError({
             estado: 500,
             mensajeCliente: 'error_servidor',
             mensajeServidor: 'error en el servidor',
@@ -99,7 +99,7 @@ controllerInformacionUsuario.actualizar = async (req, res) => {
     } catch (error) {
         console.log('Error - obtenerMiUsuario: ', error)
 
-        const respuesta =  new Respuesta({
+        const respuesta =  new RespuestaError({
             estado: 500,
             mensajeCliente: 'error_servidor',
             mensajeServidor: 'error en el servidor',
