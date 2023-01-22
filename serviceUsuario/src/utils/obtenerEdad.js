@@ -1,0 +1,1 @@
+export const obtenerEdad = ( miliseconds = Date.now() ) => (Date.now() - miliseconds) * 3.2*Math.pow(10, -11)
