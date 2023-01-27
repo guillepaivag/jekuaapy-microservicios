@@ -1,6 +1,6 @@
 {
   "projects": {
-    "dev": "jekuaapydev1",
+    "dev": "jekuaapydev2",
     "prod": "jekuaa-py"
   },
   "targets": {},

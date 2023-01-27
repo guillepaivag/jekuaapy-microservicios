@@ -24,42 +24,42 @@ const setUrlApi = (service = '', isProduction = false, isLocal = false) => {
     const data = {
         usuario: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_usuario',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_usuario',
             devRemote: '',
         },
         correo: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_correo',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_correo',
             devRemote: '',
         },
         blog: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_blog',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_blog',
             devRemote: '',
         },
         cursoBorrador: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_cursoBorrador',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_cursoBorrador',
             devRemote: '',
         },
         cursoPublicado: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_cursoPublicado',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_cursoPublicado',
             devRemote: '',
         },
         equipo: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_equipo',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_equipo',
             devRemote: '',
         },
         examen: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_examen',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_examen',
             devRemote: '',
         },
         pedido: {
             prod: '',
-            devLocal: 'http://127.0.0.1:7000/jekuaapydev1/southamerica-east1/service_pedido',
+            devLocal: 'http://127.0.0.1:7000/jekuaapydev2/southamerica-east1/service_pedido',
             devRemote: '',
         },
     }
