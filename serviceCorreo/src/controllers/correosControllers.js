@@ -2,7 +2,7 @@ import { request, response } from "express"
 
 // Models de respuesta
 import Respuesta from "../models/Respuestas/Respuesta.js"
-import RespuestaError from "../models/RespuestaError.js"
+import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 // Correo
 import AwsSesCorreosRepository from "../repositories/AwsSesCorreosRepository.js"

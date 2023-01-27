@@ -1,6 +1,6 @@
-export const setBucketsName = (isProduction = false, isLocal = false) => {
-    const bucketNameFotoPerfil = setBucketName('fotoPerfil', isProduction, isLocal)
-    const bucketNameFotoPortada = setBucketName('fotoPortada', isProduction, isLocal)
+export const setBucketsName = (isProduction = false) => {
+    const bucketNameFotoPerfil = setBucketName('fotoPerfil', isProduction)
+    const bucketNameFotoPortada = setBucketName('fotoPortada', isProduction)
 
     return {
         bucketNameFotoPerfil,
@@ -8,22 +8,19 @@ export const setBucketsName = (isProduction = false, isLocal = false) => {
     }
 }
 
-const setBucketName = (code = '', isProduction = false, isLocal = false) => {
+const setBucketName = (code = '', isProduction = false) => {
     const data = {
         'fotoPerfil': {
-            prod: '',
-            devLocal: '',
-            devRemote: '',
+            prod: 'jekuaapy-usuarios-foto_perfil',
+            devRemote: 'jekuaapydev1-usuarios-foto_perfil',
         },
         'fotoPortada': {
-            prod: '',
-            devLocal: '',
-            devRemote: '',
+            prod: 'jekuaapy-usuarios-foto_portada',
+            devRemote: 'jekuaapydev1-usuarios-foto_portada',
         },
     }
 
-    const tipo = isProduction ? 'prod' :
-    (isLocal ? 'devLocal' : 'devRemote')
+    const tipo = isProduction ? 'prod' : 'devRemote'
 
     return data[code][tipo]
 }

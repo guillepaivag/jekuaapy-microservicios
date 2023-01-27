@@ -5,8 +5,12 @@
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
+    "logs": "firebase functions:log",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+
+    "set_prod": "firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get",
+    "set_dev_local": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=Y && firebase functions:config:get > config.json && firebase functions:config:get",
+    "set_dev_remote": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get"
   },
   "engines": {
     "node": "16"

@@ -4,21 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "set_prod_usuarios": "cd serviceUsuario && firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_prod_correos": "cd serviceCorreo && firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_prod_equipos": "cd serviceEquipo && firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
+    "set_prod_usuarios": "cd serviceUsuario && npm run set_prod && cd ..",
+    "set_dev_remote_usuarios": "cd serviceUsuario && npm run set_dev_remote && cd ..",
+    "set_dev_local_usuarios": "cd serviceUsuario && npm run set_dev_local && cd ..",
     
-    "set_dev_local_usuarios": "cd serviceUsuario && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=Y && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_dev_local_correos": "cd serviceCorreo && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=Y && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_dev_local_equipos": "cd serviceEquipo && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=Y && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-
-    "set_dev_remote_usuarios": "cd serviceUsuario && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_dev_remote_correos": "cd serviceCorreo && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
-    "set_dev_remote_equipos": "cd serviceEquipo && firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set environment.local=N && firebase functions:config:get > config.json && firebase functions:config:get && cd ..",
+    "set_prod_correos": "cd serviceCorreo && npm run set_prod && cd ..",
+    "set_dev_remote_correos": "cd serviceCorreo && npm run set_dev_remote && cd ..",
+    "set_dev_local_correos": "cd serviceCorreo && npm run set_dev_local && cd ..",
+    
+    "set_prod_equipos": "cd serviceEquipo && npm run set_prod && cd ..",
+    "set_dev_remote_equipos": "cd serviceEquipo && npm run set_dev_remote && cd ..",
+    "set_dev_local_equipos": "cd serviceEquipo && npm run set_dev_local && cd ..",
 
     "set_prod": "npm run set_prod_usuarios && npm run set_prod_correos",
-    "set_dev_local": "npm run set_dev_local_usuarios && npm run set_dev_local_correos",
-    "set_dev_remote": "npm run set_dev_remote_usuarios && npm run set_dev_remote_correos"
+    "set_dev_remote": "npm run set_dev_remote_usuarios && npm run set_dev_remote_correos",
+    "set_dev_local": "npm run set_dev_local_usuarios && npm run set_dev_local_correos"
   },
   "keywords": [],
   "author": "",
