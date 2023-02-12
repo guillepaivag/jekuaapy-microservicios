@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { estaAutenticado } from '../middlewares/estaAutenticado.js'
-import { verificarCreacionUsuario, verificarActualizacionUsuario, verificarActualizacionContrasena, verificarEliminacionUsuario, verificarReevioCorreoVerificacion } from '../middlewares/usuariosMiddlewares.js'
-import { crear, obtener, obtenerAuthentication, actualizar, reeviarCorreoVerificacion, actualizarContrasena, eliminarFotoPerfil, eliminarFotoPortada, eliminar } from '../controllers/usuariosControllers.js'
+import { verificarCreacionUsuario, verificarActualizacionUsuario, verificarActualizacionContrasena, verificarEliminacionUsuario, verificarRestauracionFotoPerfil, verificarRestauracionFotoPortada } from '../middlewares/usuariosMiddlewares.js'
+import { crear, obtener, obtenerAuthentication, actualizar, actualizarContrasena, restaurarFotoPerfil, restaurarFotoPortada, eliminar } from '../controllers/usuariosControllers.js'
 
 const router = Router()
 
@@ -13,13 +13,11 @@ router.get('/:tipo/:valor/authentication', obtenerAuthentication)
 
 router.put('/', estaAutenticado, verificarActualizacionUsuario, actualizar)
 
-router.put('/reeviarCorreoVerificacion', estaAutenticado, verificarReevioCorreoVerificacion, reeviarCorreoVerificacion)
-
 router.put('/contrasena', estaAutenticado, verificarActualizacionContrasena, actualizarContrasena)
 
-router.delete('/fotoPerfil', estaAutenticado, eliminarFotoPerfil)
+router.put('/restaurarFotoPerfil', estaAutenticado, verificarRestauracionFotoPerfil, restaurarFotoPerfil)
 
-router.delete('/fotoPortada', estaAutenticado, eliminarFotoPortada)
+router.put('/restaurarFotoPortada', estaAutenticado, verificarRestauracionFotoPortada, restaurarFotoPortada)
 
 // router.delete('/', estaAutenticado, verificarEliminacionUsuario, eliminar)
 

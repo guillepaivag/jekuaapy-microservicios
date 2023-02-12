@@ -60,9 +60,8 @@ export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body } = req
         const { solicitante, informacionUsuarioActualizado, datosInformacionUsuarioActualizado } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
 
-        await informacionUsuariosUseCase.actualizar(uidSolicitante, datosInformacionUsuarioActualizado)
+        await informacionUsuariosUseCase.actualizar(solicitante.uidSolicitante, datosInformacionUsuarioActualizado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({

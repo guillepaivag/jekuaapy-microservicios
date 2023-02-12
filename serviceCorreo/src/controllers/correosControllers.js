@@ -9,9 +9,9 @@ import AwsSesCorreosRepository from "../repositories/AwsSesCorreosRepository.js"
 import CorreosUseCases from "../usecases/CorreosUseCases.js"
 
 // Helpers
+import { generarLinkDeVerificacionDeCorreo } from "../helpers/usuarios/generarLinkDeVerificacionDeCorreo.js"
 import { generarHtmlVerificacionCorreoUsuario } from "../helpers/correosEstructurados/verificacionCorreoUsuario/generarHtmlVerificacionCorreoUsuario.js"
 import { errorHandler } from "../helpers/errors/error-handler.js"
-import { generarLinkDeVerificacionDeCorreo } from "../helpers/usuarios/generarLinkDeVerificacionDeCorreo.js"
 
 // Variables
 const correoUseCase = new CorreosUseCases(new AwsSesCorreosRepository())
@@ -35,6 +35,7 @@ export const verificarCorreoDeUsuario = async (req = request, res = response) =>
             resultado: null
         })
 
+        console.log('Correo de verificacion enviado con exito..')
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {

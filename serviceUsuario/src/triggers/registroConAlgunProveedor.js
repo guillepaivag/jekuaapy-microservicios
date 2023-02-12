@@ -42,8 +42,8 @@ const registroConAlgunProveedor = functions
             nombreCompleto: 'Estudiante de Jekuaapy',
             fechaNacimiento: null,
             rol: 'estudiante',
-            fotoPerfil: '',
-            fotoPortada: '',
+            fotoPerfil: 'default',
+            fotoPortada: 'default',
             estado: 'activo',
             authenticationEliminado: null,
         })

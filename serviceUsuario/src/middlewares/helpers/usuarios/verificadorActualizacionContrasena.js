@@ -1,7 +1,7 @@
 // Models
 import RespuestaError from "../../../models/Respuestas/RespuestaError.js"
 
-export const verificadorActualizacionContrasena = async (contrasena, confirmacionContrasena) => {
+export const verificadorActualizacionContrasena = (contrasena, confirmacionContrasena) => {
     if (contrasena !== confirmacionContrasena) {
         return new RespuestaError({
             estado: 400, 

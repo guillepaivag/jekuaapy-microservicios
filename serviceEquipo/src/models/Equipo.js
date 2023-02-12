@@ -4,10 +4,10 @@ const paramsObject = {
     codigo : '',
     nombre : '',
     descripcion : '',
+    cantidadMiembros : 0,
+    estado : 'activo',
     fechaCreacion : null,
     fechaEliminado : null,
-    estado : 'activo',
-    cantidadMiembros : 0,
 }
 
 class Equipo {
@@ -19,10 +19,10 @@ class Equipo {
             codigo: { type: 'string', errorMessage: 'debe ser de tipo String' },
             nombre: { type: 'string', errorMessage: 'debe ser de tipo String' },
             descripcion: { type: 'string', errorMessage: 'debe ser de tipo String' },
+            cantidadMiembros: { type: 'number', errorMessage: 'debe ser de tipo Number' },
+            estado: { type: 'string', errorMessage: 'debe ser de tipo string' },
             fechaCreacion: { type: 'object', errorMessage: 'debe ser de tipo Object' },
             fechaEliminado: { type: 'object', errorMessage: 'debe ser de tipo Object' },
-            estado: { type: 'string', errorMessage: 'debe ser de tipo string' },
-            cantidadMiembros: { type: 'number', errorMessage: 'debe ser de tipo Number' },
         },
         required: ['responsable', 'codigo', 'nombre' ,'descripcion'],
         additionalProperties: true,
@@ -31,17 +31,17 @@ class Equipo {
     static params = paramsObject
     
     constructor (data = paramsObject) {
-        const { uid, responsable, codigo, nombre, descripcion, fechaCreacion, fechaEliminado, estado, cantidadMiembros } = data
+        const { uid, responsable, codigo, nombre, descripcion, cantidadMiembros, estado, fechaCreacion, fechaEliminado } = data
         
         this.uid = uid ? uid : ''
         this.responsable = responsable ? responsable : ''
         this.codigo = codigo ? codigo : ''
         this.nombre = nombre ? nombre : ''
         this.descripcion = descripcion ? descripcion : ''
+        this.cantidadMiembros = cantidadMiembros ? cantidadMiembros : 0
+        this.estado = estado ? estado : 'activo'
         this.fechaCreacion = fechaCreacion ? fechaCreacion : null
         this.fechaEliminado = fechaEliminado ? fechaEliminado : null
-        this.estado = estado ? estado : 'activo'
-        this.cantidadMiembros = cantidadMiembros ? cantidadMiembros : 0
     }
 
 }

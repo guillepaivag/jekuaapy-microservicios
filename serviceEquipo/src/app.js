@@ -12,13 +12,18 @@ import { errorHandler } from './helpers/errors/error-handler.js'
 const app = express()
 
 // Middlewares
+app.use((req, res, next) => { 
+  req.timeOfRequest = Date.now()
+  next()
+})
+
 const origin = []
 const urlsProduccion = ['']
 const urlsDesarrolloLocal = ['http://localhost:3000']
 const urlsDesarrolloRemoto = ['']
 config.production ? origin.push(...urlsProduccion) : ''
-!config.production && config.local ? origin.push(...urlsDesarrolloLocal) : ''
-!config.production && !config.local ? origin.push(...urlsDesarrolloRemoto) : ''
+!config.production && config.remote ? origin.push(...urlsDesarrolloRemoto) : ''
+!config.production && !config.remote ? origin.push(...urlsDesarrolloLocal) : ''
 
 app.use(cors({
   credentials: true,

@@ -1,13 +1,10 @@
-import collections_name_firestore from '../../firebase-service/collections_name_firestore/collections_name_firestore.js'
-import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
-import { milliseconds_a_timestamp } from '../helpers/timestamp.js'
 import Equipo from '../models/Equipo.js'
-
+import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
+import collections_name_firestore from '../../firebase-service/collections_name_firestore/collections_name_firestore.js'
 
 class FirestoreEquipoRepository {
 
-    constructor(isTest) {
-
+    constructor (isTest) {
         // Obtener el nombre de la colección desde variables de entorno.
         // Si "test" es true, se le agrega un sufijo, útil para que 
         // las pruebas de integración no sobreescriban los datos existentes.
@@ -18,52 +15,10 @@ class FirestoreEquipoRepository {
 
         this.collection = firebaseFirestoreService.collection(collection_name)
         this.isTest = isTest
-
-    }
-
-    async obtenerTodos() {
-
-        const snapshot = await this.collection.get();
-        const equipos = snapshot.docs.map(doc => this._obtenerDeDocumento(doc));
-
-        return equipos;
-
-    }
-
-    async obtenerPorUID(uid = '') {
-
-
-        const snapshot = await this.collection
-            .where('uid', '==', uid)
-            .where('estado', '==', 'activo')
-            .get()
-
-        if (snapshot.empty) return null
-
-        const doc = snapshot.docs[0]
-
-        return this._obtenerDeDocumento(doc)
-
-    }
-
-    async obtenerPorCodigo(codigo = '') {
-
-        const snapshot = await this.collection
-            .where('codigo', '==', codigo)
-            .where('estado', '==', 'activo')
-            .get()
-
-        if (snapshot.empty) return null
-
-        const doc = snapshot.docs[0]
-
-        return this._obtenerDeDocumento(doc)
-
     }
 
     async crear(equipo = Equipo.params) {
-
-        const doc = this.collection.doc();
+        const doc = this.collection.doc()
 
         await this.collection.doc(doc.id).set({
             uid: doc.id,
@@ -71,36 +26,52 @@ class FirestoreEquipoRepository {
             codigo: equipo.codigo, 
             nombre: equipo.nombre, 
             descripcion: equipo.descripcion, 
-            fechaCreacion: milliseconds_a_timestamp(Date.now()),
-            fechaEliminado: null,
-            estado: 'activo', 
-            cantidadMiembros: 0, 
+            cantidadMiembros: 0,
+            estado: 'activo',
+            fechaCreacion: equipo.fechaCreacion, 
+            fechaEliminado: null, 
         })
 
         equipo.uid = doc.id
 
         return equipo
+    }
 
+    async obtenerPorUID(uid = '') {
+        const snapshot = await this.collection
+            .where('uid', '==', uid)
+            .where('estado', '==', 'activo')
+            .get()
+
+        if (snapshot.empty) return null
+        const doc = snapshot.docs[0]
+
+        return this._obtenerDeDocumento(doc)
+    }
+
+    async obtenerPorCodigo(codigo = '') {
+        const snapshot = await this.collection
+            .where('codigo', '==', codigo)
+            .where('estado', '==', 'activo')
+            .get()
+
+        if (snapshot.empty) return null
+        const doc = snapshot.docs[0]
+
+        return this._obtenerDeDocumento(doc)
     }
 
     async actualizar(uid = '', datosActualizados = {}) {
-
         const doc = this.collection.doc(uid)
-
-        await doc.update(
-            datosActualizados
-        )
-
-        return datosActualizados
-
+        await doc.update(datosActualizados)
     }
 
-    async eliminar(uid = '') {
-
-        await this.collection.doc(uid).delete()
-
-        return true
-
+    async eliminar(uid = '', fechaEliminado) {
+        const doc = this.collection.doc(uid)
+        await doc.update({
+            estado: 'eliminado',
+            fechaEliminado
+        })
     }
 
     _obtenerDeDocumento(doc) {
@@ -114,10 +85,10 @@ class FirestoreEquipoRepository {
             codigo: data.codigo,
             nombre: data.nombre,
             descripcion: data.descripcion,
+            cantidadMiembros: data.cantidadMiembros,
+            estado: data.estado,
             fechaCreacion: data.fechaCreacion,
             fechaEliminado: data.fechaEliminado,
-            estado: data.estado,
-            cantidadMiembros: data.cantidadMiembros,
         })
     }
 }

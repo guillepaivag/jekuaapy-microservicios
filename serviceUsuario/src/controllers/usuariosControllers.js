@@ -164,14 +164,13 @@ export const actualizar = async (req = request, res = response) => {
         const { params, body } = req
         const { tipo, valor } = params
         const { solicitante, usuarioActualizado, datosUsuarioActualizado } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
         
         // Actualizar usuario
-        await usuariosUseCase.actualizar(uidSolicitante, datosUsuarioActualizado)
+        await usuariosUseCase.actualizar(solicitante.uidSolicitante, datosUsuarioActualizado)
 
         // Actualizar authentication [correo] si es necesario
         if (datosUsuarioActualizado.correo) {
-            await authenticationUseCase.actualizar(uidSolicitante, { 
+            await authenticationUseCase.actualizar(solicitante.uidSolicitante, { 
                 email: datosUsuarioActualizado.correo, 
                 emailVerified: false 
             })
@@ -200,45 +199,14 @@ export const actualizar = async (req = request, res = response) => {
     }
 }
 
-export const reeviarCorreoVerificacion = async (req = request, res = response) => {
-    try {
-        const { params, body } = req
-        const { tipo, valor } = params
-        const { solicitante, contrasena } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
-
-        // Reenviar correo de verificación
-        apiCorreoVerificacionCorreo(authSolicitante.email)
-
-        // Retornar respuesta
-        const respuesta = new Respuesta({
-            estado: 200,
-            mensajeCliente: 'exito',
-            mensajeServidor: 'Se reenvió un correo de verificación con éxito.',
-            resultado: null
-        })
-
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
-
-    } catch (error) {
-        console.log('Error - reeviarCorreoVerificacion: ', error)
-
-        // Manejo de errores
-        const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
-
-    }
-}
-
 export const actualizarContrasena = async (req = request, res = response) => {
     try {
         const { params, body } = req
         const { tipo, valor } = params
         const { solicitante, contrasena, confirmacionContrasena } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
 
         // Actualizacion de contrasena
-        await authenticationUseCase.actualizar(uidSolicitante, { password: contrasena })
+        await authenticationUseCase.actualizar(solicitante.uidSolicitante, { password: contrasena })
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -260,29 +228,30 @@ export const actualizarContrasena = async (req = request, res = response) => {
     }
 }
 
-export const eliminarFotoPerfil = async (req = request, res = response) => {
+export const restaurarFotoPerfil = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { tipo, valor } = params
-        const { solicitante } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
+        const { solicitante, tipoRestauracion } = body
 
         // Eliminar foto de perfil
-        await fotoPerfilUseCase.eliminar(`${uidSolicitante}/foto.`)
-        await usuariosUseCase.actualizar(uidSolicitante, { fotoPerfil: '' })
+        const usuario = await usuariosUseCase.obtenerPorUID(solicitante.uidSolicitante)
+        if (usuario.fotoPerfil !== '' && usuario.fotoPerfil !== 'default') 
+            await fotoPerfilUseCase.eliminar(`${solicitante.uidSolicitante}/foto.`)
+        
+        await usuariosUseCase.actualizar(solicitante.uidSolicitante, { fotoPerfil: tipoRestauracion })
 
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
             mensajeCliente: 'exito',
-            mensajeServidor: 'Se eliminó la foto de perfil.',
+            mensajeServidor: 'Se restauró la foto de perfil.',
             resultado: null
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {
-        console.log('Error - eliminarFotoPerfil: ', error)
+        console.log('Error - restaurarFotoPerfil: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
@@ -291,29 +260,30 @@ export const eliminarFotoPerfil = async (req = request, res = response) => {
     }
 }
 
-export const eliminarFotoPortada = async (req = request, res = response) => {
+export const restaurarFotoPortada = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { tipo, valor } = params
-        const { solicitante } = body
-        const { authToken, uidSolicitante, authSolicitante } = solicitante
+        const { solicitante, tipoRestauracion } = body
 
         // Eliminar foto de portada
-        await fotoPortadaUseCase.eliminar(`${uidSolicitante}/foto.`)
-        await usuariosUseCase.actualizar(uidSolicitante, { fotoPortada: '' })
+        const usuario = await usuariosUseCase.obtenerPorUID(solicitante.uidSolicitante)
+        if (usuario.fotoPortada !== '' && usuario.fotoPortada !== 'default') 
+            await fotoPortadaUseCase.eliminar(`${solicitante.uidSolicitante}/foto.`)
+
+        await usuariosUseCase.actualizar(solicitante.uidSolicitante, { fotoPortada: tipoRestauracion })
 
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
             mensajeCliente: 'exito',
-            mensajeServidor: 'Se eliminó la foto de portada.',
+            mensajeServidor: 'Se restauró la foto de portada.',
             resultado: null
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {
-        console.log('Error - eliminarFotoPortada: ', error)
+        console.log('Error - restaurarFotoPortada: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)

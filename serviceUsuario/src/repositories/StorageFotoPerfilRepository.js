@@ -7,7 +7,7 @@ class StorageFotoPerfilRepository {
     }
 
     async obtenerUrlPublica (prefix = '') {
-        const bucketName = config.buckets.bucketNameFotoPerfil
+        const bucketName = config.buckets.fotoPerfil
         const response = await firebaseStorageService.bucket(bucketName).getFiles({ prefix })
 
         const files = response[0]
@@ -17,7 +17,7 @@ class StorageFotoPerfilRepository {
     }
 
     async eliminar (prefix = '') {
-        const bucketName = config.buckets.bucketNameFotoPerfil
+        const bucketName = config.buckets.fotoPerfil
         const response = await firebaseStorageService.bucket(bucketName).getFiles({ prefix })
 
         const files = response[0]
@@ -27,7 +27,7 @@ class StorageFotoPerfilRepository {
     }
 
     async mover (prefix = '', destino = '') {
-        const bucketName = config.buckets.bucketNameFotoPerfil
+        const bucketName = config.buckets.fotoPerfil
         const response = await firebaseStorageService.bucket(bucketName).getFiles({ prefix })
 
         const files = response[0]

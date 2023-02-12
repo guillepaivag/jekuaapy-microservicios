@@ -1,6 +1,3 @@
-const collections_name_firestore = {
-    usuarios: 'Usuarios',
-    informacionUsuarios: 'InformacionUsuarios',
-}
+const collections_name_firestore = {}
 
 export default collections_name_firestore

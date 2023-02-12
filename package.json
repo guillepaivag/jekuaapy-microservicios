@@ -16,6 +16,10 @@
     "set_dev_remote_equipos": "cd serviceEquipo && npm run set_dev_remote && cd ..",
     "set_dev_local_equipos": "cd serviceEquipo && npm run set_dev_local && cd ..",
 
+    "set_prod_proyectos": "cd serviceProyecto && npm run set_prod && cd ..",
+    "set_dev_remote_proyectos": "cd serviceProyecto && npm run set_dev_remote && cd ..",
+    "set_dev_local_proyectos": "cd serviceProyecto && npm run set_dev_local && cd ..",
+
     "set_prod": "npm run set_prod_usuarios && npm run set_prod_correos",
     "set_dev_remote": "npm run set_dev_remote_usuarios && npm run set_dev_remote_correos",
     "set_dev_local": "npm run set_dev_local_usuarios && npm run set_dev_local_correos"

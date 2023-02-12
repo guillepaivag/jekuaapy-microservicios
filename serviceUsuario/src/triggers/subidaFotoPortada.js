@@ -10,7 +10,7 @@ import StorageFotoPortadaRepository from "../repositories/StorageFotoPortadaRepo
 import FotoPortadaUseCase from "../usecases/FotoPortadaUseCase.js"
 
 // Variables
-const bucketNameFotoPortada = config.buckets.bucketNameFotoPortada
+const bucketNameFotoPortada = config.buckets.fotoPortada
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const fotoPortadaUseCase = new FotoPortadaUseCase(new StorageFotoPortadaRepository())
 
@@ -45,7 +45,7 @@ const actualizacionFotoPortadaDeUsuario = functions
         if (!usuario || usuario.estado === 'eliminado') throw new Error('No existe el usuario.')
 
         // Usuario solicitante valido
-        if (context.auth.uid !== uidUsuario) throw new Error('No puedes cambiar la foto de portada de los demas.')
+        if (config.production && context.auth.uid !== uidUsuario) throw new Error('No puedes cambiar la foto de portada de los demas.')
 
         // La foto de portada solamente se acepta en 3 extensiones: png | jpg | jpeg
         if (fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') throw new Error('Extensión incorrecta.')
@@ -56,8 +56,10 @@ const actualizacionFotoPortadaDeUsuario = functions
         if (sizeMB > 5) throw new Error('La foto de portada solo puede pesar hasta 5MB.')
 
         // Eliminar la foto publicada
-        estadoSubida.value = 'eliminacion_de_foto_vieja'
-        await fotoPortadaUseCase.eliminar(`${uidUsuario}/foto.`)
+        if (usuario.fotoPortada !== '' && usuario.fotoPortada !== 'default') {
+            estadoSubida.value = 'eliminacion_de_foto_vieja'
+            await fotoPortadaUseCase.eliminar(`${uidUsuario}/foto.`)
+        }
 
         // Publicar la foto verificada
         estadoSubida.value = 'moviendo_foto_nueva'

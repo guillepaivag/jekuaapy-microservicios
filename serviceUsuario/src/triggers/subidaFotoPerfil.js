@@ -10,7 +10,7 @@ import StorageFotoPerfilRepository from "../repositories/StorageFotoPerfilReposi
 import FotoPerfilUseCase from "../usecases/FotoPerfilUseCase.js"
 
 // Variables
-const bucketNameFotoPerfil = config.buckets.bucketNameFotoPerfil
+const bucketNameFotoPerfil = config.buckets.fotoPerfil
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const fotoPerfilUseCase = new FotoPerfilUseCase(new StorageFotoPerfilRepository())
 
@@ -45,7 +45,7 @@ const actualizacionFotoPerfilDeUsuario = functions
         if (!usuario || usuario.estado === 'eliminado') throw new Error('No existe el usuario.')
 
         // Usuario solicitante valido
-        if (context.auth.uid !== uidUsuario) throw new Error('Solo puedes cambiar tu foto de perfil.')
+        if (config.production && context.auth.uid !== uidUsuario) throw new Error('Solo puedes cambiar tu foto de perfil.')
 
         // La foto de perfil solamente se acepta en 3 extensiones: png | jpg | jpeg
         if (fileExtension !== 'png' && fileExtension !== 'jpg' && fileExtension !== 'jpeg') throw new Error('Extensión incorrecta.')
@@ -56,8 +56,10 @@ const actualizacionFotoPerfilDeUsuario = functions
         if (sizeMB > 5) throw new Error('La foto de perfil solo puede pesar hasta 5MB.')
 
         // Eliminar la foto publicada
-        estadoSubida.value = 'eliminacion_de_foto_vieja'
-        await fotoPerfilUseCase.eliminar(`${uidUsuario}/foto.`)
+        if (usuario.fotoPerfil !== '' && usuario.fotoPerfil !== 'default') {
+            estadoSubida.value = 'eliminacion_de_foto_vieja'
+            await fotoPerfilUseCase.eliminar(`${uidUsuario}/foto.`)
+        }
 
         // Publicar la foto verificada
         estadoSubida.value = 'moviendo_foto_nueva'

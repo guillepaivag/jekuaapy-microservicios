@@ -1,8 +1,7 @@
-import functions from 'firebase-functions'
-import * as dotenv from 'dotenv'
+import functions from "firebase-functions"
+import dotenv from 'dotenv'
+import app from "./src/app.js"
 
-console.log('dotenv.config()', dotenv.config())
+dotenv.config()
 
-console.log('process.env.ALGOLIA_APP_ID', process.env.ALGOLIA_APP_ID)
-console.log('process.env.ALGOLIA_API_KEY', process.env.ALGOLIA_API_KEY)
-console.log('process.env.ENVIRONMENT', process.env.ENVIRONMENT)
+export const service_equipo = functions.region('southamerica-east1').https.onRequest(app)

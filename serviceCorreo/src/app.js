@@ -2,15 +2,28 @@ import express from 'express'
 import cors from 'cors'
 
 // Get Routes
-import correosRoutes from './routes/correosRoutes.js'
+import correosUsuariosRoutes from './routes/correosUsuariosRoutes.js'
 
 // App
 const app = express()
 
 // Middlewares
+app.use((req, res, next) => { 
+  req.timeOfRequest = Date.now()
+  next()
+})
+
+const origin = []
+const urlsProduccion = ['']
+const urlsDesarrolloLocal = ['http://localhost:3000']
+const urlsDesarrolloRemoto = ['']
+config.production ? origin.push(...urlsProduccion) : ''
+!config.production && config.remote ? origin.push(...urlsDesarrolloRemoto) : ''
+!config.production && !config.remote ? origin.push(...urlsDesarrolloLocal) : ''
+
 app.use(cors({
   credentials: true,
-  origin: ['https://jekuaapy.com', 'https://jekuaa-py.web.app', 'http://localhost:3000'],
+  origin,
   methods: ['GET','POST','DELETE','PUT','UPDATE','PATCH'],
   allowedHeaders: ['Authorization', 'Content-Type']
 }))
@@ -18,7 +31,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 // Routes
-app.use('/correos', correosRoutes)
+app.use('/usuarios', correosUsuariosRoutes)
 
 // Manejo de errores
 app.use((error, req, res, next) => { 

@@ -85,41 +85,47 @@ const verificacionCondicionalDeDatos = (usuarioActualizado) => {
     }
 
     // Nombre de usuario valido [cantidad_caracteres, caracteres_validos]
-    if (usuarioActualizado.nombreUsuario && usuarioActualizado.nombreUsuario.length > 50) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'caracteres_nombreUsuario_excedido', 
-            mensajeServidor: '[nombreUsuario] solo puede tener hasta 50 caracteres.', 
-            resultado: null
-        })
-    }
+    if (usuarioActualizado.nombreUsuario) {
+        if (usuarioActualizado.nombreUsuario.length > 50) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'caracteres_nombreUsuario_excedido', 
+                mensajeServidor: '[nombreUsuario] solo puede tener hasta 50 caracteres.', 
+                resultado: null
+            })
+        }
 
-    if ( usuarioActualizado.nombreUsuario && !esNombreUsuario(usuarioActualizado.nombreUsuario) ) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'nombreUsuario_invalido', 
-            mensajeServidor: '[nombreUsuario] no es válido.', 
-            resultado: null
-        })
+        if (!esNombreUsuario(usuarioActualizado.nombreUsuario)) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'nombreUsuario_invalido', 
+                mensajeServidor: '[nombreUsuario] no es válido.', 
+                resultado: null
+            })
+        }
     }
 
     // Nombre completo valido [cantidad_caracteres]
-    if (usuarioActualizado.nombreCompleto && usuarioActualizado.nombreCompleto.length > 100) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'caracteres_nombreCompleto_excedido', 
-            mensajeServidor: '[nombreCompleto] solo puede tener hasta 100 caracteres.', 
-            resultado: null
-        })
+    if (usuarioActualizado.nombreCompleto) {
+        if (usuarioActualizado.nombreCompleto.length > 100) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'caracteres_nombreCompleto_excedido', 
+                mensajeServidor: '[nombreCompleto] solo puede tener hasta 100 caracteres.', 
+                resultado: null
+            })
+        }
     }
 
-    // Fecha de nacimiento
+    // Fecha de nacimiento: Solo si tiene 1 año de edad puede registrarse
     if (usuarioActualizado.fechaNacimiento) {
-        // Solo si tiene 1 año de edad puede registrarse
-        let edad = obtenerEdad(usuarioActualizado.fechaNacimiento)
-        let valido = edad >= 1
-        if ( !valido ) {
-            throw new TypeError('El usuario debe tener al menos 1 año de edad.')
+        if (obtenerEdad(usuarioActualizado.fechaNacimiento) < 1) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'caracteres_nombreCompleto_excedido', 
+                mensajeServidor: '[nombreCompleto] solo puede tener hasta 100 caracteres.', 
+                resultado: null
+            })
         }
     }
     
