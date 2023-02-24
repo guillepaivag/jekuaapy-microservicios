@@ -1,10 +1,10 @@
 import { request, response } from "express";
-import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import { verificadorCreacionUsuario } from "./helpers/usuarios/verificadorCreacionUsuario.js";
 import { verificadorActualizacionUsuario } from "./helpers/usuarios/verificadorActualizacionUsuario.js";
 import { constructorUsuarioActualizacion } from "./helpers/usuarios/constructorUsuarioActualizacion.js";
 import { constructorUsuarioCreacion } from "./helpers/usuarios/constructorUsuarioCreacion.js";
 import { verificadorActualizacionContrasena } from "./helpers/usuarios/verificadorActualizacionContrasena.js";
+import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 export const verificarCreacionUsuario = async (req = request, res = response, next) => {
     const { body } = req
@@ -35,7 +35,7 @@ export const verificarActualizacionUsuario = async (req = request, res = respons
         usuarioActualizado.nombreUsuario !== undefined
 
         if ( datosDependientesDeCorreoVerificado && !solicitante.authSolicitante.emailVerified) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -51,6 +51,7 @@ export const verificarActualizacionUsuario = async (req = request, res = respons
 
         next()
     } catch (error) {
+        console.log('error', error)
         next(error)
     }
 }
@@ -62,7 +63,7 @@ export const verificarActualizacionContrasena = (req = request, res = response, 
     try {
         
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -85,7 +86,7 @@ export const verificarRestauracionFotoPerfil = (req = request, res = response, n
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -117,7 +118,7 @@ export const verificarRestauracionFotoPortada = (req = request, res = response, 
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 

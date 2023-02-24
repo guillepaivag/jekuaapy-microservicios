@@ -11,8 +11,16 @@ export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = 
     try {
         const emailVerified = { value: false }
         if (solicitante.tipo === 'servicio') {
-            // CORREOS-TODO: Obtener usuario para saber si el email esta verificado
+            // Obtener usuario para saber si el email esta verificado
             const usuarioAuthentication = await apiUsuarioObtenerUsuarioDeFirebaseAuthentication('correo', correo)
+            if (!usuarioAuthentication) {
+                throw new RespuestaError({
+                    estado: 400, 
+                    mensajeCliente: 'no_existe_usuario', 
+                    mensajeServidor: 'No existe usuario.', 
+                    resultado: null
+                })
+            }
             emailVerified.value = usuarioAuthentication.emailVerified
         }
 
@@ -21,7 +29,7 @@ export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = 
         }
 
         if (emailVerified.value) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_ya_verificado', 
                 mensajeServidor: '[correo] ya está verificado.', 

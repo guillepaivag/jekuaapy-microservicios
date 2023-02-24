@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import config from './configs/config.js'
 
 // Get Routes
 import correosUsuariosRoutes from './routes/correosUsuariosRoutes.js'

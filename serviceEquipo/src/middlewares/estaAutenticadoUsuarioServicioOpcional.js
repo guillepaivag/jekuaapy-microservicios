@@ -1,7 +1,8 @@
 import { request, response } from 'express'
 import firebaseAuthenticationService from '../../../serviceUsuario/firebase-service/firebase-authentication-service.js'
+import { verificarTokenDeAutenticacionDeServicio } from '../helpers/verificarTokenDeAutenticacionDeServicio.js'
 
-export const estaAutenticadoUsuarioServicio = async (req = request, res = response, next) => {
+export const estaAutenticadoUsuarioServicioOpcional = async (req = request, res = response, next) => {
     const { authorization } = req.headers
     req.body.solicitante = {}
 
@@ -13,10 +14,10 @@ export const estaAutenticadoUsuarioServicio = async (req = request, res = respon
 
     try {
         // Verificar autenticacion de servicio
-        const solicitadoPorServicio = false
-        if (solicitadoPorServicio) {
+        const tokenVerificado = verificarTokenDeAutenticacionDeServicio(authToken)
+        if (tokenVerificado.isService) {
             req.body.solicitante.tipo = 'servicio'
-            req.body.solicitante.uidSolicitante = 'service_usuario'
+            req.body.solicitante.uidSolicitante = tokenVerificado.idService
             
             return next()
         }

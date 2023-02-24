@@ -26,10 +26,10 @@ class FirestoreEquipoRepository {
             codigo: equipo.codigo, 
             nombre: equipo.nombre, 
             descripcion: equipo.descripcion, 
-            cantidadMiembros: 0,
-            estado: 'activo',
+            cantidadMiembros: equipo.cantidadMiembros,
+            estado: equipo.estado,
             fechaCreacion: equipo.fechaCreacion, 
-            fechaEliminado: null, 
+            fechaEliminado: equipo.fechaEliminado, 
         })
 
         equipo.uid = doc.id
@@ -38,21 +38,19 @@ class FirestoreEquipoRepository {
     }
 
     async obtenerPorUID(uid = '') {
-        const snapshot = await this.collection
-            .where('uid', '==', uid)
-            .where('estado', '==', 'activo')
-            .get()
+        const doc = await this.collection.doc(uid).get()
 
-        if (snapshot.empty) return null
-        const doc = snapshot.docs[0]
-
-        return this._obtenerDeDocumento(doc)
+        if (!doc.exists) return null
+        const equipo = this._obtenerDeDocumento(doc)
+        if (equipo.estado === 'eliminado') return null
+    
+        return equipo
     }
 
     async obtenerPorCodigo(codigo = '') {
         const snapshot = await this.collection
             .where('codigo', '==', codigo)
-            .where('estado', '==', 'activo')
+            .where('estado', '!=', 'eliminado')
             .get()
 
         if (snapshot.empty) return null

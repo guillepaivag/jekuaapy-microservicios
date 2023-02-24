@@ -94,7 +94,7 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado)
         }
     }
 
-    if (equipoActualizado.nombre.length > 50) {
+    if (equipoActualizado.nombre && equipoActualizado.nombre.length > 50) {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'caracteres_nombre_excedido', 

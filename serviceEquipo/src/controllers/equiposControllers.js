@@ -13,6 +13,7 @@ import { errorHandler } from "../helpers/errors/error-handler.js"
 
 // Helpers & utils
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
+import { apiMiembroCrearMiembroInternoDeEquipo } from "../helpers/axios/axiosApiMiembros.js"
 
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
@@ -20,10 +21,14 @@ const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
-        const { solicitante, equipoNuevo, equipoNuevoVerificado } = body
+        const { solicitante, equipoNuevo, equipoNuevoVerificado, miembroNuevoVerificado } = body
 
         // Crear equipo
         const equipo = await equipoUseCase.crear(equipoNuevoVerificado)
+
+        // Crear miembro
+        miembroNuevoVerificado.uidEquipo = equipo.uid
+        await apiMiembroCrearMiembroInternoDeEquipo(miembroNuevoVerificado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -48,21 +53,27 @@ export const crear = async (req = request, res = response) => {
 export const obtener = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { tipo, valor } = params
-        const { solicitante, equipoNuevo, equipoNuevoVerificado } = body
+        const { uid } = params
+        const { solicitante, tipoPermiso } = body
 
-        let equipo = null
+        const equipo = await equipoUseCase.obtenerPorUID(uid)
 
-        if (tipo === 'uid') equipo = await equipoUseCase.obtenerPorUID(valor)
-        else if (tipo === 'codigo') equipo = await equipoUseCase.obtenerPorCodigo(valor)
-        else throw new TypeError('No hay datos para buscar un equipo.')
+        const datosEquipoFiltrado = { value: null }
+        if (equipo) {
+            datosEquipoFiltrado.value = {}
+            
+            if (tipoPermiso === 'completo') datosEquipoFiltrado.value = equipo
+            else {
+                datosEquipoFiltrado.value.uid = equipo.uid
+                datosEquipoFiltrado.value.codigo = equipo.codigo
+                datosEquipoFiltrado.value.nombre = equipo.nombre
+                datosEquipoFiltrado.value.descripcion = equipo.descripcion
 
-        if (!equipo) {
-            throw new RespuestaError({
-                estado: 400,
-                mensajeCliente: 'no_existe_equipo',
-                mensajeServidor: 'No existe el equipo.'
-            })
+                if (tipoPermiso === 'medio') {
+                    datosEquipoFiltrado.value.cantidadMiembros = equipo.cantidadMiembros
+                    datosEquipoFiltrado.value.fechaCreacion = equipo.fechaCreacion
+                }
+            }   
         }
 
         // Retornar respuesta
@@ -70,7 +81,7 @@ export const obtener = async (req = request, res = response) => {
             estado: 200,
             mensajeCliente: 'exito',
             mensajeServidor: 'Se encontró el equipo de manera correcta!',
-            resultado: equipo
+            resultado: datosEquipoFiltrado.value
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())

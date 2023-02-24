@@ -1,15 +1,19 @@
 import axios from 'axios'
 import config from '../../configs/config.js'
 import { errorHandlerAxios } from '../errors/error-handler-axios.js'
+import { generarTokenDeAutenticacionDeServicio } from '../generarTokenDeAutenticacionDeServicio.js'
 
 const serviceName = 'Usuarios'
 const apiUsuario = axios.create({ baseURL: config.urlServices.apiUsuario })
 
 export const apiUsuarioObtenerUsuarioDeFirebaseAuthentication = async (tipo = '', valor = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
+    const tokenDeAutenticacionDeServicio = generarTokenDeAutenticacionDeServicio()
+
     const configOfTheRequest = { 
             headers: { 
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
             } 
         }
 

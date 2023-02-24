@@ -36,7 +36,6 @@ class FirestoreMiembroInternoEquipoRepository {
         .collection(this.collection_name_equipos).doc(uidEquipo)
         .collection(this.collection_name_miembrosInternos)
         .where('uid', '==', uidMiembro)
-        .where('estado', '==', 'activo')
         .get()
 
         if (snapshot.empty) return null
@@ -64,7 +63,7 @@ class FirestoreMiembroInternoEquipoRepository {
         // Retorna una instancia User desde una instancia Document de Firestore.
         const data = doc.data()
 
-        return new Equipo({
+        return new MiembroInternoEquipo({
             uid: data.uid,
             uidEquipo: data.uidEquipo,
             rol: data.rol,

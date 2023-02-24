@@ -5,6 +5,14 @@ import { crear, obtener, obtenerAuthentication, actualizar, actualizarContrasena
 
 const router = Router()
 
+// router.get('/googleToken', async (req, res) => {
+//     const baseUrl = 'service_usuario'
+//     const idToken = await googleToken(baseUrl)
+//     const loginTicket = await googleVerifyToken(idToken)
+
+//     res.json({ idToken, loginTicket })
+// })
+
 router.post('/', verificarCreacionUsuario, crear)
 
 router.get('/:tipo/:valor', obtener)

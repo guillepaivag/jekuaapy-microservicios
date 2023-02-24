@@ -6,11 +6,20 @@ export const constructorEquipoCreacion = (equipoNuevo) => {
         codigo: equipoNuevo.codigo,  
         nombre: equipoNuevo.nombre,  
         descripcion: equipoNuevo.descripcion,  
-        cantidadMiembros: 0, 
+        cantidadMiembros: 1, 
         estado: 'activo', 
         fechaCreacion: milliseconds_a_timestamp(equipoNuevo.fechaCreacion), 
         fechaEliminado: null, 
     }
+    
+    // Datos para el body de la creacion del miembro
+    const miembroNuevoVerificado = {
+        uid: equipoNuevo.responsable,
+        uidEquipo: '',
+        rol: 'propietario',
+        estado: 'activo',
+        fechaCreacion: equipoNuevo.fechaCreacion,
+    }
 
-    return { equipoNuevoVerificado }
+    return { equipoNuevoVerificado, miembroNuevoVerificado }
 }

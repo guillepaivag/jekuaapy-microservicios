@@ -7,7 +7,6 @@
     "start": "npm run shell",
     "logs": "firebase functions:log",
     "deploy": "firebase deploy --only functions",
-
     "set_prod": "firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set execution.mode=remote && firebase functions:config:get > config.json && firebase functions:config:get",
     "set_dev_local": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set execution.mode=local && firebase functions:config:get > config.json && firebase functions:config:get",
     "set_dev_remote": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set execution.mode=remote && firebase functions:config:get > config.json && firebase functions:config:get"
@@ -23,6 +22,8 @@
     "express": "^4.18.2",
     "firebase-admin": "^11.5.0",
     "firebase-functions": "^4.2.1",
+    "google-auth-library": "^8.7.0",
+    "jsonwebtoken": "^9.0.0",
     "nodemailer": "^6.8.0"
   },
   "devDependencies": {

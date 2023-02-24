@@ -16,7 +16,7 @@ class MiembroInternoEquipo {
             estado: { type: 'string', errorMessage: 'debe ser de tipo String' },
             fechaCreacion: { type: 'object', errorMessage: 'debe ser de tipo String' },
         },
-        required: ['uid', 'uidEquipo', 'rol', 'estado' ,'fechaCreacion'],
+        required: ['uid', 'uidEquipo', 'rol' ,'fechaCreacion'],
         additionalProperties: true,
     }
 
