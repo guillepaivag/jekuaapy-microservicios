@@ -3,8 +3,7 @@ import cors from 'cors'
 import config from './configs/config.js'
 
 // Get Routes
-import usuariosRoutes from './routes/usuariosRoutes.js'
-import informacionUsuarioRoutes from './routes/informacionUsuariosRoutes.js'
+import proyectosRoutes from './routes/proyectosRoutes.js'
 
 // Manejador de errores
 import { errorHandler } from './helpers/errors/error-handler.js'
@@ -36,8 +35,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
 // Routes
-app.use('/usuarios', usuariosRoutes)
-app.use('/informaciones', informacionUsuarioRoutes)
+app.use('/proyectos', proyectosRoutes)
 
 // Manejo de errores
 app.use((error, req, res, next) => { 
