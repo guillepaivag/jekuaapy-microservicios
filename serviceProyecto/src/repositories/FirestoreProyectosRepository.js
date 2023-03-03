@@ -24,9 +24,14 @@ class FirestoreProyectosRepository {
 
     async obtenerPorUID(uid = '') {
 
-        const doc = await this.collection.doc(uid).get()
+        const query = this.collection
+            .where('uid', '==', uid)
+            .where('estado', '!=', 'eliminado')
 
-        if (!doc.exists) return null
+        const snapshot = await query.get()
+        if (snapshot.empty) return null
+
+        const doc = snapshot.docs[0]
 
         return this._obtenerDeDocumento(doc)
 
@@ -36,7 +41,7 @@ class FirestoreProyectosRepository {
 
         const query = this.collection
             .where('codigo', '==', codigo)
-            .where('estado', '==', 'activo')
+            .where('estado', '!=', 'eliminado')
 
         const snapshot = await query.get()
         if (snapshot.empty) return null
@@ -49,8 +54,10 @@ class FirestoreProyectosRepository {
 
     async crear(proyecto = Proyecto.params) {
 
-        await this.collection.doc(proyecto.uid).set({
-            uid: proyecto.uid,
+        const doc = this.collection.doc()
+
+        await this.collection.doc(doc.id).set({
+            uid: doc.id,
             uidEquipo: proyecto.uidEquipo,
             tipoProyecto: proyecto.tipoProyecto,
             nombre: proyecto.nombre,
@@ -64,6 +71,8 @@ class FirestoreProyectosRepository {
             fechaCreacion: proyecto.fechaCreacion,
             fechaEliminacion: proyecto.fechaEliminacion,
         })
+
+        proyecto.uid = doc.id
 
         return proyecto
 

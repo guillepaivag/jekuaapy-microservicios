@@ -18,6 +18,7 @@ import FotoPortadaUseCase from "../usecases/FotoPortadaUseCase.js"
 
 // Manejo de errores
 import { errorHandler } from "../helpers/errors/error-handler.js"
+import { milliseconds_a_timestamp } from "../utils/timestamp.js"
 
 const proyectosUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
 const fotoPerfilUseCase = new FotoPerfilUseCase(new StorageFotoPerfilRepository())
@@ -35,11 +36,8 @@ export const crear = async (req = request, res = response) => {
             estado: 200,
             mensajeCliente: 'exito',
             mensajeServidor: 'Se creó un proyecto con éxito.',
-            resultado: {
-                proyectoAuth,
-                proyecto,
-                informacionProyecto,
-            }
+            resultado: proyecto
+
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
