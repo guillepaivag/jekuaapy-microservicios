@@ -34,7 +34,7 @@ export const verificarActualizacionUsuario = async (req = request, res = respons
         usuarioActualizado.nombreCompleto !== undefined || 
         usuarioActualizado.nombreUsuario !== undefined
 
-        if ( datosDependientesDeCorreoVerificado && !solicitante.authSolicitante.emailVerified) {
+        if ( datosDependientesDeCorreoVerificado && !solicitante.authSolicitante.emailVerified ) {
             throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 

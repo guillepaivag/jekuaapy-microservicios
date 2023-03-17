@@ -1,4 +1,5 @@
 import { request, response } from "express"
+import jwt from "jsonwebtoken"
 
 // Models
 import Respuesta from "../models/Respuestas/Respuesta.js"
@@ -10,6 +11,9 @@ import MiembroInternoEquipoUseCase from "../usecases/MiembroInternoEquipoUseCase
 
 // Manejo de errores
 import { errorHandler } from "../helpers/errors/error-handler.js"
+
+// Helpers
+import { milliseconds_a_timestamp } from "../utils/timestamp.js"
 
 // Variables
 const miembroInternoEquipoUseCase = new MiembroInternoEquipoUseCase(new FirestoreMiembroInternoEquipoRepository())
@@ -64,6 +68,50 @@ export const obtener = async (req = request, res = response) => {
 
     } catch (error) {
         console.log('Error - obtener: ', error)
+
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+
+    }
+
+}
+
+export const solicitar = async (req = request, res = response) => {
+    try {
+        const { params, body, timeOfRequest } = req
+        const { solicitante, uidEquipo, correoMiembroNuevo, roles, usuarioMiembroNuevo, miembroNuevo } = body
+
+        // MIEMBRO_INTERNO-TODO: Generar token de verificacion de miembro-interno
+        const payload = { fechaSolicitud: timeOfRequest }
+        const jwtSecretKey = process.env.JWT_SECRET_KEY
+        const options = { algorithm: 'RS256', expiresIn: '1h' }
+        const token = jwt.sign(payload, jwtSecretKey, options)
+
+        // MIEMBRO_INTERNO-TODO: Crear miembro-interno en estado pendiente
+        await miembroInternoEquipoUseCase.crear(uidEquipo, {
+            uid: usuarioMiembroNuevo.uid,
+            uidEquipo: uidEquipo,
+            roles: roles,
+            estado: 'pendiente',
+            fechaCreacion: milliseconds_a_timestamp(timeOfRequest),
+        })
+
+        // MIEMBRO_INTERNO-TODO: Enviar correo a [correoMiembroNuevo]
+
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'Se envió una solicitud para ser miembro a un usuario de manera correcta.',
+            mensajeServidor: 'exito',
+            resultado: null
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - solicitar: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)

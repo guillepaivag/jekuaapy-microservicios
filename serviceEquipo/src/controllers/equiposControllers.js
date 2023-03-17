@@ -13,7 +13,7 @@ import { errorHandler } from "../helpers/errors/error-handler.js"
 
 // Helpers & utils
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
-import { apiMiembroCrearMiembroInternoDeEquipo } from "../helpers/axios/axiosApiMiembros.js"
+import { apiMiembroCrearMiembroInternoDeEquipo } from "../services/service_miembro.js"
 
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())

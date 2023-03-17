@@ -59,7 +59,7 @@ class FirestoreEquipoRepository {
         return this._obtenerDeDocumento(doc)
     }
 
-    async actualizar(uid = '', datosActualizados = {}) {
+    async actualizar(uid = '', datosActualizados = Equipo.params) {
         const doc = this.collection.doc(uid)
         await doc.update(datosActualizados)
     }

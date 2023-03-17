@@ -1,9 +1,9 @@
 import functions from "firebase-functions"
 import dotenv from 'dotenv'
 import app from "./src/app.js"
-import registroConAlgunProveedor from './src/triggers/registroConAlgunProveedor.js'
-import subidaFotoPerfil from './src/triggers/subidaFotoPerfil.js'
-import subidaFotoPortada from './src/triggers/subidaFotoPortada.js'
+import { registroConAlgunProveedor } from "./src/triggers/registroConAlgunProveedor.js"
+import { subidaFotoPerfil } from "./src/triggers/subidaFotoPerfil.js"
+import { subidaFotoPortada } from "./src/triggers/subidaFotoPortada.js"
 
 dotenv.config()
 

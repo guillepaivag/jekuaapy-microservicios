@@ -5,7 +5,7 @@ export const constructorMIECreacion = (miembroNuevo = MiembroInternoEquipo.param
     const miembroInternoEquipoVerificado = {
         uid: miembroNuevo.uid, 
         uidEquipo: miembroNuevo.uidEquipo, 
-        rol: miembroNuevo.rol, 
+        roles: miembroNuevo.roles, 
         estado: miembroNuevo.estado, 
         fechaCreacion: milliseconds_a_timestamp(miembroNuevo.fechaCreacion)
     }

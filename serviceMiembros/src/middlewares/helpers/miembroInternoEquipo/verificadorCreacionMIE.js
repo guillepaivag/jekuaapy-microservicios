@@ -2,8 +2,8 @@
 import RespuestaError from "../../../models/Respuestas/RespuestaError.js"
 
 // Apis
-import { apiEquipoObtenerEquipo } from "../../../helpers/axios/axiosApiEquipos.js"
-import { apiUsuarioObtenerUsuario } from "../../../helpers/axios/axiosApiUsuarios.js"
+import { apiUsuarioObtenerUsuario } from "../../../services/service_usuario.js"
+import { apiEquipoObtenerEquipo } from "../../../services/service_equipo.js"
 
 // Repositories&UseCase - Usuarios
 import FirestoreMiembroInternoEquipoRepository from "../../../repositories/FirestoreMiembroInternoEquipoRepository.js"
@@ -13,18 +13,25 @@ import MiembroInternoEquipoUseCase from "../../../usecases/MiembroInternoEquipoU
 const miembroInternoEquipoUseCase = new MiembroInternoEquipoUseCase(new FirestoreMiembroInternoEquipoRepository())
 
 export const verificadorCreacionMIE = async (miembroNuevo) => {
-    let respuestaError = null
+    const data = {
+        respuestaError: null,
+        data: {}
+    }
 
     // ##### Datos requeridos #####
-    respuestaError = verificacionDatosRequeridos(miembroNuevo)
+    data.respuestaError = verificacionDatosRequeridos(miembroNuevo)
 
-    // ##### Tipos de datos #####
-    respuestaError = verificacionTiposDeDatos(miembroNuevo)
+    if (!data.respuestaError) {
+        // ##### Tipos de datos #####
+        data.respuestaError = verificacionTiposDeDatos(miembroNuevo)
+    }
 
-    // ##### Datos validos #####
-    respuestaError = await verificacionCondicionalDeDatos(miembroNuevo)
+    if (!data.respuestaError) {
+        // ##### Datos validos #####
+        data.respuestaError = await verificacionCondicionalDeDatos(miembroNuevo)
+    }
 
-    return respuestaError
+    return data
 }
 
 const verificacionDatosRequeridos = (miembroNuevo) => {
@@ -47,11 +54,11 @@ const verificacionDatosRequeridos = (miembroNuevo) => {
         })
     }
 
-    if ( !miembroNuevo.rol ) {
+    if ( !miembroNuevo.roles || !miembroNuevo.roles.length ) {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'rol_requerido', 
-            mensajeServidor: '[rol] es requerido.', 
+            mensajeServidor: '[roles] es requerido.', 
             resultado: null
         })
     }
@@ -82,8 +89,8 @@ const verificacionTiposDeDatos = (miembroNuevo) => {
 
     if (typeof miembroNuevo.uidEquipo !== 'string') return TypeError('[uidEquipo] debe ser string')
 
-    if (typeof miembroNuevo.rol !== 'string') return TypeError('[rol] debe ser string')
-
+    if ( !(miembroNuevo.roles instanceof Array) ) return TypeError('[roles] debe ser array')
+    
     if (typeof miembroNuevo.estado !== 'string') return TypeError('[estado] debe ser string')
 
     if (typeof miembroNuevo.fechaCreacion !== 'number') return TypeError('[fechaCreacion] debe ser number')
@@ -91,7 +98,7 @@ const verificacionTiposDeDatos = (miembroNuevo) => {
     return null
 }
 
-// uid, uidEquipo, rol, estado
+// uid, uidEquipo, roles, estado
 const verificacionCondicionalDeDatos = async (miembroNuevo) => {
 
     // Verificar existencia del usuario

@@ -1,4 +1,5 @@
 import { request, response } from "express"
+import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import { constructorMIECreacion } from "./helpers/miembroInternoEquipo/constructorMIECreacion.js"
 import { verificadorCreacionMIE } from "./helpers/miembroInternoEquipo/verificadorCreacionMIE.js"
 import { verificadorObtencionMiembro } from "./helpers/miembroInternoEquipo/verificadorObtencionMiembro.js"
@@ -9,9 +10,9 @@ export const verificarCreacionDeMiembroInterno = async (req = request, res = res
     const { solicitante, miembroNuevo } = body
 
     try {
-        // Validar los datos - [uid, uidEquipo, rol, estado, fechaCreacion]
-        const respuestaError = await verificadorCreacionMIE(miembroNuevo)
-        if (respuestaError) throw respuestaError
+        // Validar los datos - [uid, uidEquipo, roles, estado, fechaCreacion]
+        const data = await verificadorCreacionMIE(miembroNuevo)
+        if (data.respuestaError instanceof RespuestaError) throw data.respuestaError
 
         // Construir el miembro nuevo
         miembroNuevo.fechaCreacion = timeOfRequest
@@ -27,11 +28,15 @@ export const verificarCreacionDeMiembroInterno = async (req = request, res = res
 
 export const verificarSolicitud = async (req = request, res = response, next) => {
     const { params, body } = req
-    const { solicitante, uidEquipo, correoMiembroNuevo } = body
+    const { solicitante, uidEquipo, correoMiembroNuevo, roles } = body
 
     try {
-        const respuestaError = await verificadorSolicitudMiembro(solicitante, uidEquipo, correoMiembroNuevo)
-        if (respuestaError) throw respuestaError
+        const data = await verificadorSolicitudMiembro(solicitante, uidEquipo, correoMiembroNuevo, roles)
+        if (data.respuestaError instanceof RespuestaError) throw data.respuestaError
+
+        const { usuarioMiembroNuevo, miembroNuevo } = data.data
+        req.body.usuarioMiembroNuevo = usuarioMiembroNuevo
+        req.body.miembroNuevo = miembroNuevo
 
         next()
     } catch (error) {
@@ -57,8 +62,8 @@ export const verificarObtencionMiembroInterno = async (req = request, res = resp
     const { solicitante } = body
     
     try {
-        const respuestaError = await verificadorObtencionMiembro(solicitante, uidEquipo, uidMiembro)
-        if (respuestaError) throw respuestaError
+        const data = await verificadorObtencionMiembro(solicitante, uidEquipo, uidMiembro)
+        if (data.respuestaError instanceof RespuestaError) throw data.respuestaError
 
         next()
     } catch (error) {
@@ -77,7 +82,7 @@ export const verificarActualizacionMiembroInterno = (req = request, res = respon
             
         }
 
-        // MIEMBRO_INTERNO-TODO: Verificar los datos de solicitud [rol, estado]
+        // MIEMBRO_INTERNO-TODO: Verificar los datos de solicitud [roles, estado]
 
 
         return next()

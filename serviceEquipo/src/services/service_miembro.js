@@ -1,21 +1,21 @@
 import axios from 'axios'
-import config from '../../configs/config.js'
-import { errorHandlerAxios } from '../errors/error-handler-axios.js'
-import { generarTokenDeAutenticacionDeServicio } from '../generarTokenDeAutenticacionDeServicio.js'
+import config from '../configs/config.js'
+import { errorHandlerRequest } from '../helpers/errors/error-handler-request.js'
+import { generarTokenDeServicio } from '../helpers/generarTokenDeServicio.js'
 
-const serviceName = 'Miembros'
-const apiMiembro = axios.create({ baseURL: config.urlServices.apiMiembro })
+const serviceName = 'service_miembro'
+const apiMiembro = axios.create({ baseURL: config.services[serviceName] })
 
 export const apiMiembroCrearMiembroInternoDeEquipo = async (miembroInterno) => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
-    const tokenDeAutenticacionDeServicio = generarTokenDeAutenticacionDeServicio()
+    const tokenDeServicio = await generarTokenDeServicio()
 
     const bodyOfTheRequest = { miembroNuevo: miembroInterno }
 
     const configOfTheRequest = { 
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
+            'Authorization': `Bearer ${tokenDeServicio}`
         } 
     }
 
@@ -23,18 +23,18 @@ export const apiMiembroCrearMiembroInternoDeEquipo = async (miembroInterno) => {
         const response = await apiMiembro.post(`/miembrosInternosEquipo`, bodyOfTheRequest, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
-        throw errorHandlerAxios(error, serviceName) 
+        throw errorHandlerRequest(error, serviceName) 
     }
 } 
 
 export const apiMiembroObtenerMiembroInternoDeEquipo = async (uidEquipo = '', uidMiembro = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
-    const tokenDeAutenticacionDeServicio = generarTokenDeAutenticacionDeServicio()
+    const tokenDeServicio = await generarTokenDeServicio()
 
     const configOfTheRequest = { 
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
+            'Authorization': `Bearer ${tokenDeServicio}`
         } 
     }
 
@@ -42,6 +42,6 @@ export const apiMiembroObtenerMiembroInternoDeEquipo = async (uidEquipo = '', ui
         const response = await apiMiembro.get(`/miembrosInternosEquipo/${uidEquipo}/${uidMiembro}`, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
-        throw errorHandlerAxios(error, serviceName) 
+        throw errorHandlerRequest(error, serviceName) 
     }
 } 

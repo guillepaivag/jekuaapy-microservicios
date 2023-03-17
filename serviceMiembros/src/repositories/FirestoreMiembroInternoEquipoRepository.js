@@ -23,7 +23,7 @@ class FirestoreMiembroInternoEquipoRepository {
         .set({
             uid: miembroInterno.uid,
             uidEquipo: miembroInterno.uidEquipo,
-            rol: miembroInterno.rol, 
+            roles: miembroInterno.roles, 
             estado: miembroInterno.estado, 
             fechaCreacion: miembroInterno.fechaCreacion, 
         })
@@ -66,7 +66,7 @@ class FirestoreMiembroInternoEquipoRepository {
         return new MiembroInternoEquipo({
             uid: data.uid,
             uidEquipo: data.uidEquipo,
-            rol: data.rol,
+            roles: data.roles,
             estado: data.estado,
             fechaCreacion: data.fechaCreacion,
         })

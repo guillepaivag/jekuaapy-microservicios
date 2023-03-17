@@ -1,6 +1,7 @@
 import { request, response } from 'express'
 import firebaseAuthenticationService from '../../../serviceUsuario/firebase-service/firebase-authentication-service.js'
-import { verificarTokenDeAutenticacionDeServicio } from '../helpers/verificarTokenDeAutenticacionDeServicio.js'
+import { verificarTokenDeServicio } from '../helpers/verificarTokenDeServicio.js'
+import RespuestaError from '../models/Respuestas/RespuestaError.js'
 
 export const estaAutenticadoUsuarioServicioOpcional = async (req = request, res = response, next) => {
     const { authorization } = req.headers
@@ -14,10 +15,19 @@ export const estaAutenticadoUsuarioServicioOpcional = async (req = request, res 
 
     try {
         // Verificar autenticacion de servicio
-        const tokenVerificado = verificarTokenDeAutenticacionDeServicio(authToken)
-        if (tokenVerificado.isService) {
+        const result = await verificarTokenDeServicio(authToken)
+        if (result === 'servicio_no_autorizado') {
+            throw new RespuestaError({
+                estado: 401, 
+                mensajeCliente: 'servicio_no_autorizado', 
+                mensajeServidor: 'El servicio solicitante no es un servicio válido.', 
+                resultado: null
+            })
+        }
+        
+        if (result && result.servicio) {
             req.body.solicitante.tipo = 'servicio'
-            req.body.solicitante.uidSolicitante = tokenVerificado.idService
+            // req.body.solicitante.uidSolicitante = tokenVerificado.idService
             
             return next()
         }

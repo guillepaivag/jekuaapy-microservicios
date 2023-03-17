@@ -19,7 +19,7 @@ const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const authenticationUseCase = new AuthenticationUseCase(new FirebaseAuthenticationRepository())
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
 
-const registroConAlgunProveedor = functions
+export const registroConAlgunProveedor = functions
 .region('southamerica-east1')
 .auth
 .user()
@@ -68,5 +68,3 @@ const registroConAlgunProveedor = functions
 
     return true
 })
-
-export default registroConAlgunProveedor

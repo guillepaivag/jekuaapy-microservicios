@@ -3,7 +3,7 @@ import { verificadorCreacionEquipo } from "./helpers/equipos/verificadorCreacion
 import { constructorEquipoCreacion } from "./helpers/equipos/constructorEquipoCreacion.js"
 import { verificadorActualizacionEquipo } from "./helpers/equipos/verificadorActualizacionEquipo.js"
 import { constructorEquipoActualizacion } from "./helpers/equipos/constructorEquipoActualizacion.js"
-import { apiMiembroObtenerMiembroInternoDeEquipo } from "../helpers/axios/axiosApiMiembros.js"
+import { apiMiembroObtenerMiembroInternoDeEquipo } from "../services/service_miembro.js"
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 export const verificarCreacionEquipo = async (req = request, res = response, next) => {
@@ -84,7 +84,7 @@ export const verificarActualizacionEquipo = async (req = request, res = response
         // El solicitante tiene que ser un miembro del equipo 
         // El solicitante tiene que ser [propietario o editor] del equipo
         const miembroInterno = await apiMiembroObtenerMiembroInternoDeEquipo(params.uid, solicitante.uidSolicitante)
-        if (!miembroInterno || miembroInterno.estado !== 'activo' || (miembroInterno.rol !== 'propietario' && miembroInterno.rol !== 'editor')) {
+        if (!miembroInterno || miembroInterno.estado !== 'activo' || (!miembroInterno.roles.includes('propietario') && !miembroInterno.roles.includes('editor'))) {
             throw new RespuestaError({
                 estado: 401, 
                 mensajeCliente: 'no_autorizado', 
@@ -119,7 +119,7 @@ export const verificarEliminacionEquipo = async (req = request, res = response, 
         // El solicitante tiene que ser un miembro del equipo 
         // El solicitante tiene que ser [propietario] del equipo
         const miembroInterno = await apiMiembroObtenerMiembroInternoDeEquipo(params.uid, solicitante.uidSolicitante)
-        if (!miembroInterno || miembroInterno.estado !== 'activo' || miembroInterno.rol !== 'propietario') {
+        if (!miembroInterno || miembroInterno.estado !== 'activo' || !miembroInterno.roles.includes('propietario')) {
             throw new RespuestaError({
                 estado: 401, 
                 mensajeCliente: 'no_autorizado', 

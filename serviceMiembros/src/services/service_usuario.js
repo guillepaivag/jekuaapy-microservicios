@@ -1,14 +1,14 @@
 import axios from 'axios'
-import config from '../../configs/config.js'
-import { errorHandlerAxios } from '../errors/error-handler-axios.js'
-import { generarTokenDeAutenticacionDeServicio } from '../generarTokenDeAutenticacionDeServicio.js'
+import config from '../configs/config.js'
+import { generarTokenDeServicio } from '../helpers/generarTokenDeServicio.js'
+import { errorHandlerRequest } from '../helpers/errors/error-handler-request.js'
 
-const serviceName = 'Usuarios'
-const apiUsuario = axios.create({ baseURL: config.urlServices.apiUsuario })
+const serviceName = 'service_usuario'
+const apiUsuario = axios.create({ baseURL: config.services[serviceName] })
 
 export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
-    const tokenDeAutenticacionDeServicio = generarTokenDeAutenticacionDeServicio()
+    const tokenDeAutenticacionDeServicio = await generarTokenDeServicio()
 
     const configOfTheRequest = { 
             headers: { 
@@ -21,6 +21,6 @@ export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
         const response = await apiUsuario.get(`/usuarios/${tipo}/${valor}`, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
-        throw errorHandlerAxios(error, serviceName) 
+        throw errorHandlerRequest(error, serviceName) 
     }
-} 
+}

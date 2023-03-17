@@ -2,7 +2,7 @@
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 // Services
-import { apiUsuarioObtenerUsuarioDeFirebaseAuthentication } from "../helpers/axios/axiosApiUsuarios.js"
+import { apiUsuarioObtenerUsuarioDeFirebaseAuthentication } from "../services/service_usuario.js"
 
 export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = response, next) => {
     const { body } = req
@@ -24,9 +24,8 @@ export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = 
             emailVerified.value = usuarioAuthentication.emailVerified
         }
 
-        if (solicitante.tipo === 'usuario') {
+        if (solicitante.tipo === 'usuario') 
             emailVerified.value = solicitante.authSolicitante.emailVerified
-        }
 
         if (emailVerified.value) {
             throw new RespuestaError({
@@ -36,6 +35,8 @@ export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = 
                 resultado: null
             })
         }
+
+        req.body.emailVerified = emailVerified.value
 
         next()
     } catch (error) {

@@ -16,9 +16,9 @@ export const constructorEquipoCreacion = (equipoNuevo) => {
     const miembroNuevoVerificado = {
         uid: equipoNuevo.responsable,
         uidEquipo: '',
-        rol: 'propietario',
+        roles: ['propietario'],
         estado: 'activo',
-        fechaCreacion: equipoNuevo.fechaCreacion,
+        fechaCreacion: equipoNuevoVerificado.fechaCreacion,
     }
 
     return { equipoNuevoVerificado, miembroNuevoVerificado }

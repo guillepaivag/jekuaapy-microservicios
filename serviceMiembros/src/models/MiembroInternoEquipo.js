@@ -1,7 +1,7 @@
 const paramsObject = {
     uid : '',
     uidEquipo: '',
-    rol : '',
+    roles : [],
     estado : 'activo',
     fechaCreacion : null,
 }
@@ -12,22 +12,22 @@ class MiembroInternoEquipo {
         properties: {
             uid: { type: 'string', errorMessage: 'debe ser de tipo String' },
             uidEquipo: { type: 'string', errorMessage: 'debe ser de tipo String' },
-            rol: { type: 'string', errorMessage: 'debe ser de tipo String' },
+            roles: { type: 'object', errorMessage: 'debe ser de tipo String' },
             estado: { type: 'string', errorMessage: 'debe ser de tipo String' },
             fechaCreacion: { type: 'object', errorMessage: 'debe ser de tipo String' },
         },
-        required: ['uid', 'uidEquipo', 'rol' ,'fechaCreacion'],
+        required: ['uid', 'uidEquipo', 'roles' ,'fechaCreacion'],
         additionalProperties: true,
     }
 
     static params = paramsObject
     
     constructor (data = paramsObject) {
-        const { uid, uidEquipo, rol, estado, fechaCreacion, } = data
+        const { uid, uidEquipo, roles, estado, fechaCreacion, } = data
         
         this.uid = uid ? uid : ''
         this.uidEquipo = uidEquipo ? uidEquipo : ''
-        this.rol = rol ? rol : ''
+        this.roles = roles ? roles : []
         this.estado = estado ? estado : 'activo'
         this.fechaCreacion = fechaCreacion ? fechaCreacion : null
     }
