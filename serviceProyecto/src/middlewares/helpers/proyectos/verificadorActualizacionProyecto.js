@@ -1,33 +1,33 @@
 import RespuestaError from "../../../models/Respuestas/RespuestaError.js"
 import esCodigo from "../../../utils/esCodigo.js"
 
-// Equipos
-import FirestoreEquipoRepository from "../../../repositories/FirestoreEquipoRepository.js"
-import EquipoUseCase from "../../../usecases/EquipoUseCase.js"
+// Proyectos
+import FirestoreProyectosRepository from "../../../repositories/FirestoreProyectosRepository.js"
+import ProyectosUseCase from "../../../usecases/ProyectosUseCase.js"
 
 // Use cases objects
-const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
+const proyectoUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
 
-export const verificadorActualizacionEquipo = async (uidEquipo = '', equipoActualizado) => {
+export const verificadorActualizacionProyecto = async (uidEquipo = '', uidProyecto = '', proyectoActualizado) => {
     let respuestaError = null
     
     // ##### Datos requeridos #####
-    respuestaError = verificacionDatosRequeridos(equipoActualizado)
+    respuestaError = verificacionDatosRequeridos(proyectoActualizado)
     if (respuestaError) return respuestaError
 
     // ##### Tipos de datos #####
-    respuestaError = verificacionTiposDeDatos(equipoActualizado)
+    respuestaError = verificacionTiposDeDatos(proyectoActualizado)
     if (respuestaError) return respuestaError
 
     // ##### Datos validos #####
-    respuestaError = await verificacionCondicionalDeDatos(uidEquipo, equipoActualizado)
+    respuestaError = await verificacionCondicionalDeDatos(uidEquipo, uidProyecto, proyectoActualizado)
     if (respuestaError) return respuestaError
 
     return null
 }
 
-const verificacionDatosRequeridos = (equipoActualizado) => {
-    if (!Object.keys(equipoActualizado).length) {
+const verificacionDatosRequeridos = (proyectoActualizado) => {
+    if (!Object.keys(proyectoActualizado).length) {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'faltan_datos', 
@@ -39,33 +39,31 @@ const verificacionDatosRequeridos = (equipoActualizado) => {
     return null
 }
 
-const verificacionTiposDeDatos = (equipoActualizado) => {
-    if (equipoActualizado.codigo && typeof equipoActualizado.codigo !== 'string') 
-        return TypeError('[codigo] debe ser string')
+const verificacionTiposDeDatos = (proyectoActualizado) => {
 
-    if (equipoActualizado.nombre && typeof equipoActualizado.nombre !== 'string') 
+    if (proyectoActualizado.nombre && typeof proyectoActualizado.nombre !== 'string') 
         return TypeError('[nombre] debe ser string')
 
-    if (equipoActualizado.descripcion && typeof equipoActualizado.descripcion !== 'string') 
-        return TypeError('[descripcion] debe ser string')
+    if (proyectoActualizado.codigo && typeof proyectoActualizado.codigo !== 'string') 
+        return TypeError('[codigo] debe ser string')
 
     return null
 }
 
-const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado) => {
-    // Verificar si el equipo existe
-    const equipo = await equipoUseCase.obtenerPorUID(uidEquipo)
-    if (!equipo) {
+const verificacionCondicionalDeDatos = async (uidEquipo = '', uidProyecto = '', proyectoActualizado) => {
+    // Verificar si el proyecto existe
+    const proyecto = await proyectoUseCase.obtenerPorUID(uidEquipo, uidProyecto)
+    if (!proyecto) {
         return new RespuestaError({
             estado: 400, 
-            mensajeCliente: 'equipo_no_existe', 
-            mensajeServidor: 'El equipo no existe.', 
+            mensajeCliente: 'proyecto_no_existe', 
+            mensajeServidor: 'El proyecto no existe.', 
             resultado: null
         })
     }
 
-    if ( equipoActualizado.codigo ) {
-        if ( !esCodigo(equipoActualizado.codigo) ) {
+    if ( proyectoActualizado.codigo ) {
+        if ( !esCodigo(proyectoActualizado.codigo) ) {
             return new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'codigo_invalido', 
@@ -74,7 +72,7 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado)
             })
         }
 
-        if ( equipoActualizado.codigo.length > 25 ) {
+        if ( proyectoActualizado.codigo.length > 25 ) {
             return new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'caracteres_codigo_excedido', 
@@ -83,8 +81,8 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado)
             })
         }
 
-        const equipo = await equipoUseCase.obtenerPorCodigo(equipoActualizado.codigo)
-        if (equipo) {
+        const proyecto = await proyectoUseCase.obtenerPorCodigoProyecto(uidEquipo, proyectoActualizado.codigo)
+        if (proyecto) {
             return new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'codigo_en_uso', 
@@ -94,13 +92,15 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado)
         }
     }
 
-    if (equipoActualizado.nombre.length > 50) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'caracteres_nombre_excedido', 
-            mensajeServidor: '[nombre] solo puede tener hasta 50 caracteres.', 
-            resultado: null
-        })
+    if (proyectoActualizado.nombre) {
+        if (proyectoActualizado.nombre.length > 50) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'caracteres_nombre_excedido', 
+                mensajeServidor: '[nombre] solo puede tener hasta 50 caracteres.', 
+                resultado: null
+            })
+        }
     }
 
     return null

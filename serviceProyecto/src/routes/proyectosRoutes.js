@@ -1,20 +1,20 @@
 import { Router } from 'express'
 import { estaAutenticado } from '../middlewares/estaAutenticado.js'
-import {  } from '../middlewares/proyectosMiddlewares.js'
+import { verificarCreacionProyecto, verificarActualizacionProyecto, verificarEliminacionProyecto } from '../middlewares/proyectosMiddlewares.js'
 import { crear, obtener, actualizar, restaurarFotoPerfil, restaurarFotoPortada, eliminar } from '../controllers/proyectosControllers.js'
 
 const router = Router()
 
-router.post('/', crear)
+router.post('/', estaAutenticado, verificarCreacionProyecto, crear)
 
-router.get('/:tipo/:valor', obtener)
+router.get('/:uidEquipo/:tipo/:valor', obtener)
 
-router.put('/:uid', actualizar)
+router.put('/:uidEquipo/:uid', estaAutenticado, verificarActualizacionProyecto, actualizar)
 
 router.put('/restaurarFotoPerfil', restaurarFotoPerfil)
 
 router.put('/restaurarFotoPortada', restaurarFotoPortada)
 
-router.delete('/:uid', eliminar)
+router.delete('/:uidEquipo/:uid', estaAutenticado, verificarEliminacionProyecto, eliminar)
 
 export default router

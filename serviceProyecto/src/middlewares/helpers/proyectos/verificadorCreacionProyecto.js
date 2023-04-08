@@ -26,6 +26,16 @@ export const verificadorCreacionProyecto = async (proyectoNuevo) => {
     return null
 }
 
+export const verificadorUsuarioSolicitante = async (usuarioSolicitante) => {
+    let respuestaError = null
+
+    // ##### Datos requeridos #####
+    respuestaError = verificarUsuarioPermisos(usuarioSolicitante)
+    if (respuestaError) return respuestaError
+
+    return null
+}
+
 const verificacionDatosRequeridos = (proyectoNuevo) => {
 
     if ( !proyectoNuevo ) {
@@ -89,6 +99,10 @@ const verificacionTiposDeDatos = (proyectoNuevo) => {
 }
 
 const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
+
+    // verificamos que el equipo exista
+
+
     // codigo valido [caracteres_validos, cantidad_caracteres, verificacion_de_uso]
     if ( !esCodigo(proyectoNuevo.codigo) ) {
         return new RespuestaError({
@@ -108,7 +122,7 @@ const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
         })
     }
 
-    const proyecto = await proyectoUseCase.obtenerPorCodigoProyecto(proyectoNuevo.codigo)
+    const proyecto = await proyectoUseCase.obtenerPorCodigoProyecto(proyectoNuevo.uidEquipo, proyectoNuevo.codigo)
     if (proyecto) {
         return new RespuestaError({
             estado: 400, 
@@ -138,8 +152,12 @@ const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
         })
     }
 
-    // verificar que el equipo sea valido
+    return null
+}
 
+const verificarUsuarioPermisos = (usuarioSolicitante) => {
     
+    // TODO obtenemos el miembro interno y verificamos sus roles
+
     return null
 }

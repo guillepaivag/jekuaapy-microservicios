@@ -27,9 +27,9 @@ const fotoPortadaUseCase = new FotoPortadaUseCase(new StorageFotoPortadaReposito
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { datosProyectoNuevo } = body
+        const { proyectoNuevoVerificado } = body
 
-        const proyecto = await proyectosUseCase.crear(datosProyectoNuevo)
+        const proyecto = await proyectosUseCase.crear(proyectoNuevoVerificado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -41,6 +41,8 @@ export const crear = async (req = request, res = response) => {
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+        // TODO aumentar la cantidad de proyectos
 
     } catch (error) {
         console.log('Error - crear: ', error)
@@ -55,12 +57,12 @@ export const crear = async (req = request, res = response) => {
 export const obtener = async (req = request, res = response) => {
     try {
         const { params } = req
-        const { tipo, valor } = params
+        const { uidEquipo, tipo, valor } = params
 
         let proyecto = null
 
-        if (tipo === 'uid') proyecto = await proyectosUseCase.obtenerPorUID(valor)
-        else if (tipo === 'codigo') proyecto = await proyectosUseCase.obtenerPorCodigoProyecto(valor)
+        if (tipo === 'uid') proyecto = await proyectosUseCase.obtenerPorUID(uidEquipo, valor)
+        else if (tipo === 'codigo') proyecto = await proyectosUseCase.obtenerPorCodigoProyecto(uidEquipo, valor)
         else throw new TypeError('No hay datos para buscar el proyecto.')
 
         if (!proyecto) {
@@ -94,18 +96,18 @@ export const obtener = async (req = request, res = response) => {
 export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { uid } = params
-        const { solicitante, proyectoActualizado, datosProyectoActualizado } = body
+        const { uidEquipo, uid } = params
+        const { solicitante, proyectoActualizado, datosProyectoActualizado, proyectoActualizadoVerificado } = body
         
         // Actualizar proyecto
-        await proyectosUseCase.actualizar(uid, datosProyectoActualizado)
+        await proyectosUseCase.actualizar(uidEquipo, uid, proyectoActualizadoVerificado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
             mensajeCliente: 'exito',
             mensajeServidor: 'Se actualizó el proyecto de manera correcta!',
-            resultado: datosProyectoActualizado
+            resultado: proyectoActualizadoVerificado
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
@@ -123,11 +125,11 @@ export const actualizar = async (req = request, res = response) => {
 export const restaurarFotoPerfil = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { uid } = params
+        const { uidEquipo, uid } = params
         const { solicitante, tipoRestauracion } = body
 
         // Eliminar foto de perfil
-        const proyecto = await proyectosUseCase.obtenerPorUID(uid)
+        const proyecto = await proyectosUseCase.obtenerPorUID(uidEquipo, uid)
         if (proyecto.fotoPerfil !== '' && proyecto.fotoPerfil !== 'default') 
             await fotoPerfilUseCase.eliminar(`${uid}/foto.`)
         
@@ -156,15 +158,15 @@ export const restaurarFotoPerfil = async (req = request, res = response) => {
 export const restaurarFotoPortada = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { uid } = params
+        const { uidEquipo, uid } = params
         const { solicitante, tipoRestauracion } = body
 
         // Eliminar foto de portada
-        const proyecto = await proyectosUseCase.obtenerPorUID(uid)
+        const proyecto = await proyectosUseCase.obtenerPorUID(uidEquipo, uid)
         if (proyecto.fotoPortada !== '' && proyecto.fotoPortada !== 'default') 
             await fotoPortadaUseCase.eliminar(`${uid}/foto.`)
 
-        await proyectosUseCase.actualizar(uid, { fotoPortada: tipoRestauracion })
+        await proyectosUseCase.actualizar(uidEquipo, uid, { fotoPortada: tipoRestauracion })
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -190,10 +192,10 @@ export const eliminar = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
         const { solicitante } = body
+        const { uidEquipo, uid } = params
         
         // Eliminar equipo
-        const fechaEliminado = milliseconds_a_timestamp(timeOfRequest)
-        await proyectosUseCase.eliminar(params.uid, fechaEliminado)
+        await proyectosUseCase.eliminar(uidEquipo, params.uid)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -204,6 +206,7 @@ export const eliminar = async (req = request, res = response) => {
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        // TODO disminuir la cantidad de proyectos
 
     } catch (error) {
         console.log('Error - eliminar: ', error)

@@ -1,9 +1,10 @@
 import { request, response } from "express"
-import { verificadorCreacionProyecto } from "./helpers/proyectos/verificadorCreacionProyecto.js"
+import { verificadorCreacionProyecto, verificadorUsuarioSolicitante } from "./helpers/proyectos/verificadorCreacionProyecto.js"
 import { constructorProyectoCreacion } from "./helpers/proyectos/constructorProyectoCreacion.js"
 import { verificadorActualizacionProyecto } from "./helpers/proyectos/verificadorActualizacionProyecto.js"
 import { constructorProyectoActualizacion } from "./helpers/proyectos/constructorProyectoActualizacion.js"
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
+import { verificadorEliminacionProyecto } from "./helpers/proyectos/verificadorEliminarProyecto.js"
 
 export const verificarCreacionProyecto = async (req = request, res = response, next) => {
     const { params, body, timeOfRequest } = req
@@ -18,12 +19,18 @@ export const verificarCreacionProyecto = async (req = request, res = response, n
                 resultado: null
             })
         }
+
+        let respuestaError = null
+
         // Datos requeridos para crear un proyecto: codigo, nombre, descripcion
-        const respuestaError = await verificadorCreacionProyecto(proyectoNuevo)
+        respuestaError = await verificadorUsuarioSolicitante(solicitante)
         if (respuestaError) throw respuestaError
 
-        proyecto.responsable = solicitante.uidSolicitante
-        proyecto.fechaCreacion = timeOfRequest
+        // Datos requeridos para crear un proyecto: codigo, nombre, descripcion
+        respuestaError = await verificadorCreacionProyecto(proyectoNuevo)
+        if (respuestaError) throw respuestaError
+
+        proyectoNuevo.fechaCreacion = timeOfRequest
         const { proyectoNuevoVerificado } = constructorProyectoCreacion(proyectoNuevo)
         
         req.body.proyectoNuevoVerificado = proyectoNuevoVerificado
@@ -53,6 +60,7 @@ export const verificarObtencionProyecto = async (req = request, res = response, 
 export const verificarActualizacionProyecto = async (req = request, res = response, next) => {
     const { params, body } = req
     const { solicitante, proyectoActualizado } = body
+    const { uidEquipo, uid } = params
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
@@ -65,7 +73,7 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
         }
 
         // Datos que se actualizan: codigo, nombre, descripcion
-        const respuestaError = await verificadorActualizacionProyecto(params.uid, proyectoActualizado)
+        const respuestaError = await verificadorActualizacionProyecto(uidEquipo, uid, proyectoActualizado)
         if (respuestaError) throw respuestaError
 
         // EQUIPO-TODO: El solicitante tiene que ser un miembro del proyecto 
@@ -84,6 +92,7 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
 export const verificarEliminacionProyecto = async (req = request, res = response, next) => {
     const { params, body } = req
     const { solicitante } = body
+    const { uidEquipo, uid } = params
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
@@ -95,9 +104,12 @@ export const verificarEliminacionProyecto = async (req = request, res = response
             })
         }
 
-        // EQUIPO-TODO: El solicitante tiene que ser un miembro del proyecto 
-        
-        // EQUIPO-TODO: El solicitante tiene que ser [propietario] del proyecto
+        // TODO: El solicitante tiene que ser un miembro del proyecto 
+
+        // TODO Verificar que exista el proyecto
+        const respuestaError = await verificadorEliminacionProyecto( uidEquipo, uid )
+
+        if (respuestaError) throw respuestaError
         
         next()
     } catch (error) {

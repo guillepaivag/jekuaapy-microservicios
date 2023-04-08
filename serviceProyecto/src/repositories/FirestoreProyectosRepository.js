@@ -1,6 +1,7 @@
 import collections_name_firestore from '../../firebase-service/collections_name_firestore/collections_name_firestore.js'
 import firebaseFirestoreService from '../../firebase-service/firebase-firestore-service.js'
 import Proyecto from '../models/Proyecto.js'
+import { milliseconds_a_timestamp } from '../utils/timestamp.js'
 
 // Implementación con Firestore para el repositorio de libros.
 // Recibe la conexión con Firestore externamente.
@@ -13,18 +14,21 @@ class FirestoreProyectosRepository {
         // Si "test" es true, se le agrega un sufijo, útil para que 
         // las pruebas de integración no sobreescriban los datos existentes.
 
-        let collection_name = collections_name_firestore.proyectos
+        let collection_name_equipos = collections_name_firestore.equipos
+        let collection_name_proyecto = collections_name_firestore.proyectos
 
-        if (isTest) collection_name += '_test'
+        if (isTest) collection_name_equipos += '_test'
+        if (isTest) collection_name_proyecto += '_test'
 
-        this.collection = firebaseFirestoreService.collection(collection_name)
+        this.collection_name_equipos = collection_name_equipos
+        this.collection_name_proyecto = collection_name_proyecto
         this.isTest = isTest
-
     }
 
-    async obtenerPorUID(uid = '') {
+    async obtenerPorUID(uidEquipo = '', uid = '') {
 
-        const query = this.collection
+        const query = firebaseFirestoreService.collection(this.collection_name_equipos).doc(uidEquipo)
+            .collection(this.collection_name_proyecto)
             .where('uid', '==', uid)
             .where('estado', '!=', 'eliminado')
 
@@ -37,9 +41,10 @@ class FirestoreProyectosRepository {
 
     }
 
-    async obtenerPorCodigoProyecto(codigo = '') {
+    async obtenerPorCodigoProyecto(uidEquipo = '', codigo = '') {
 
-        const query = this.collection
+        const query = firebaseFirestoreService.collection(this.collection_name_equipos).doc(uidEquipo)
+            .collection(this.collection_name_proyecto)
             .where('codigo', '==', codigo)
             .where('estado', '!=', 'eliminado')
 
@@ -54,9 +59,12 @@ class FirestoreProyectosRepository {
 
     async crear(proyecto = Proyecto.params) {
 
-        const doc = this.collection.doc()
+        console.log("proyecto",proyecto)
 
-        await this.collection.doc(doc.id).set({
+        const doc = firebaseFirestoreService.collection(this.collection_name_proyecto).doc()
+
+        await firebaseFirestoreService.collection(this.collection_name_equipos).doc(proyecto.uidEquipo)
+        .collection(this.collection_name_proyecto).doc(doc.id).set({
             uid: doc.id,
             uidEquipo: proyecto.uidEquipo,
             tipoProyecto: proyecto.tipoProyecto,
@@ -78,19 +86,22 @@ class FirestoreProyectosRepository {
 
     }
 
-    async actualizar(uid = '', datosActualizados = Proyecto.params) {
+    async actualizar(uidEquipo = '', uid = '', datosActualizados = Proyecto.params) {
 
-        const doc = this.collection.doc(uid)
+        const doc = firebaseFirestoreService.collection(this.collection_name_equipos).doc(uidEquipo)
+        .collection(this.collection_name_proyecto).doc(uid)
         await doc.update(datosActualizados)
 
         return datosActualizados
 
     }
 
-    async eliminar(uid = '') {
+    async eliminar(uidEquipo = '', uid = '') {
 
-        await this.collection.doc(uid).update({
+        await firebaseFirestoreService.collection(this.collection_name_equipos).doc(uidEquipo)
+        .collection(this.collection_name_proyecto).doc(uid).update({
             estado: 'eliminado',
+            fechaEliminacion: milliseconds_a_timestamp(new Date())
         })
 
         return true

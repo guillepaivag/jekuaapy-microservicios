@@ -1,9 +1,8 @@
-export const constructorEquipoActualizacion = (equipoActualizado) => {
-    const equipoActualizadoVerificado = {}
+export const constructorProyectoActualizacion = (proyectoActualizado) => {
+    const proyectoActualizadoVerificado = {}
     
-    equipoActualizado.codigo ? equipoActualizadoVerificado.codigo = equipoActualizado.codigo : ''
-    equipoActualizado.nombre ? equipoActualizadoVerificado.nombre = equipoActualizado.nombre : ''
-    equipoActualizado.descripcion ? equipoActualizadoVerificado.descripcion = equipoActualizado.descripcion : ''
+    proyectoActualizado.codigo ? proyectoActualizadoVerificado.codigo = proyectoActualizado.codigo : ''
+    proyectoActualizado.nombre ? proyectoActualizadoVerificado.nombre = proyectoActualizado.nombre : ''
 
-    return { equipoActualizadoVerificado }
+    return { proyectoActualizadoVerificado }
 }

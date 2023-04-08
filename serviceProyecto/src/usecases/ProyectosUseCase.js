@@ -10,12 +10,12 @@ class ProyectosUseCase {
     this.proyectosRepository = proyectosRepository
   }
 
-  async obtenerPorUID (uid = '') {
-    return await this.proyectosRepository.obtenerPorUID(uid)
+  async obtenerPorUID (uidEquipo = '', uid = '') {
+    return await this.proyectosRepository.obtenerPorUID(uidEquipo, uid)
   }
 
-  async obtenerPorCodigoProyecto (codigo = '') {
-    return await this.proyectosRepository.obtenerPorCodigoProyecto(codigo)
+  async obtenerPorCodigoProyecto (uidEquipo = '', codigo = '') {
+    return await this.proyectosRepository.obtenerPorCodigoProyecto(uidEquipo, codigo)
   }
 
   async crear (proyectoNuevo = Proyecto.params) {
@@ -45,12 +45,12 @@ class ProyectosUseCase {
 
   }
 
-  async actualizar (uid = '', datosActualizados = Proyecto.params) {
-    await this.proyectosRepository.actualizar(uid, datosActualizados)
+  async actualizar (uidEquipo = '', uid = '', datosActualizados = Proyecto.params) {
+    await this.proyectosRepository.actualizar(uidEquipo, uid, datosActualizados)
   }
 
-  async eliminar (uid = '') {
-    await this.proyectosRepository.eliminar(uid)
+  async eliminar (uidEquipo = '', uid = '') {
+    await this.proyectosRepository.eliminar(uidEquipo, uid)
   }
 
 }
