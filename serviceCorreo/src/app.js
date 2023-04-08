@@ -1,8 +1,10 @@
 import express from 'express'
 import cors from 'cors'
+import config from './configs/config.js'
 
 // Get Routes
 import correosUsuariosRoutes from './routes/correosUsuariosRoutes.js'
+import correosMiembrosEquipoRoutes from './routes/correosMiembrosEquipoRoutes.js'
 
 // App
 const app = express()
@@ -32,6 +34,7 @@ app.use(express.urlencoded({ extended: false }))
 
 // Routes
 app.use('/usuarios', correosUsuariosRoutes)
+app.use('/miembrosEquipo', correosMiembrosEquipoRoutes)
 
 // Manejo de errores
 app.use((error, req, res, next) => { 

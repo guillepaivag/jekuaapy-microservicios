@@ -2,31 +2,36 @@
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 // Services
-import { apiUsuarioObtenerUsuarioDeFirebaseAuthentication } from "../helpers/axios/axiosApiUsuarios.js"
+import { apiUsuarioObtenerUsuarioDeFirebaseAuthentication } from "../services/service_usuario.js"
 
 export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = response, next) => {
     const { body } = req
-    const { solicitante, correo } = body
+    const { solicitante, correo, verificarSiTieneCorreoVerificado } = body
 
-    try {
-        const emailVerified = { value: false }
-        if (solicitante.tipo === 'servicio') {
-            // CORREOS-TODO: Obtener usuario para saber si el email esta verificado
+    try {       
+        if (verificarSiTieneCorreoVerificado) {
+            // Obtener usuario para saber si el email esta verificado
             const usuarioAuthentication = await apiUsuarioObtenerUsuarioDeFirebaseAuthentication('correo', correo)
-            emailVerified.value = usuarioAuthentication.emailVerified
-        }
-
-        if (solicitante.tipo === 'usuario') {
-            emailVerified.value = solicitante.authSolicitante.emailVerified
-        }
-
-        if (emailVerified.value) {
-            return new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'correo_ya_verificado', 
-                mensajeServidor: '[correo] ya está verificado.', 
-                resultado: null
-            })
+            if (!usuarioAuthentication) {
+                throw new RespuestaError({
+                    estado: 400, 
+                    mensajeCliente: 'no_existe_usuario', 
+                    mensajeServidor: 'No existe usuario.', 
+                    resultado: null
+                })
+            }
+            
+            const emailVerified = usuarioAuthentication.emailVerified
+            if (emailVerified) {
+                throw new RespuestaError({
+                    estado: 400, 
+                    mensajeCliente: 'correo_ya_verificado', 
+                    mensajeServidor: '[correo] ya está verificado.', 
+                    resultado: null
+                })
+            }
+        
+            req.body.emailVerified = emailVerified
         }
 
         next()

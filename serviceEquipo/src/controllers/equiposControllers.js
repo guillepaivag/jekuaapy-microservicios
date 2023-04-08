@@ -13,6 +13,7 @@ import { errorHandler } from "../helpers/errors/error-handler.js"
 
 // Helpers & utils
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
+import { apiMiembroCrearMiembroEquipo } from "../services/service_miembro.js"
 
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
@@ -20,10 +21,14 @@ const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
-        const { solicitante, equipoNuevo, equipoNuevoVerificado } = body
+        const { equipoNuevoVerificado, miembroNuevoVerificado } = body
 
         // Crear equipo
         const equipo = await equipoUseCase.crear(equipoNuevoVerificado)
+
+        // Crear miembro
+        miembroNuevoVerificado.uidEquipo = equipo.uid
+        await apiMiembroCrearMiembroEquipo(miembroNuevoVerificado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -48,22 +53,9 @@ export const crear = async (req = request, res = response) => {
 export const obtener = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { tipo, valor } = params
-        const { solicitante, equipoNuevo, equipoNuevoVerificado } = body
+        const { uid } = params
 
-        let equipo = null
-
-        if (tipo === 'uid') equipo = await equipoUseCase.obtenerPorUID(valor)
-        else if (tipo === 'codigo') equipo = await equipoUseCase.obtenerPorCodigo(valor)
-        else throw new TypeError('No hay datos para buscar un equipo.')
-
-        if (!equipo) {
-            throw new RespuestaError({
-                estado: 400,
-                mensajeCliente: 'no_existe_equipo',
-                mensajeServidor: 'No existe el equipo.'
-            })
-        }
+        const equipo = await equipoUseCase.obtenerPorUID(uid)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -88,7 +80,7 @@ export const obtener = async (req = request, res = response) => {
 export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { solicitante, equipoActualizado, equipoActualizadoVerificado } = body
+        const { equipoActualizadoVerificado } = body
         
         // Actualizar equipo
         await equipoUseCase.actualizar(params.uid, equipoActualizadoVerificado)

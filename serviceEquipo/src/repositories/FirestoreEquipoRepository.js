@@ -17,42 +17,44 @@ class FirestoreEquipoRepository {
         this.isTest = isTest
     }
 
-    async crear(equipo = Equipo.params) {
+    async crear(equipoNuevo = Equipo.params) {
         const doc = this.collection.doc()
+
+        equipoNuevo.uid = doc.id
 
         await this.collection.doc(doc.id).set({
             uid: doc.id,
-            responsable: equipo.responsable, 
-            codigo: equipo.codigo, 
-            nombre: equipo.nombre, 
-            descripcion: equipo.descripcion, 
-            cantidadMiembros: 0,
-            estado: 'activo',
-            fechaCreacion: equipo.fechaCreacion, 
-            fechaEliminado: null, 
+            responsable: equipoNuevo.responsable, 
+            codigo: equipoNuevo.codigo, 
+            nombre: equipoNuevo.nombre, 
+            descripcion: equipoNuevo.descripcion, 
+            cantidadMiembros: equipoNuevo.cantidadMiembros, 
+            cantidadMiembrosPorRol: equipoNuevo.cantidadMiembrosPorRol, 
+            cantidadProyectos: equipoNuevo.cantidadProyectos, 
+            cantidadContenidos: equipoNuevo.cantidadContenidos, 
+            cantidadContenidosPorTipo: equipoNuevo.cantidadContenidosPorTipo, 
+            estado: equipoNuevo.estado, 
+            fechaCreacion: equipoNuevo.fechaCreacion, 
+            fechaEliminado: equipoNuevo.fechaEliminado, 
         })
 
-        equipo.uid = doc.id
-
-        return equipo
+        return new Equipo(equipoNuevo) 
     }
 
     async obtenerPorUID(uid = '') {
-        const snapshot = await this.collection
-            .where('uid', '==', uid)
-            .where('estado', '==', 'activo')
-            .get()
+        const doc = await this.collection.doc(uid).get()
 
-        if (snapshot.empty) return null
-        const doc = snapshot.docs[0]
-
-        return this._obtenerDeDocumento(doc)
+        if (!doc.exists) return null
+        const equipo = this._obtenerDeDocumento(doc)
+        if (equipo.estado === 'eliminado') return null
+    
+        return equipo
     }
 
     async obtenerPorCodigo(codigo = '') {
         const snapshot = await this.collection
             .where('codigo', '==', codigo)
-            .where('estado', '==', 'activo')
+            .where('estado', '!=', 'eliminado')
             .get()
 
         if (snapshot.empty) return null
@@ -61,7 +63,7 @@ class FirestoreEquipoRepository {
         return this._obtenerDeDocumento(doc)
     }
 
-    async actualizar(uid = '', datosActualizados = {}) {
+    async actualizar(uid = '', datosActualizados = Equipo.params) {
         const doc = this.collection.doc(uid)
         await doc.update(datosActualizados)
     }
@@ -75,21 +77,10 @@ class FirestoreEquipoRepository {
     }
 
     _obtenerDeDocumento(doc) {
-
         // Retorna una instancia User desde una instancia Document de Firestore.
-        const data = doc.data()
-
-        return new Equipo({
-            uid: data.uid,
-            responsable: data.responsable,
-            codigo: data.codigo,
-            nombre: data.nombre,
-            descripcion: data.descripcion,
-            cantidadMiembros: data.cantidadMiembros,
-            estado: data.estado,
-            fechaCreacion: data.fechaCreacion,
-            fechaEliminado: data.fechaEliminado,
-        })
+        const documentData = doc.data()
+        const data = Equipo.structureData(documentData)
+        return new Equipo(data)
     }
 }
 

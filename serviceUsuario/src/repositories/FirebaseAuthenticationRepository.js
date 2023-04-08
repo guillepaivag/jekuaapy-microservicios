@@ -16,13 +16,21 @@ class FirebaseAuthenticationRepository {
     }
     
     async obtenerPorUID (uid = '') {
-        const usuarioAuth = await firebaseAuthenticationService.getUser(uid)
-        return usuarioAuth
+        try {
+            return await firebaseAuthenticationService.getUser(uid)
+        } catch (error) {
+            if (error.errorInfo.code === 'auth/user-not-found') return null
+            throw error
+        }
     }
 
     async obtenerPorCorreo (correo = '') {
-        const usuarioAuth = await firebaseAuthenticationService.getUserByEmail(correo)
-        return usuarioAuth
+        try {
+            return await firebaseAuthenticationService.getUserByEmail(correo)
+        } catch (error) {
+            if (error.errorInfo.code === 'auth/user-not-found') return null
+            throw error
+        }
     }
 
     async obtenerLinkDeVerificacionDeCorreo (correo = '') {

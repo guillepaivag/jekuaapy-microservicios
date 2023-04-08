@@ -1,8 +1,18 @@
 import { request, response } from "express"
-import { verificadorCreacionEquipo } from "./helpers/equipos/verificadorCreacionEquipo.js"
-import { constructorEquipoCreacion } from "./helpers/equipos/constructorEquipoCreacion.js"
-import { verificadorActualizacionEquipo } from "./helpers/equipos/verificadorActualizacionEquipo.js"
-import { constructorEquipoActualizacion } from "./helpers/equipos/constructorEquipoActualizacion.js"
+
+// Helpers de CREACION
+import { verificadorCreacionEquipo } from "./helpers/equipos/creacion/verificadorCreacionEquipo.js"
+import { constructorEquipoCreacion } from "./helpers/equipos/creacion/constructorEquipoCreacion.js"
+import { constructorMiembroEquipoCreacion } from "./helpers/equipos/creacion/constructorMiembroEquipoCreacion.js"
+
+// Helpers de ACTUALIZACION
+import { verificadorActualizacionEquipo } from "./helpers/equipos/actualizacion/verificadorActualizacionEquipo.js"
+import { constructorEquipoActualizacion } from "./helpers/equipos/actualizacion/constructorEquipoActualizacion.js"
+
+// Servicios
+import { apiMiembroObtenerMiembroEquipo } from "../services/service_miembro.js"
+
+// Models
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 
 export const verificarCreacionEquipo = async (req = request, res = response, next) => {
@@ -11,7 +21,7 @@ export const verificarCreacionEquipo = async (req = request, res = response, nex
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -20,30 +30,17 @@ export const verificarCreacionEquipo = async (req = request, res = response, nex
         }
 
         // Datos requeridos para crear un equipo: codigo, nombre, descripcion
-        const respuestaError = await verificadorCreacionEquipo(equipoNuevo)
-        if (respuestaError) throw respuestaError
+        const dataVerificadorCreacionEquipo = await verificadorCreacionEquipo(equipoNuevo)
+        if (dataVerificadorCreacionEquipo instanceof Error) throw dataVerificadorCreacionEquipo
 
-        equipo.responsable = solicitante.uidSolicitante
-        equipo.fechaCreacion = timeOfRequest
+        equipoNuevo.responsable = solicitante.uidSolicitante
+        equipoNuevo.fechaCreacion = timeOfRequest
         const { equipoNuevoVerificado } = constructorEquipoCreacion(equipoNuevo)
+        const { miembroNuevoVerificado } = constructorMiembroEquipoCreacion(equipoNuevoVerificado.responsable, timeOfRequest)
         
+        req.body.dataVerificadorCreacionEquipo = dataVerificadorCreacionEquipo
         req.body.equipoNuevoVerificado = equipoNuevoVerificado
-
-        next()
-    } catch (error) {
-        next(error)
-    }
-}
-
-export const verificarObtencionEquipo = async (req = request, res = response, next) => {
-    const { params, body } = req
-    const { solicitante } = body
-
-    try {
-        // Si el usuario es miembro del equipo, puede ver todos los datos
-        // Si no esta logeado o no es miembro del equipo, solo puede ver los datos de manera parcial
-        // EQUIPO-TODO: Verificar si el solicitante puede ver todos los datos o no
-        const esMiembroDelEquipo = { value: false }
+        req.body.miembroNuevoVerificado = miembroNuevoVerificado
 
         next()
     } catch (error) {
@@ -56,24 +53,38 @@ export const verificarActualizacionEquipo = async (req = request, res = response
     const { solicitante, equipoActualizado } = body
 
     try {
-        if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'correo_no_verificado', 
-                mensajeServidor: 'El email no está verificado.', 
-                resultado: null
-            })
+        if (solicitante.tipo === 'usuario') {
+            if ( !solicitante.authSolicitante.emailVerified ) {
+                throw new RespuestaError({
+                    estado: 400, 
+                    mensajeCliente: 'correo_no_verificado', 
+                    mensajeServidor: 'El email no está verificado.', 
+                    resultado: null
+                })
+            }
+
+            // El solicitante tiene que ser un miembro del equipo 
+            // El solicitante tiene que ser [propietario o editor] del equipo
+            const miembroEquipoSolicitante = await apiMiembroObtenerMiembroEquipo(params.uid, solicitante.uidSolicitante)
+            if (!miembroEquipoSolicitante || miembroEquipoSolicitante.estado !== 'activo' || (!miembroEquipoSolicitante.roles.includes('propietario') && !miembroEquipoSolicitante.roles.includes('editor'))) {
+                throw new RespuestaError({
+                    estado: 401, 
+                    mensajeCliente: 'no_autorizado', 
+                    mensajeServidor: 'No eres un miembro autorizado.', 
+                    resultado: null
+                })
+            }
         }
 
-        // Datos que se actualizan: codigo, nombre, descripcion
-        const respuestaError = await verificadorActualizacionEquipo(params.uid, equipoActualizado)
-        if (respuestaError) throw respuestaError
+        // Datos que se actualizan: 
+        // [responsable (solo para responsable)], codigo, nombre, descripcion, [cantidadMiembros, cantidadMiembrosPorRol (solo para servicios)]
+        const uidUsuarioSolicitante = solicitante.tipo === 'usuario' ? solicitante.uidSolicitante : undefined
+        const dataVerificadorActualizacionEquipo = await verificadorActualizacionEquipo(solicitante.tipo, params.uid, equipoActualizado, uidUsuarioSolicitante)
+        if (dataVerificadorActualizacionEquipo instanceof Error) throw dataVerificadorActualizacionEquipo
 
-        // EQUIPO-TODO: El solicitante tiene que ser un miembro del equipo 
+        const { equipoActualizadoVerificado } = constructorEquipoActualizacion(equipoActualizado, solicitante)
         
-        // EQUIPO-TODO: El solicitante tiene que ser [propietario o editor] del equipo
-
-        const { equipoActualizadoVerificado } = constructorEquipoActualizacion(equipoActualizado)
+        req.body.dataVerificadorActualizacionEquipo = dataVerificadorActualizacionEquipo
         req.body.equipoActualizadoVerificado = equipoActualizadoVerificado
 
         next()
@@ -88,7 +99,7 @@ export const verificarEliminacionEquipo = async (req = request, res = response, 
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -96,9 +107,17 @@ export const verificarEliminacionEquipo = async (req = request, res = response, 
             })
         }
 
-        // EQUIPO-TODO: El solicitante tiene que ser un miembro del equipo 
-        
-        // EQUIPO-TODO: El solicitante tiene que ser [propietario] del equipo
+        // El solicitante tiene que ser un miembro del equipo 
+        // El solicitante tiene que ser [propietario] del equipo
+        const miembroEquipo = await apiMiembroObtenerMiembroEquipo(params.uid, solicitante.uidSolicitante)
+        if (!miembroEquipo || miembroEquipo.estado !== 'activo' || !miembroEquipo.roles.includes('propietario')) {
+            throw new RespuestaError({
+                estado: 401, 
+                mensajeCliente: 'no_autorizado', 
+                mensajeServidor: 'No eres un miembro autorizado.', 
+                resultado: null
+            })
+        }
         
         next()
     } catch (error) {

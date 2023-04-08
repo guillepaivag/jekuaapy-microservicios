@@ -1,6 +1,6 @@
 const collections_name_firestore = {
     equipos: 'Equipos',
-    miembrosInternosEquipo: 'MiembrosInternosPorEquipo',
+    miembrosEquipo: 'MiembrosPorEquipo',
 }
 
 export default collections_name_firestore

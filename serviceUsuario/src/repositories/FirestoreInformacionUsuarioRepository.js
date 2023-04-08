@@ -34,7 +34,7 @@ class FirestoreInformacionUsuarioRepository {
         const snapshot = await firebaseFirestoreService
         .collection('Usuarios')
         .where('nombreUsuario', '==', nombreUsuario)
-        .where('estado', '==', 'activo')
+        .where('estado', '!=', 'eliminado')
         .get()
     
         if (snapshot.empty) return null
@@ -50,7 +50,7 @@ class FirestoreInformacionUsuarioRepository {
         const snapshot = await firebaseFirestoreService
         .collection('Usuarios')
         .where('correo', '==', correo)
-        .where('estado', '==', 'activo')
+        .where('estado', '!=', 'eliminado')
         .get()
     
         if (snapshot.empty) return null

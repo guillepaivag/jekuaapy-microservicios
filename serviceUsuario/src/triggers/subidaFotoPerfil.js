@@ -14,7 +14,7 @@ const bucketNameFotoPerfil = config.buckets.fotoPerfil
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const fotoPerfilUseCase = new FotoPerfilUseCase(new StorageFotoPerfilRepository())
 
-const actualizacionFotoPerfilDeUsuario = functions
+export const subidaFotoPerfil = functions
 .region('southamerica-east1')
 .storage
 .bucket(bucketNameFotoPerfil)
@@ -86,5 +86,3 @@ const actualizacionFotoPerfilDeUsuario = functions
     }
     
 })
-
-export default actualizacionFotoPerfilDeUsuario

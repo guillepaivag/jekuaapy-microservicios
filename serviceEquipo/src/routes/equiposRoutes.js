@@ -1,17 +1,48 @@
 import { Router } from 'express'
-import { estaAutenticado } from '../middlewares/estaAutenticado.js'
-import { estaAutenticadoOpcional } from '../middlewares/estaAutenticadoOpcional.js'
-import { verificarCreacionEquipo, verificarObtencionEquipo, verificarActualizacionEquipo, verificarEliminacionEquipo, } from "../middlewares/equiposMiddlewares.js"
+import { estaAutenticadoUsuario } from '../middlewares/estaAutenticadoUsuario.js'
+import { estaAutenticadoUsuarioServicio } from '../middlewares/estaAutenticadoUsuarioServicio.js'
+import { verificarCreacionEquipo, verificarActualizacionEquipo, verificarEliminacionEquipo, } from "../middlewares/equiposMiddlewares.js"
 import { crear, obtener, actualizar, eliminar } from '../controllers/equiposControllers.js'
 
 const router = Router()
 
-router.post('/', estaAutenticado, verificarCreacionEquipo, crear)
 
-router.get('/:tipo/:valor', estaAutenticadoOpcional, verificarObtencionEquipo, obtener)
 
-router.put('/:uid', estaAutenticado, verificarActualizacionEquipo, actualizar)
+/**
+ * 1. El cliente solicita una creacion de equipo
+ * 2. Se verifican datos iniciales: codigo, nombre, descripcion
+ * 3. Crea el equipo y un miembro
+*/
+router.post('/', estaAutenticadoUsuario, verificarCreacionEquipo, crear)
 
-router.delete('/:uid', estaAutenticado, verificarEliminacionEquipo, eliminar)
+
+
+
+
+/**
+ * 
+*/
+router.get('/:uid', obtener)
+
+
+
+
+
+/**
+ * 
+*/
+router.put('/:uid', estaAutenticadoUsuarioServicio, verificarActualizacionEquipo, actualizar)
+
+
+
+
+
+/**
+ * 
+*/
+router.delete('/:uid', estaAutenticadoUsuario, verificarEliminacionEquipo, eliminar)
+
+
+
 
 export default router

@@ -27,14 +27,6 @@ export const obtener = async (req = request, res = response) => {
         else if (tipo === 'nombreUsuario') informacionUsuario = await informacionUsuariosUseCase.obtenerPorNombreUsuario(valor)
         else throw new TypeError('No hay datos para buscar el usuario.')
 
-        if (!informacionUsuario) {
-            throw new RespuestaError({
-                estado: 400,
-                mensajeCliente: 'no_existe_usuario',
-                mensajeServidor: 'No existe el usuario.'
-            })
-        }
-
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,

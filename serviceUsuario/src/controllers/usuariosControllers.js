@@ -28,7 +28,7 @@ import FotoPortadaUseCase from "../usecases/FotoPortadaUseCase.js"
 import { errorHandler } from "../helpers/errors/error-handler.js"
 
 // Services
-import { apiCorreoVerificacionCorreo } from "../helpers/axios/axiosApiCorreos.js"
+import { apiCorreoVerificacionCorreo } from "../services/service_correo.js"
 
 const authenticationUseCase = new AuthenticationUseCase(new FirebaseAuthenticationRepository())
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
@@ -91,14 +91,6 @@ export const obtenerAuthentication = async (req = request, res = response) => {
         else if (tipo === 'correo') usuarioAuth = await authenticationUseCase.obtenerPorCorreo(valor)
         else throw new TypeError('No hay datos para buscar el usuario.')
 
-        if ( !usuarioAuth ) {
-            throw new RespuestaError({
-                estado: 400,
-                mensajeCliente: 'no_existe_usuario',
-                mensajeServidor: 'No existe el usuario.'
-            })
-        }
-
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
@@ -131,14 +123,6 @@ export const obtener = async (req = request, res = response) => {
         else if (tipo === 'nombreUsuario') usuario = await usuariosUseCase.obtenerPorNombreUsuario(valor)
         else throw new TypeError('No hay datos para buscar el usuario.')
 
-        if (!usuario) {
-            throw new RespuestaError({
-                estado: 400,
-                mensajeCliente: 'no_existe_usuario',
-                mensajeServidor: 'No existe el usuario.'
-            })
-        }
-
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
@@ -151,6 +135,43 @@ export const obtener = async (req = request, res = response) => {
 
     } catch (error) {
         console.log('Error - obtener: ', error)
+
+        // Manejo de errores
+        const respuestaManejada = errorHandler(error)
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+
+    }
+}
+
+export const enviarVerificacionCorreo = async (req = request, res = response) => {
+    try {
+        const { params, body } = req
+        const { solicitante } = body
+
+        if (solicitante.authSolicitante.emailVerified) {
+            throw new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'correo_ya_verificado', 
+                mensajeServidor: 'El email ya está verificado.', 
+                resultado: null
+            })
+        }
+        
+        // Enviar verificacion de correo
+        await apiCorreoVerificacionCorreo(solicitante.authSolicitante.email, false)
+
+        // Retornar respuesta
+        const respuesta = new Respuesta({
+            estado: 200,
+            mensajeCliente: 'exito',
+            mensajeServidor: 'Se envió el correo de verificación de manera correcta!',
+            resultado: null
+        })
+
+        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+
+    } catch (error) {
+        console.log('Error - enviarVerificacionCorreo: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)

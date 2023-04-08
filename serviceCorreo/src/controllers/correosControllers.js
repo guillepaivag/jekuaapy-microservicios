@@ -35,7 +35,6 @@ export const verificarCorreoDeUsuario = async (req = request, res = response) =>
             resultado: null
         })
 
-        console.log('Correo de verificacion enviado con exito..')
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {

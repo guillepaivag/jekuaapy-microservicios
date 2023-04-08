@@ -9,7 +9,7 @@ export const verificarActualizacionInformacionUsuario = async (req = request, re
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 

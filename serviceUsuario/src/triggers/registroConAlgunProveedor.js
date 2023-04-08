@@ -13,13 +13,13 @@ import FirestoreInformacionUsuarioRepository from "../repositories/FirestoreInfo
 import InformacionUsuariosUseCase from "../usecases/InformacionUsuariosUseCase.js"
 
 // Services
-import { apiCorreoVerificacionCorreo } from "../helpers/axios/axiosApiCorreos.js"
+import { apiCorreoVerificacionCorreo } from "../services/service_correo.js"
 
 const usuariosUseCase = new UsuariosUseCase(new FirestoreUsuariosRepository())
 const authenticationUseCase = new AuthenticationUseCase(new FirebaseAuthenticationRepository())
 const informacionUsuariosUseCase = new InformacionUsuariosUseCase(new FirestoreInformacionUsuarioRepository())
 
-const registroConAlgunProveedor = functions
+export const registroConAlgunProveedor = functions
 .region('southamerica-east1')
 .auth
 .user()
@@ -35,7 +35,7 @@ const registroConAlgunProveedor = functions
         
         // Datos Usuario
         const nombreUsuario = user.email.split('@')[0] + new Date(user.metadata.creationTime).getTime()
-        const usuario = await usuariosUseCase.crear({
+        await usuariosUseCase.crear({
             uid: user.uid,
             nombreUsuario: nombreUsuario,
             correo: user.email,
@@ -49,7 +49,7 @@ const registroConAlgunProveedor = functions
         })
 
         // Datos Información del usuario
-        const informacionUsuario = await informacionUsuariosUseCase.crear(user.uid, {
+        await informacionUsuariosUseCase.crear(user.uid, {
             uid: user.uid,
             descripcion: '',
             especializaciones: '',
@@ -68,5 +68,3 @@ const registroConAlgunProveedor = functions
 
     return true
 })
-
-export default registroConAlgunProveedor

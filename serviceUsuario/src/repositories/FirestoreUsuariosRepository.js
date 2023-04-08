@@ -27,16 +27,18 @@ class FirestoreUsuariosRepository {
     const doc = await this.collection.doc(uid).get()
 
     if (!doc.exists) return null
-    
-    return this._obtenerDeDocumento(doc)
-  
+    const usuario = this._obtenerDeDocumento(doc)
+    if (usuario.estado === 'eliminado') return null
+
+    return usuario
+
   }
 
   async obtenerPorCorreo (correo = '') {
 
     const query = this.collection
     .where('correo', '==', correo)
-    .where('estado', '==', 'activo')
+    .where('estado', '!=', 'eliminado')
 
     const snapshot = await query.get()
     if (snapshot.empty) return null
@@ -51,7 +53,7 @@ class FirestoreUsuariosRepository {
 
     const query = this.collection
     .where('nombreUsuario', '==', nombreUsuario)
-    .where('estado', '==', 'activo')
+    .where('estado', '!=', 'eliminado')
 
     const snapshot = await query.get()
     if (snapshot.empty) return null
