@@ -1,12 +1,12 @@
 const paramsObject = {
-    uid : '',
+    uid: '',
     uidEquipo: '',
-    roles : [],
-    estado : 'activo',
-    fechaCreacion : null,
+    roles: [],
+    estado: 'activo',
+    fechaCreacion: null,
 }
 
-class MiembroInternoEquipo {
+class MiembroEquipo {
     static schema = {
         type: 'object',
         properties: {
@@ -21,6 +21,7 @@ class MiembroInternoEquipo {
     }
 
     static params = paramsObject
+    static structureForReturn = (data = paramsObject) => data
     
     constructor (data = paramsObject) {
         const { uid, uidEquipo, roles, estado, fechaCreacion, } = data
@@ -34,4 +35,4 @@ class MiembroInternoEquipo {
 
 }
 
-export default MiembroInternoEquipo
+export default MiembroEquipo

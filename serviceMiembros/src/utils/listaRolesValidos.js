@@ -1,9 +1,8 @@
 const listaRolesValidos = [
-    'estudiante',
+    'propietario',
+    'editor',
     'visualizador',
-    'editor-miembro',
-    'editor-contenido',
-    'propietario'
+    'estudiante',
 ]
 
 export default listaRolesValidos

@@ -1,5 +1,5 @@
-import { enviarCorreo } from "../helpers/enviarCorreo.js"
 import Correo from "../models/Correo.js"
+import { enviarCorreo } from "../helpers/enviarCorreo.js"
 
 class AwsSesCorreosRepository {
 
@@ -7,7 +7,7 @@ class AwsSesCorreosRepository {
         this.isTest = isTest
     }
 
-    async enviarVerificacionDeCorreo(correo = Correo.params) {
+    async enviarCorreo(correo = Correo.params) {
         return await enviarCorreo({
             from: correo.correoEmisor,
             to: correo.correoReceptor,

@@ -1,32 +1,37 @@
-import RespuestaError from "../../../models/Respuestas/RespuestaError.js"
-import esCodigo from "../../../utils/esCodigo.js"
+import RespuestaError from "../../../../models/Respuestas/RespuestaError.js"
+import esCodigo from "../../../../utils/esCodigo.js"
 
 // Equipos
-import FirestoreEquipoRepository from "../../../repositories/FirestoreEquipoRepository.js"
-import EquipoUseCase from "../../../usecases/EquipoUseCase.js"
+import FirestoreEquipoRepository from "../../../../repositories/FirestoreEquipoRepository.js"
+import EquipoUseCase from "../../../../usecases/EquipoUseCase.js"
 
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 
 export const verificadorCreacionEquipo = async (equipoNuevo) => {
-    let respuestaError = null
-
+    const data = {}
+    
     // ##### Datos requeridos #####
-    respuestaError = verificacionDatosRequeridos(equipoNuevo)
-    if (respuestaError) return respuestaError
+    const datosRequeridos = verificacionDatosRequeridos(equipoNuevo)
+    if (datosRequeridos instanceof Error) return datosRequeridos
+    else data.datosRequeridos = datosRequeridos
 
     // ##### Tipos de datos #####
-    respuestaError = verificacionTiposDeDatos(equipoNuevo)
-    if (respuestaError) return respuestaError
+    const tiposDeDatos = verificacionTiposDeDatos(equipoNuevo)
+    if (tiposDeDatos instanceof Error) return tiposDeDatos
+    else data.tiposDeDatos = tiposDeDatos
 
     // ##### Datos validos #####
-    respuestaError = await verificacionCondicionalDeDatos(equipoNuevo)
-    if (respuestaError) return respuestaError
-
-    return null
+    const validacionCondicional = await verificacionCondicionalDeDatos(equipoNuevo)
+    if (validacionCondicional instanceof Error) return validacionCondicional
+    else data.validacionCondicional = validacionCondicional
+    
+    return data
 }
 
 const verificacionDatosRequeridos = (equipoNuevo) => {
+    
+    const data = {}
 
     if ( !equipoNuevo ) {
         return new RespuestaError({
@@ -64,20 +69,24 @@ const verificacionDatosRequeridos = (equipoNuevo) => {
         })
     }
 
-    return null
+    return data
 }
 
 const verificacionTiposDeDatos = (equipoNuevo) => {
+    const data = {}
+    
     if (typeof equipoNuevo.codigo !== 'string') return TypeError('[codigo] debe ser string')
 
     if (typeof equipoNuevo.nombre !== 'string') return TypeError('[nombre] debe ser string')
 
     if (typeof equipoNuevo.descripcion !== 'string') return TypeError('[descripcion] debe ser string')
 
-    return null
+    return data
 }
 
 const verificacionCondicionalDeDatos = async (equipoNuevo) => {
+    const data = {}
+    
     // codigo valido [caracteres_validos, cantidad_caracteres, verificacion_de_uso]
     if ( !esCodigo(equipoNuevo.codigo) ) {
         return new RespuestaError({
@@ -116,6 +125,8 @@ const verificacionCondicionalDeDatos = async (equipoNuevo) => {
             resultado: null
         })
     }
+
+    data.equipo = equipo
     
-    return null
+    return data
 }

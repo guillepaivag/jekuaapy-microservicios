@@ -24,3 +24,22 @@ export const apiUsuarioObtenerUsuarioDeFirebaseAuthentication = async (tipo = ''
         throw errorHandlerRequest(error, serviceName) 
     }
 } 
+
+export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
+    // Llamada a la API de correos para enviar una verificacion de correo a un correo
+    const tokenDeAutenticacionDeServicio = await generarTokenDeServicio()
+
+    const configOfTheRequest = { 
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
+        } 
+    }
+
+    try { 
+        const response = await apiUsuario.get(`/usuarios/${tipo}/${valor}`, configOfTheRequest) 
+        return response.data.resultado
+    } catch (error) { 
+        throw errorHandlerRequest(error, serviceName) 
+    }
+} 

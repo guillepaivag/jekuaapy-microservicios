@@ -6,16 +6,19 @@ class EquipoUseCase {
         this.equipoRepository = equipoRepository
     }
 
-    async crear(equipo = Equipo.params) {
-        return await this.equipoRepository.crear(equipo)
+    async crear(equipoNuevo = Equipo.params) {
+        const equipo = await this.equipoRepository.crear(equipoNuevo)
+        return Equipo.structureData(equipo)
     }
 
     async obtenerPorUID(uid = '') {
-        return await this.equipoRepository.obtenerPorUID(uid)
+        const equipo = await this.equipoRepository.obtenerPorUID(uid)
+        return Equipo.structureData(equipo)
     }
 
     async obtenerPorCodigo(codigo = '') {
-        return await this.equipoRepository.obtenerPorCodigo(codigo)
+        const equipo = await this.equipoRepository.obtenerPorCodigo(codigo)
+        return Equipo.structureData(equipo)
     }
 
     async actualizar(uid = '', datosActualizados = {}) {

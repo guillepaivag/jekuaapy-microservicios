@@ -17,24 +17,28 @@ class FirestoreEquipoRepository {
         this.isTest = isTest
     }
 
-    async crear(equipo = Equipo.params) {
+    async crear(equipoNuevo = Equipo.params) {
         const doc = this.collection.doc()
+
+        equipoNuevo.uid = doc.id
 
         await this.collection.doc(doc.id).set({
             uid: doc.id,
-            responsable: equipo.responsable, 
-            codigo: equipo.codigo, 
-            nombre: equipo.nombre, 
-            descripcion: equipo.descripcion, 
-            cantidadMiembros: equipo.cantidadMiembros,
-            estado: equipo.estado,
-            fechaCreacion: equipo.fechaCreacion, 
-            fechaEliminado: equipo.fechaEliminado, 
+            responsable: equipoNuevo.responsable, 
+            codigo: equipoNuevo.codigo, 
+            nombre: equipoNuevo.nombre, 
+            descripcion: equipoNuevo.descripcion, 
+            cantidadMiembros: equipoNuevo.cantidadMiembros, 
+            cantidadMiembrosPorRol: equipoNuevo.cantidadMiembrosPorRol, 
+            cantidadProyectos: equipoNuevo.cantidadProyectos, 
+            cantidadContenidos: equipoNuevo.cantidadContenidos, 
+            cantidadContenidosPorTipo: equipoNuevo.cantidadContenidosPorTipo, 
+            estado: equipoNuevo.estado, 
+            fechaCreacion: equipoNuevo.fechaCreacion, 
+            fechaEliminado: equipoNuevo.fechaEliminado, 
         })
 
-        equipo.uid = doc.id
-
-        return equipo
+        return new Equipo(equipoNuevo) 
     }
 
     async obtenerPorUID(uid = '') {
@@ -73,21 +77,10 @@ class FirestoreEquipoRepository {
     }
 
     _obtenerDeDocumento(doc) {
-
         // Retorna una instancia User desde una instancia Document de Firestore.
-        const data = doc.data()
-
-        return new Equipo({
-            uid: data.uid,
-            responsable: data.responsable,
-            codigo: data.codigo,
-            nombre: data.nombre,
-            descripcion: data.descripcion,
-            cantidadMiembros: data.cantidadMiembros,
-            estado: data.estado,
-            fechaCreacion: data.fechaCreacion,
-            fechaEliminado: data.fechaEliminado,
-        })
+        const documentData = doc.data()
+        const data = Equipo.structureData(documentData)
+        return new Equipo(data)
     }
 }
 

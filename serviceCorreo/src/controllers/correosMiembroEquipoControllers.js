@@ -1,4 +1,5 @@
 import { request, response } from "express"
+import jwt from "jsonwebtoken"
 
 // Models de respuesta
 import Respuesta from "../models/Respuestas/Respuesta.js"
@@ -9,23 +10,33 @@ import AwsSesCorreosRepository from "../repositories/AwsSesCorreosRepository.js"
 import CorreosUseCases from "../usecases/CorreosUseCases.js"
 
 // Helpers
-import { generarLinkDeVerificacionDeCorreo } from "../helpers/usuarios/generarLinkDeVerificacionDeCorreo.js"
-import { generarHtmlVerificacionCorreoUsuario } from "../helpers/correosEstructurados/verificacionCorreoUsuario/generarHtmlVerificacionCorreoUsuario.js"
+import { generarHtmlAvisoNuevoMiembroEquipo } from "../helpers/correosEstructurados/avisoNuevoMiembroEquipo/generarHtmlAvisoNuevoMiembroEquipo.js"
 import { errorHandler } from "../helpers/errors/error-handler.js"
+
+// Servicios
+import { apiEquipoObtenerEquipo } from "../services/service_equipo.js"
+import { apiUsuarioObtenerUsuario } from "../services/service_usuario.js"
 
 // Variables
 const correoUseCase = new CorreosUseCases(new AwsSesCorreosRepository())
 
-export const verificarCorreoDeUsuario = async (req = request, res = response) => {
+export const enviarAvisoNuevoMiembroEquipo = async (req = request, res = response) => {
     try {
         const { body } = req
-        const { correo } = body
+        const { uidUsuarioSolicitante, uidEquipo, correo } = body
         
         // Enviar correo
-        const correoReceptor = correo
-        const linkVerificacionCorreoUsuario = await generarLinkDeVerificacionDeCorreo(correo)
-        const contenido = generarHtmlVerificacionCorreoUsuario(correo, linkVerificacionCorreoUsuario)
-        await correoUseCase.enviarVerificacionDeCorreo({ correoReceptor, contenido })
+        const usuario = await apiUsuarioObtenerUsuario('uid', uidUsuarioSolicitante)
+        const equipo = await apiEquipoObtenerEquipo(uidEquipo)
+        
+        const asunto = `[Jekuaapy] ${usuario.nombreCompleto} te agregó como miembro del equipo “${equipo.nombre}”`
+        const contenido = generarHtmlAvisoNuevoMiembroEquipo({correo, usuario, equipo})
+
+        await correoUseCase.enviarAvisoNuevoMiembroEquipo({
+            correoReceptor: correo,
+            asunto,
+            contenido,
+        })
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -38,7 +49,7 @@ export const verificarCorreoDeUsuario = async (req = request, res = response) =>
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
     } catch (error) {
-        console.log('Error - verificarCorreoDeUsuario: ', error)
+        console.log('Error - enviarAvisoNuevoMiembroEquipo: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)

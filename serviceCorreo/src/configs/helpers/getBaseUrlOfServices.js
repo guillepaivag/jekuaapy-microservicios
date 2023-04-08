@@ -6,9 +6,7 @@ export const getBaseUrlOfServices = (isProduction = false, isRemote = false) => 
     
     const apis = {}
     Object.keys(baseUrls)
-    .map(v => {
-        apis[v] = baseUrls[v][tipoUrl]
-    })
+    .map(v => apis[v] = baseUrls[v][tipoUrl])
     
     return structuringBaseUrlOfServices(apis)
 }

@@ -13,7 +13,7 @@ import { errorHandler } from "../helpers/errors/error-handler.js"
 
 // Helpers & utils
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
-import { apiMiembroCrearMiembroInternoDeEquipo } from "../services/service_miembro.js"
+import { apiMiembroCrearMiembroEquipo } from "../services/service_miembro.js"
 
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
@@ -21,14 +21,14 @@ const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
-        const { solicitante, equipoNuevo, equipoNuevoVerificado, miembroNuevoVerificado } = body
+        const { equipoNuevoVerificado, miembroNuevoVerificado } = body
 
         // Crear equipo
         const equipo = await equipoUseCase.crear(equipoNuevoVerificado)
 
         // Crear miembro
         miembroNuevoVerificado.uidEquipo = equipo.uid
-        await apiMiembroCrearMiembroInternoDeEquipo(miembroNuevoVerificado)
+        await apiMiembroCrearMiembroEquipo(miembroNuevoVerificado)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -54,34 +54,15 @@ export const obtener = async (req = request, res = response) => {
     try {
         const { params, body } = req
         const { uid } = params
-        const { solicitante, tipoPermiso } = body
 
         const equipo = await equipoUseCase.obtenerPorUID(uid)
-
-        const datosEquipoFiltrado = { value: null }
-        if (equipo) {
-            datosEquipoFiltrado.value = {}
-            
-            if (tipoPermiso === 'completo') datosEquipoFiltrado.value = equipo
-            else {
-                datosEquipoFiltrado.value.uid = equipo.uid
-                datosEquipoFiltrado.value.codigo = equipo.codigo
-                datosEquipoFiltrado.value.nombre = equipo.nombre
-                datosEquipoFiltrado.value.descripcion = equipo.descripcion
-
-                if (tipoPermiso === 'medio') {
-                    datosEquipoFiltrado.value.cantidadMiembros = equipo.cantidadMiembros
-                    datosEquipoFiltrado.value.fechaCreacion = equipo.fechaCreacion
-                }
-            }   
-        }
 
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
             mensajeCliente: 'exito',
             mensajeServidor: 'Se encontró el equipo de manera correcta!',
-            resultado: datosEquipoFiltrado.value
+            resultado: equipo
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
@@ -99,7 +80,7 @@ export const obtener = async (req = request, res = response) => {
 export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { solicitante, equipoActualizado, equipoActualizadoVerificado } = body
+        const { equipoActualizadoVerificado } = body
         
         // Actualizar equipo
         await equipoUseCase.actualizar(params.uid, equipoActualizadoVerificado)

@@ -1,7 +1,6 @@
 const collections_name_firestore = {
     equipos: 'Equipos',
-    miembrosInternosEquipo: 'MiembrosInternosPorEquipo',
-    registroMiembrosInternosEquipo: 'RegistroDeMiembrosInternosPorEquipo',
+    miembrosEquipo: 'MiembrosPorEquipo',
 }
 
 export default collections_name_firestore

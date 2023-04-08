@@ -6,11 +6,10 @@ import { apiUsuarioObtenerUsuarioDeFirebaseAuthentication } from "../services/se
 
 export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = response, next) => {
     const { body } = req
-    const { solicitante, correo } = body
+    const { solicitante, correo, verificarSiTieneCorreoVerificado } = body
 
-    try {
-        const emailVerified = { value: false }
-        if (solicitante.tipo === 'servicio') {
+    try {       
+        if (verificarSiTieneCorreoVerificado) {
             // Obtener usuario para saber si el email esta verificado
             const usuarioAuthentication = await apiUsuarioObtenerUsuarioDeFirebaseAuthentication('correo', correo)
             if (!usuarioAuthentication) {
@@ -21,22 +20,19 @@ export const verificarEnvioDeVerificacionDeCorreo = async (req = request, res = 
                     resultado: null
                 })
             }
-            emailVerified.value = usuarioAuthentication.emailVerified
+            
+            const emailVerified = usuarioAuthentication.emailVerified
+            if (emailVerified) {
+                throw new RespuestaError({
+                    estado: 400, 
+                    mensajeCliente: 'correo_ya_verificado', 
+                    mensajeServidor: '[correo] ya está verificado.', 
+                    resultado: null
+                })
+            }
+        
+            req.body.emailVerified = emailVerified
         }
-
-        if (solicitante.tipo === 'usuario') 
-            emailVerified.value = solicitante.authSolicitante.emailVerified
-
-        if (emailVerified.value) {
-            throw new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'correo_ya_verificado', 
-                mensajeServidor: '[correo] ya está verificado.', 
-                resultado: null
-            })
-        }
-
-        req.body.emailVerified = emailVerified.value
 
         next()
     } catch (error) {
