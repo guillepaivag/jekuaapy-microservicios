@@ -5,6 +5,7 @@ import { verificadorActualizacionProyecto } from "./helpers/proyectos/verificado
 import { constructorProyectoActualizacion } from "./helpers/proyectos/constructorProyectoActualizacion.js"
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import { verificadorEliminacionProyecto } from "./helpers/proyectos/verificadorEliminarProyecto.js"
+import { apiMiembroObtenerMiembro } from "../services/service_miembro.js"
 
 export const verificarCreacionProyecto = async (req = request, res = response, next) => {
     const { params, body, timeOfRequest } = req
@@ -22,9 +23,26 @@ export const verificarCreacionProyecto = async (req = request, res = response, n
 
         let respuestaError = null
 
-        // Datos requeridos para crear un proyecto: codigo, nombre, descripcion
-        respuestaError = await verificadorUsuarioSolicitante(solicitante)
-        if (respuestaError) throw respuestaError
+         // El solicitante tiene que ser un miembro del proyecto y que sea 
+         const miembro = await apiMiembroObtenerMiembro(proyectoNuevo.uidEquipo, solicitante.uidSolicitante)
+
+         if(!miembro){
+             throw new RespuestaError({
+                 estado: 400, 
+                 mensajeCliente: 'no_es_miembro', 
+                 mensajeServidor: 'El usuario solicitante no es miembro del equipo', 
+                 resultado: null
+             })
+         }
+ 
+         if(!miembro.roles.includes('propietario') && !miembro.roles.includes('editor')){
+             throw new RespuestaError({
+                 estado: 400, 
+                 mensajeCliente: 'miembro_no_tiene_permisos', 
+                 mensajeServidor: 'El usuario solicitante no tiene permisos', 
+                 resultado: null
+             })
+         }
 
         // Datos requeridos para crear un proyecto: codigo, nombre, descripcion
         respuestaError = await verificadorCreacionProyecto(proyectoNuevo)
@@ -46,10 +64,6 @@ export const verificarObtencionProyecto = async (req = request, res = response, 
     const { solicitante } = body
 
     try {
-        // Si el usuario es miembro del proyecto, puede ver todos los datos
-        // Si no esta logeado o no es miembro del proyecto, solo puede ver los datos de manera parcial
-        // EQUIPO-TODO: Verificar si el solicitante puede ver todos los datos o no
-        const esMiembroDelProyecto = { value: false }
 
         next()
     } catch (error) {
@@ -76,9 +90,26 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
         const respuestaError = await verificadorActualizacionProyecto(uidEquipo, uid, proyectoActualizado)
         if (respuestaError) throw respuestaError
 
-        // EQUIPO-TODO: El solicitante tiene que ser un miembro del proyecto 
-        
-        // EQUIPO-TODO: El solicitante tiene que ser [propietario o editor] del proyecto
+         // El solicitante tiene que ser un miembro del proyecto y que sea 
+         const miembro = await apiMiembroObtenerMiembro(uidEquipo, solicitante.uidSolicitante)
+
+         if(!miembro){
+             throw new RespuestaError({
+                 estado: 400, 
+                 mensajeCliente: 'no_es_miembro', 
+                 mensajeServidor: 'El usuario solicitante no es miembro del equipo', 
+                 resultado: null
+             })
+         }
+ 
+         if(!miembro.roles.includes('propietario') && !miembro.roles.includes('editor')){
+             throw new RespuestaError({
+                 estado: 400, 
+                 mensajeCliente: 'miembro_no_tiene_permisos', 
+                 mensajeServidor: 'El usuario solicitante no tiene permisos', 
+                 resultado: null
+             })
+         }
 
         const { proyectoActualizadoVerificado } = constructorProyectoActualizacion(proyectoActualizado)
         req.body.proyectoActualizadoVerificado = proyectoActualizadoVerificado
@@ -96,7 +127,7 @@ export const verificarEliminacionProyecto = async (req = request, res = response
 
     try {
         if ( !solicitante.authSolicitante.emailVerified ) {
-            return new RespuestaError({
+            throw new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'correo_no_verificado', 
                 mensajeServidor: 'El email no está verificado.', 
@@ -104,9 +135,28 @@ export const verificarEliminacionProyecto = async (req = request, res = response
             })
         }
 
-        // TODO: El solicitante tiene que ser un miembro del proyecto 
+        // El solicitante tiene que ser un miembro del proyecto y que sea 
+        const miembro = await apiMiembroObtenerMiembro(uidEquipo, solicitante.uidSolicitante)
 
-        // TODO Verificar que exista el proyecto
+        if(!miembro){
+            throw new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'no_es_miembro', 
+                mensajeServidor: 'El usuario solicitante no es miembro del equipo', 
+                resultado: null
+            })
+        }
+
+        if(!miembro.roles.includes('propietario') && !miembro.roles.includes('editor')){
+            throw new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'miembro_no_tiene_permisos', 
+                mensajeServidor: 'El usuario solicitante no tiene permisos', 
+                resultado: null
+            })
+        }
+
+        // Verificar que exista el proyecto
         const respuestaError = await verificadorEliminacionProyecto( uidEquipo, uid )
 
         if (respuestaError) throw respuestaError

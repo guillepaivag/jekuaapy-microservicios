@@ -73,3 +73,5 @@ service_account_*.json
 
 # config.json
 config.json
+
+package-lock.json

@@ -16,6 +16,6 @@ router.get('/:uidEquipo/:uidMiembro', obtener)
 router.put('/:uidEquipo/:uidMiembro', estaAutenticadoUsuario, verificarActualizacionMiembroEquipo, actualizar)
 
 // MIEMBRO_EQUIPO-TODO: Eliminar miembro del equipo
-router.delete('/:uidEquipo/:uidMiembro', estaAutenticadoUsuario, verificarEliminacionMiembroEquipo, eliminar)
+//router.delete('/:uidEquipo/:uidMiembro', estaAutenticadoUsuario, verificarEliminacionMiembroEquipo, eliminar)
 
 export default router

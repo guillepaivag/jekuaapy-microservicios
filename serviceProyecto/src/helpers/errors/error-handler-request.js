@@ -1,6 +1,6 @@
 import RespuestaError from "../../models/Respuestas/RespuestaError.js"
 
-export const errorHandlerAxios = (error, serviceName = '') => {
+export const errorHandlerRequest = (error, serviceName = '') => {
     console.log('error en axios', error)
     
     if (error.response && error.response.data.mensajeCliente) {

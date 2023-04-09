@@ -154,10 +154,3 @@ const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
 
     return null
 }
-
-const verificarUsuarioPermisos = (usuarioSolicitante) => {
-    
-    // TODO obtenemos el miembro interno y verificamos sus roles
-
-    return null
-}
