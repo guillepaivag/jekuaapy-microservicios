@@ -10,7 +10,7 @@ import FirestoreMiembroEquipoRepository from "../../../repositories/FirestoreMie
 import MiembroEquipoUseCase from "../../../usecases/MiembroEquipoUseCase.js"
 
 // Helpers
-import { esEstadoValido } from "../../../helpers/esEstadoValido.js"
+import { verificarEstadoDeMiembroEquipo } from "../../../helpers/verificarEstadoDeMiembroEquipo.js"
 import { verificarListaDeRoles } from "../../../helpers/esRolValido.js"
 
 // Objetos de use-cases
@@ -112,7 +112,7 @@ const verificacionCondicionalDeDatos = async (miembroNuevo) => {
 
     // Verificar que el usuario NO EXISTA en el equipo
     const miembroEquipoSolicitado = await miembroEquipoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, miembroNuevo.uid)
-    if (miembroEquipoSolicitado) {
+    if (miembroEquipoSolicitado && miembroEquipoSolicitado.estado !== 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'ya_existe_miembro', 
@@ -136,7 +136,7 @@ const verificacionCondicionalDeDatos = async (miembroNuevo) => {
     if (dataVerificadorCantidadLimiteDeMiembrosPorRoles instanceof Error) return dataVerificadorCantidadLimiteDeMiembrosPorRoles
 
     // Verificar los datos de solicitud [estado]
-    const estadoValido = esEstadoValido(miembroNuevo.estado)
+    const estadoValido = verificarEstadoDeMiembroEquipo(miembroNuevo.estado)
     if (!estadoValido) {
         return new RespuestaError({
             estado: 400, 

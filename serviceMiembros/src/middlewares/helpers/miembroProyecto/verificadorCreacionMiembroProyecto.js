@@ -3,19 +3,24 @@ import RespuestaError from "../../../models/Respuestas/RespuestaError.js"
 
 // Apis
 import { apiUsuarioObtenerUsuario } from "../../../services/service_usuario.js"
-import { apiEquipoObtenerEquipo } from "../../../services/service_equipo.js"
+import { apiProyectoObtenerProyecto } from "../../../services/service_proyecto.js"
 
 // Repositories&UseCase - Usuarios
 import FirestoreMiembroEquipoRepository from "../../../repositories/FirestoreMiembroEquipoRepository.js"
 import MiembroEquipoUseCase from "../../../usecases/MiembroEquipoUseCase.js"
 
-// Helpers
-import { verificarListaDeRoles } from "../../../helpers/esRolValido.js"
+// Repositories&UseCase - Usuarios
+import FirestoreMiembroProyectoRepository from "../../../repositories/FirestoreMiembroProyectoRepository.js"
+import MiembroProyectoUseCase from "../../../usecases/MiembroProyectoUseCase.js"
+
+// Models
+import MiembroProyecto from "../../../models/MiembroProyecto.js"
 
 // Objetos de use-cases
 const miembroEquipoUseCase = new MiembroEquipoUseCase(new FirestoreMiembroEquipoRepository())
+const miembroProyectoUseCase = new MiembroProyectoUseCase(new FirestoreMiembroProyectoRepository())
 
-export const verificadorCreacionMiembroEquipoUsuario = async (uidSolicitante, miembroNuevo) => {
+export const verificadorCreacionMiembroProyecto = async (uidSolicitante = '', miembroNuevo = MiembroProyecto.params) => {   
     // ##### Datos requeridos #####
     const datosRequeridos = verificacionDatosRequeridos(miembroNuevo)
     if (datosRequeridos instanceof Error) return datosRequeridos
@@ -27,11 +32,20 @@ export const verificadorCreacionMiembroEquipoUsuario = async (uidSolicitante, mi
     // ##### Datos validos #####
     const validacionCondicional = await verificacionCondicionalDeDatos(uidSolicitante, miembroNuevo)
     if (validacionCondicional instanceof Error) return validacionCondicional
-    
+
     return validacionCondicional
 }
 
-const verificacionDatosRequeridos = (miembroNuevo) => {
+
+const verificacionDatosRequeridos = (miembroNuevo = MiembroProyecto.params) => {
+    if ( !miembroNuevo || typeof miembroNuevo !== 'object' || !Object.keys(miembroNuevo).length ) {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'datos_requeridos', 
+            mensajeServidor: 'Se requiere datos.', 
+            resultado: null
+        })
+    }
 
     if ( !miembroNuevo.uid ) {
         return new RespuestaError({
@@ -51,49 +65,38 @@ const verificacionDatosRequeridos = (miembroNuevo) => {
         })
     }
 
-    if ( !miembroNuevo.roles || !miembroNuevo.roles.length ) {
+    if ( !miembroNuevo.uidProyecto ) {
         return new RespuestaError({
             estado: 400, 
-            mensajeCliente: 'rol_requerido', 
-            mensajeServidor: '[roles] es requerido.', 
+            mensajeCliente: 'uidProyecto_requerido', 
+            mensajeServidor: '[uidProyecto] es requerido.', 
             resultado: null
         })
     }
 
 }
 
-const verificacionTiposDeDatos = (miembroNuevo) => {
-    
+const verificacionTiposDeDatos = (miembroNuevo = MiembroProyecto.params) => {
+
     if (typeof miembroNuevo.uid !== 'string') return TypeError('[uid] debe ser string')
 
     if (typeof miembroNuevo.uidEquipo !== 'string') return TypeError('[uidEquipo] debe ser string')
-
-    if ( !(miembroNuevo.roles instanceof Array) ) return TypeError('[roles] debe ser array')
+    
+    if (typeof miembroNuevo.uidProyecto !== 'string') return TypeError('[uidProyecto] debe ser string')
 
 }
 
 // Solo se verifica -> uid, uidEquipo, roles, estado
-const verificacionCondicionalDeDatos = async (uidSolicitante, miembroNuevo) => {
+const verificacionCondicionalDeDatos = async (uidSolicitante = '', miembroNuevo = MiembroProyecto.params) => {
     const data = {}
 
-    // Verificar la existencia del equipo
-    const equipo = await apiEquipoObtenerEquipo(miembroNuevo.uidEquipo)
-    if (!equipo) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'no_existe_equipo', 
-            mensajeServidor: 'No existe el equipo.', 
-            resultado: null
-        })
-    }
-
-    // Verificar permisos del solicitante (es propietario o editor) para solicitar
+    // Verificar que el usuario sea propietario o editor
     const miembroEquipoSolicitante = await miembroEquipoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, uidSolicitante)
     if (!miembroEquipoSolicitante || miembroEquipoSolicitante.estado !== 'activo' || (!miembroEquipoSolicitante.roles.includes('propietario') && !miembroEquipoSolicitante.roles.includes('editor'))) {
         return new RespuestaError({
             estado: 401, 
-            mensajeCliente: 'uid_requerido', 
-            mensajeServidor: '[uid] es requerido.', 
+            mensajeCliente: 'no_autorizado', 
+            mensajeServidor: 'No eres un miembro de tipo propietario o editor.', 
             resultado: null
         })
     }
@@ -109,9 +112,31 @@ const verificacionCondicionalDeDatos = async (uidSolicitante, miembroNuevo) => {
         })
     }
 
-    // Verificar que el usuario NO EXISTA en el equipo
+    // Verificar que el ME exista en el equipo
     const miembroEquipoSolicitado = await miembroEquipoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, miembroNuevo.uid)
-    if (miembroEquipoSolicitado && miembroEquipoSolicitado.estado !== 'eliminado') {
+    if (!miembroEquipoSolicitado || miembroEquipoSolicitado.estado === 'eliminado') {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'no_existe_miembro_equipo', 
+            mensajeServidor: 'El miembro no existe en el equipo.', 
+            resultado: null
+        })
+    }
+
+    // Verificar la existencia del proyecto
+    const proyecto = await apiProyectoObtenerProyecto(miembroNuevo.uidEquipo, 'uid', miembroNuevo.uidProyecto)
+    if (!proyecto || proyecto.estado === 'eliminado') {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'no_existe_proyecto', 
+            mensajeServidor: 'No existe el proyecto.', 
+            resultado: null
+        })
+    }
+
+    // Verificar que el MP no exista en el proyecto
+    const miembroProyectoSolicitado = await miembroProyectoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, miembroNuevo.uidProyecto, miembroNuevo.uid)
+    if (miembroProyectoSolicitado && miembroProyectoSolicitado.estado !== 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'ya_existe_miembro', 
@@ -120,68 +145,11 @@ const verificacionCondicionalDeDatos = async (uidSolicitante, miembroNuevo) => {
         })
     }
 
-    // Verificar los datos de solicitud [roles]
-    const rolesValidos = verificarListaDeRoles(miembroNuevo.roles)
-    if (!rolesValidos) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'datos_invalidos', 
-            mensajeServidor: 'Roles invalidos.', 
-            resultado: null
-        })
-    }
-
-    if (miembroNuevo.roles.includes('propietario') && !miembroEquipoSolicitante.roles.includes('propietario')) {
-        return new RespuestaError({
-            estado: 401, 
-            mensajeCliente: 'no_autorizado', 
-            mensajeServidor: 'No puedes crear un propietario si no eres propietario.', 
-            resultado: null
-        })
-    }
-
-    const dataVerificadorCantidadLimiteDeMiembrosPorRoles = verificadorCantidadLimiteDeMiembrosPorRoles(equipo, miembroNuevo.roles)
-    if (dataVerificadorCantidadLimiteDeMiembrosPorRoles instanceof Error) return dataVerificadorCantidadLimiteDeMiembrosPorRoles
-
-    data.equipo = equipo
     data.miembroEquipoSolicitante = miembroEquipoSolicitante
     data.usuarioSolicitado = usuarioSolicitado
     data.miembroEquipoSolicitado = miembroEquipoSolicitado
+    data.proyecto = proyecto
+    data.miembroProyectoSolicitado = miembroProyectoSolicitado
     
     return data
-}
-
-
-
-
-// Verificacion de cantidad limites de miembros por roles
-const verificadorCantidadLimiteDeMiembrosPorRoles = (equipo, roles) => {
-    
-    if (roles.includes('propietario') && equipo.cantidadMiembrosPorRol.propietario === 2) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'uid_requerido', 
-            mensajeServidor: '[uid] es requerido.', 
-            resultado: null
-        })
-    }
-
-    if (roles.includes('editor') && equipo.cantidadMiembrosPorRol.editor === 4) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'uid_requerido', 
-            mensajeServidor: '[uid] es requerido.', 
-            resultado: null
-        })
-    }
-
-    if (roles.includes('visualizador') && equipo.cantidadMiembrosPorRol.visualizador === 5) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'uid_requerido', 
-            mensajeServidor: '[uid] es requerido.', 
-            resultado: null
-        })
-    }
-
 }

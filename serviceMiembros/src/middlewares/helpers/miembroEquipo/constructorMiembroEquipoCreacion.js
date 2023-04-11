@@ -8,6 +8,7 @@ export const constructorMiembroEquipoCreacion = (tipoSolicitante = '', miembroNu
         roles: miembroNuevo.roles, 
         estado: tipoSolicitante === 'usuario' ? 'activo' : miembroNuevo.estado, 
         fechaCreacion: milliseconds_a_timestamp(miembroNuevo.fechaCreacion),
+        fechaEliminacion: null
     }
 
     return { miembroEquipoVerificado }

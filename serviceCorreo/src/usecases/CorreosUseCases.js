@@ -24,6 +24,15 @@ class CorreosUseCases {
         })
     }
 
+    async enviarAvisoNuevoMiembroProyecto(correo = Correo.params) {
+        return await this.correoRepository.enviarCorreo({
+            correoEmisor: process.env.CORREO_EMISOR_ORGANIZACION_MIEMBRO_EQUIPO,
+            correoReceptor: correo.correoReceptor,
+            asunto: correo.asunto,
+            contenido: correo.contenido
+        })
+    }
+
 }
 
 export default CorreosUseCases

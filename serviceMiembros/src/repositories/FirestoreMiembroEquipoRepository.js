@@ -26,6 +26,7 @@ class FirestoreMiembroEquipoRepository {
             roles: miembroEquipo.roles, 
             estado: miembroEquipo.estado, 
             fechaCreacion: miembroEquipo.fechaCreacion, 
+            fechaEliminacion: miembroEquipo.fechaEliminacion,
         })
 
         return miembroEquipo
@@ -50,11 +51,14 @@ class FirestoreMiembroEquipoRepository {
         .update(datosActualizados)
     }
 
-    async eliminar(uidEquipo = '', uidMiembro = '') {
+    async eliminar(uidEquipo = '', uidMiembro = '', fechaEliminacion = null) {
         await firebaseFirestoreService
         .collection(this.collection_name_equipos).doc(uidEquipo)
         .collection(this.collection_name_miembrosEquipo).doc(uidMiembro)
-        .delete()
+        .update({
+            estado: 'eliminado',
+            fechaEliminacion,
+        })
     }
 
     _obtenerDeDocumento(doc) {
@@ -67,6 +71,7 @@ class FirestoreMiembroEquipoRepository {
             roles: data.roles,
             estado: data.estado, 
             fechaCreacion: data.fechaCreacion, 
+            fechaEliminacion: data.fechaEliminacion,
         })
     }
 }

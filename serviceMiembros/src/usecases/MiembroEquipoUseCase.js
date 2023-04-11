@@ -18,8 +18,8 @@ class MiembroEquipoUseCase {
         await this.miembroEquipoRepository.actualizar(uidEquipo, uidMiembro, datosActualizados)
     }
 
-    async eliminar(uidEquipo = '', uidMiembro = '') {
-       await this.miembroEquipoRepository.eliminar(uidEquipo, uidMiembro)
+    async eliminar(uidEquipo = '', uidMiembro = '', fechaEliminacion = null) {
+       await this.miembroEquipoRepository.eliminar(uidEquipo, uidMiembro, fechaEliminacion)
     }
 
 }

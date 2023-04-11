@@ -9,8 +9,15 @@ import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import FirestoreMiembroEquipoRepository from "../repositories/FirestoreMiembroEquipoRepository.js"
 import MiembroEquipoUseCase from "../usecases/MiembroEquipoUseCase.js"
 
+// MiembroProyecto
+import FirestoreMiembroProyectoRepository from "../repositories/FirestoreMiembroProyectoRepository.js"
+import MiembroProyectoUseCase from "../usecases/MiembroProyectoUseCase.js"
+
 // Manejo de errores
 import { errorHandler } from "../helpers/errors/error-handler.js"
+
+// Utils
+import listaRolesValidos from "../utils/listaRolesValidos.js"
 
 // Helpers
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
@@ -18,18 +25,18 @@ import { milliseconds_a_timestamp } from "../utils/timestamp.js"
 // Servicios
 import { apiCorreoEnviarAvisoNuevoMiembroEquipo } from "../services/service_correo.js"
 import { apiEquipoActualizarEquipo } from "../services/service_equipo.js"
-import listaRolesValidos from "../utils/listaRolesValidos.js"
 
 // Variables
 const miembroEquipoUseCase = new MiembroEquipoUseCase(new FirestoreMiembroEquipoRepository())
+const miembroProyectoUseCase = new MiembroProyectoUseCase(new FirestoreMiembroProyectoRepository())
 
 export const crear = async (req = request, res = response) => {
     try {
-        const { params, body, timeOfRequest } = req
+        const { params, body } = req
         const { solicitante, equipo, usuarioSolicitado, miembroEquipoVerificado } = body
         
         await miembroEquipoUseCase.crear(miembroEquipoVerificado.uidEquipo, miembroEquipoVerificado)
-        if (solicitante.tipo === 'usuario') apiCorreoEnviarAvisoNuevoMiembroEquipo(solicitante.uidSolicitante, equipo.uid, usuarioSolicitado.correo)
+        if (solicitante.tipo === 'usuario') apiCorreoEnviarAvisoNuevoMiembroEquipo(solicitante.uidSolicitante, usuarioSolicitado.correo, equipo.uid)
 
         const datosActualizadosEquipo = {
             cantidadMiembros: equipo.cantidadMiembros,
@@ -97,7 +104,7 @@ export const obtener = async (req = request, res = response) => {
 
 export const actualizar = async (req = request, res = response) => {
     try {
-        const { params, body } = req
+        const { params, body, timeOfRequest } = req
         const { uidEquipo, uidMiembro } = params
         const { solicitante, equipo, miembroEquipoSolicitado, miembroEquipoVerificado, } = body
 
@@ -119,6 +126,16 @@ export const actualizar = async (req = request, res = response) => {
             }
 
             await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
+        
+            if (viejosRoles.includes('estudiante') && !nuevosRoles.includes('estudiante')) {
+                // Eliminar este miembro-estudiante de cada proyecto
+                const listaProyectosAfectados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
+                
+                // SERVICE_MIEMBROS-TODO: Disminuir la cantidad de miembros de cada proyecto en -1
+                for (const uidProyectoAfectado of listaProyectosAfectados) {
+                    
+                }
+            }
         }
 
         // Retornar respuesta
@@ -144,36 +161,40 @@ export const actualizar = async (req = request, res = response) => {
 
 export const eliminar = async (req = request, res = response) => {
     try {
-        const { params, body } = req
+        const { params, body, timeOfRequest } = req
         const { uidEquipo, uidMiembro } = params
-        const { solicitante, equipo, miembroEquipoSolicitado, miembroEquipoVerificado, } = body
+        const { solicitante, equipo, miembroEquipoSolicitado } = body
 
-        await miembroEquipoUseCase.actualizar(uidEquipo, uidMiembro, miembroEquipoVerificado)
+        await miembroEquipoUseCase.eliminar(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
+
+        // Disminuir la cantidad de miembros (total y por rol) del equipo
+        const rolesMiembroEquipoSolicitado = miembroEquipoSolicitado.roles
+        const datosActualizadosEquipo = {
+            cantidadMiembros: equipo.cantidadMiembros-1,
+            cantidadMiembrosPorRol: JSON.parse( JSON.stringify( equipo.cantidadMiembrosPorRol ) )
+        }
+
+        for (const rolesValidos of listaRolesValidos) {
+            rolesMiembroEquipoSolicitado.includes(rolesValidos) ? 
+            datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]-- : ''
+        }
         
-        const datosActualizadosEquipo = {}
-        if (miembroEquipoVerificado.roles && miembroEquipoVerificado.roles.length) {
-            const viejosRoles = miembroEquipoSolicitado.roles
-            const nuevosRoles = miembroEquipoVerificado.roles
+        await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
 
-            datosActualizadosEquipo.cantidadMiembrosPorRol = JSON.parse( JSON.stringify( equipo.cantidadMiembrosPorRol ) )
-    
-            for (const rolesValidos of listaRolesValidos) {
-                !viejosRoles.includes(rolesValidos) && nuevosRoles.includes(rolesValidos) ? 
-                datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]++ : ''
+        // Eliminar miembro-estudiante de cada proyecto
+        const listaProyectosAfectados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
 
-                viejosRoles.includes(rolesValidos) && !nuevosRoles.includes(rolesValidos) ? 
-                datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]-- : ''
-            }
-
-            await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
+        // SERVICE_MIEMBROS-TODO: Disminuir la cantidad de miembros de cada proyecto en -1
+        for (const uidProyectoAfectado of listaProyectosAfectados) {
+                    
         }
 
         // Retornar respuesta
         const respuesta = new Respuesta({
             estado: 200,
-            mensajeCliente: 'Se actualizó la información del usuario de forma correcta.',
+            mensajeCliente: 'Se eliminó un miembro de un equipo de forma correcta.',
             mensajeServidor: 'exito',
-            resultado: { miembroEquipoVerificado, datosActualizadosEquipo }
+            resultado: null
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())

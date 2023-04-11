@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { estaAutenticadoServicio } from '../middlewares/estaAutenticadoServicio.js'
-import { verificarEnvioDeVerificacionDeCorreo } from '../middlewares/correosMiddlewares.js'
-import { verificarCorreoDeUsuario } from '../controllers/correosControllers.js'
+import { verificarEnvioDeVerificacionDeCorreo } from '../middlewares/correosUsuariosMiddlewares.js'
+import { verificarCorreoDeUsuario } from '../controllers/correosUsuariosControllers.js'
 
 const router = Router()
 

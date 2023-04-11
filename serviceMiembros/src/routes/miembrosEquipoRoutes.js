@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { estaAutenticadoUsuario } from '../middlewares/estaAutenticadoUsuario.js'
 import { estaAutenticadoUsuarioServicio } from '../middlewares/estaAutenticadoUsuarioServicio.js'
 import { verificarCreacionDeMiembroEquipo, verificarActualizacionMiembroEquipo, verificarEliminacionMiembroEquipo } from '../middlewares/miembrosEquipoMiddlewares.js'
-import { actualizar, crear, obtener } from '../controllers/miembrosEquipoControllers.js'
+import { crear, obtener, actualizar, eliminar } from '../controllers/miembrosEquipoControllers.js'
 
 const router = Router()
 
@@ -15,7 +15,7 @@ router.get('/:uidEquipo/:uidMiembro', obtener)
 // Actualizar miembro del equipo [roles | estado]
 router.put('/:uidEquipo/:uidMiembro', estaAutenticadoUsuario, verificarActualizacionMiembroEquipo, actualizar)
 
-// MIEMBRO_EQUIPO-TODO: Eliminar miembro del equipo
+// Eliminar miembro del equipo
 router.delete('/:uidEquipo/:uidMiembro', estaAutenticadoUsuario, verificarEliminacionMiembroEquipo, eliminar)
 
 export default router

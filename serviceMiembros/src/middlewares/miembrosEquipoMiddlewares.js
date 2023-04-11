@@ -10,6 +10,9 @@ import { constructorMiembroEquipoCreacion } from "./helpers/miembroEquipo/constr
 import { verificadorActualizacionMiembroEquipo } from "./helpers/miembroEquipo/verificadorActualizacionMiembroEquipo.js"
 import { constructorMiembroEquipoActualizacion } from "./helpers/miembroEquipo/constructorMiembroEquipoActualizacion.js"
 
+// Eliminacion miembro equipo
+import { verificadorEliminacionMiembroEquipo } from "./helpers/miembroEquipo/verificadorEliminacionMiembroEquipo.js"
+
 export const verificarCreacionDeMiembroEquipo = async (req = request, res = response, next) => {
     const { params, body, timeOfRequest } = req
     const { solicitante, miembroNuevo } = body
@@ -91,12 +94,18 @@ export const verificarActualizacionMiembroEquipo = async (req = request, res = r
     }
 }
 
-export const verificarEliminacionMiembroEquipo = (req = request, res = response, next) => {
+export const verificarEliminacionMiembroEquipo = async (req = request, res = response, next) => {
     const { params, body } = req
+    const { uidEquipo, uidMiembro } = params
     const { solicitante } = body
 
     try {
-        // MIEMBRO_EQUIPO-TODO: 
+        const dataVerificadorEliminacionMiembroEquipo = await verificadorEliminacionMiembroEquipo(solicitante.uidSolicitante, uidEquipo, uidMiembro)
+        if (dataVerificadorEliminacionMiembroEquipo instanceof Error) throw dataVerificadorEliminacionMiembroEquipo
+
+        req.body.equipo = dataVerificadorEliminacionMiembroEquipo.equipo
+        req.body.miembroEquipoSolicitante = dataVerificadorEliminacionMiembroEquipo.miembroEquipoSolicitante
+        req.body.miembroEquipoSolicitado = dataVerificadorEliminacionMiembroEquipo.miembroEquipoSolicitado
 
         next()
     } catch (error) {

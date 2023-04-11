@@ -1,7 +1,7 @@
 import style from './style.js'
 
-export const generarHtmlAvisoNuevoMiembroEquipo = (data = params) => {
-    const { usuarioSolicitante, usuarioSolicitado, equipo } = data
+export const generarHtmlAvisoNuevoMiembroProyecto = (data = params) => {
+    const { usuarioSolicitante, usuarioSolicitado, equipo, proyecto } = data
     const linkVerMas = ''
 
     return `
@@ -18,7 +18,7 @@ export const generarHtmlAvisoNuevoMiembroEquipo = (data = params) => {
         </head>
         <body>
             <p>¡Hola <b>${usuarioSolicitado.correo}</b>!</p>
-            <p>Te proporcioné acceso al equipo ${equipo.nombre} de Jekuaapy.</p>
+            <p>Te proporcioné acceso al proyecto ${proyecto.nombre} del equipo ${equipo.nombre} de Jekuaapy.</p>
             <a href="${linkVerMas}">Ver más</a>
         </body>
     </html>
@@ -29,4 +29,5 @@ const params = {
     usuarioSolicitante: {},
     usuarioSolicitado: {}, 
     equipo: {},
-} 
+    proyecto: {},
+}

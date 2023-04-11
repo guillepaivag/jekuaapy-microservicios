@@ -9,7 +9,7 @@ import FirestoreMiembroEquipoRepository from "../../../repositories/FirestoreMie
 import MiembroEquipoUseCase from "../../../usecases/MiembroEquipoUseCase.js"
 
 // Helpers
-import { esEstadoValido } from "../../../helpers/esEstadoValido.js"
+import { verificarEstadoDeMiembroEquipo } from "../../../helpers/verificarEstadoDeMiembroEquipo.js"
 import { verificarListaDeRoles } from "../../../helpers/esRolValido.js"
 
 // Objetos de use-cases
@@ -76,7 +76,7 @@ const verificacionCondicionalDeDatos = async (uidSolicitante, uidEquipo, uidMiem
 
     // Obtener el miembro solicitado
     const miembroEquipoSolicitado = await miembroEquipoUseCase.obtenerPorUID(uidEquipo, uidMiembro)
-    if (!miembroEquipoSolicitado) {
+    if (!miembroEquipoSolicitado || miembroEquipoSolicitado.estado == 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'datos_invalidos', 
@@ -121,14 +121,25 @@ const verificacionCondicionalDeDatos = async (uidSolicitante, uidEquipo, uidMiem
     }
 
     // Verificar los datos de solicitud [estado]
-    const estadoValido = esEstadoValido(miembroActualizado.estado)
-    if (!estadoValido) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'datos_invalidos', 
-            mensajeServidor: 'Estado invalido.', 
-            resultado: null
-        })
+    if (miembroActualizado.estado) {
+        const estadoValido = verificarEstadoDeMiembroEquipo(miembroActualizado.estado)
+        if (!estadoValido) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'datos_invalidos', 
+                mensajeServidor: 'Estado invalido.', 
+                resultado: null
+            })
+        }
+
+        if (miembroActualizado.estado === 'eliminado') {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'datos_invalidos', 
+                mensajeServidor: 'No puedes cambiar el estado a "eliminado" en una actualización.', 
+                resultado: null
+            })
+        }
     }
 
     data.equipo = equipo
