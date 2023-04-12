@@ -21,7 +21,7 @@ export const verificarCreacionProyecto = async (req = request, res = response, n
             })
         }
 
-        let respuestaError = null
+        let respuesta = null
 
          // El solicitante tiene que ser un miembro del proyecto y que sea 
          const miembro = await apiMiembroObtenerMiembro(proyectoNuevo.uidEquipo, solicitante.uidSolicitante)
@@ -45,12 +45,13 @@ export const verificarCreacionProyecto = async (req = request, res = response, n
          }
 
         // Datos requeridos para crear un proyecto: codigo, nombre, descripcion
-        respuestaError = await verificadorCreacionProyecto(proyectoNuevo)
-        if (respuestaError) throw respuestaError
+        respuesta = await verificadorCreacionProyecto(proyectoNuevo)
+        if (respuesta instanceof RespuestaError) throw respuesta
 
         proyectoNuevo.fechaCreacion = timeOfRequest
         const { proyectoNuevoVerificado } = constructorProyectoCreacion(proyectoNuevo)
         
+        req.body.data = respuesta.data
         req.body.proyectoNuevoVerificado = proyectoNuevoVerificado
 
         next()
@@ -157,9 +158,11 @@ export const verificarEliminacionProyecto = async (req = request, res = response
         }
 
         // Verificar que exista el proyecto
-        const respuestaError = await verificadorEliminacionProyecto( uidEquipo, uid )
+        const respuesta = await verificadorEliminacionProyecto( uidEquipo, uid )
 
-        if (respuestaError) throw respuestaError
+        if (respuesta instanceof RespuestaError) throw respuesta
+
+        body.data = respuesta.data
         
         next()
     } catch (error) {

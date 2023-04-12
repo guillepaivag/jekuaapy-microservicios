@@ -19,6 +19,7 @@ import FotoPortadaUseCase from "../usecases/FotoPortadaUseCase.js"
 // Manejo de errores
 import { errorHandler } from "../helpers/errors/error-handler.js"
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
+import { apiEquipoActualizarEquipo } from "../services/service_equipo.js"
 
 const proyectosUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
 const fotoPerfilUseCase = new FotoPerfilUseCase(new StorageFotoPerfilRepository())
@@ -27,7 +28,7 @@ const fotoPortadaUseCase = new FotoPortadaUseCase(new StorageFotoPortadaReposito
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { proyectoNuevoVerificado } = body
+        const { proyectoNuevoVerificado, data } = body
 
         const proyecto = await proyectosUseCase.crear(proyectoNuevoVerificado)
 
@@ -40,9 +41,14 @@ export const crear = async (req = request, res = response) => {
 
         })
 
+         // TODO aumentar la cantidad de proyectos
+        apiEquipoActualizarEquipo(proyectoNuevoVerificado.uidEquipo, {
+            cantidadProyectos: data.equipo.cantidadProyectos + 1
+        })
+
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
 
-        // TODO aumentar la cantidad de proyectos
+       
 
     } catch (error) {
         console.log('Error - crear: ', error)
@@ -191,11 +197,16 @@ export const restaurarFotoPortada = async (req = request, res = response) => {
 export const eliminar = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
-        const { solicitante } = body
+        const { solicitante, data } = body
         const { uidEquipo, uid } = params
         
         // Eliminar equipo
         await proyectosUseCase.eliminar(uidEquipo, params.uid)
+
+        // TODO aumentar la cantidad de proyectos
+        apiEquipoActualizarEquipo(proyectoNuevoVerificado.uidEquipo, {
+            cantidadProyectos: data.equipo.cantidadProyectos - 1
+        })
 
         // Retornar respuesta
         const respuesta = new Respuesta({

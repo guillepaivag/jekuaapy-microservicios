@@ -11,6 +11,22 @@ const proyectoUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
 export const verificadorEliminacionProyecto = async (uidEquipo, uid) => {
     let respuestaError = null
 
+    // verificar la existencia del proyecto
+    const data = {}
+
+    // verificamos que el equipo exista
+    const equipo = await apiEquipoObtenerEquipo(proyectoNuevo.uidEquipo)
+
+    if(!equipo) {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'equipo_no_existe', 
+            mensajeServidor: 'El equipo no existe.', 
+            resultado: null
+        })
+    }
+
+
     const proyecto = await proyectoUseCase.obtenerPorUID(uidEquipo, uid)
     console.log("proyecto",proyecto)
     if (proyecto === null) {
@@ -22,5 +38,7 @@ export const verificadorEliminacionProyecto = async (uidEquipo, uid) => {
         })
     }
 
-    return null
+    data.equipo = equipo
+
+    return data
 }

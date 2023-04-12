@@ -4,6 +4,7 @@ import esCodigo from "../../../utils/esCodigo.js"
 // Proyectos
 import FirestoreProyectosRepository from "../../../repositories/FirestoreProyectosRepository.js"
 import ProyectosUseCase from "../../../usecases/ProyectosUseCase.js"
+import { apiEquipoObtenerEquipo } from "../../../services/service_equipo.js"
 
 // Use cases objects
 const proyectoUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
@@ -100,7 +101,19 @@ const verificacionTiposDeDatos = (proyectoNuevo) => {
 
 const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
 
+    const data = {}
+
     // verificamos que el equipo exista
+    const equipo = await apiEquipoObtenerEquipo(proyectoNuevo.uidEquipo)
+
+    if(!equipo) {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'equipo_no_existe', 
+            mensajeServidor: 'El equipo no existe.', 
+            resultado: null
+        })
+    }
 
 
     // codigo valido [caracteres_validos, cantidad_caracteres, verificacion_de_uso]
@@ -152,5 +165,7 @@ const verificacionCondicionalDeDatos = async (proyectoNuevo) => {
         })
     }
 
-    return null
+    data.equipo = equipo
+
+    return data
 }
