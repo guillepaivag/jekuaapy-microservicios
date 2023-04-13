@@ -24,7 +24,7 @@ export const verificadorCreacionProyecto = async (proyectoNuevo) => {
     respuestaError = await verificacionCondicionalDeDatos(proyectoNuevo)
     if (respuestaError) return respuestaError
 
-    return null
+    return respuestaError
 }
 
 export const verificadorUsuarioSolicitante = async (usuarioSolicitante) => {

@@ -40,7 +40,7 @@ export const crear = async (req = request, res = response) => {
             resultado: proyecto
 
         })
-
+        console.log("data.equipo",data.equipo)
          // TODO aumentar la cantidad de proyectos
         apiEquipoActualizarEquipo(proyectoNuevoVerificado.uidEquipo, {
             cantidadProyectos: data.equipo.cantidadProyectos + 1
