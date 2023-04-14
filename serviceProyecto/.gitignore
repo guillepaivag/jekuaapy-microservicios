@@ -67,3 +67,12 @@ node_modules/
 
 #
 ui-debug.log
+
+# Credentials
+service_account_*.json
+
+# config.json
+config.json
+
+# Package lock
+package-lock.json
