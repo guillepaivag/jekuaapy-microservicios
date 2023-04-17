@@ -36,7 +36,7 @@ export const verificadorEliminacionMiembroEquipo = async (uidSolicitante, uidEqu
 
     // Obtener el miembro solicitado
     const miembroEquipoSolicitado = await miembroEquipoUseCase.obtenerPorUID(uidEquipo, uidMiembro)
-    if (!miembroEquipoSolicitado || miembroEquipoSolicitado.estado == 'eliminado') {
+    if (!miembroEquipoSolicitado || miembroEquipoSolicitado.estado === 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'datos_invalidos', 

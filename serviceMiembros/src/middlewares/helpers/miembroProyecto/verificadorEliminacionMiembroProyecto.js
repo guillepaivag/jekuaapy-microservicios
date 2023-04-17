@@ -32,7 +32,7 @@ export const verificadorEliminacionMiembroProyecto = async (uidSolicitante = '',
     
     // Verificacion existencia miembro proyecto solicitado
     const miembroProyectoSolicitado = await miembroProyectoUseCase.obtenerPorUID(uidEquipo, uidProyecto, uidMiembro)
-    if (!miembroProyectoSolicitado || miembroProyectoSolicitado.estado == 'eliminado') {
+    if (!miembroProyectoSolicitado || miembroProyectoSolicitado.estado === 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'datos_invalidos', 
