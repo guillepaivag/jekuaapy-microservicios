@@ -27,7 +27,7 @@ export const verificarCreacionProyecto = async (req = request, res = response, n
         // El solicitante tiene que ser un miembro del proyecto y que sea 
         const miembro = await apiMiembroObtenerMiembro(proyectoNuevo.uidEquipo, solicitante.uidSolicitante)
 
-        if (!miembro) {
+        if (!miembro || miembro.estado === 'eliminado') {
             throw new RespuestaError({
                 estado: 400,
                 mensajeCliente: 'no_es_miembro',
@@ -93,7 +93,7 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
             // El solicitante tiene que ser un miembro del proyecto y que sea 
             const miembro = await apiMiembroObtenerMiembro(uidEquipo, solicitante.uidSolicitante)
 
-            if (!miembro) {
+            if (!miembro || miembro.estado === 'eliminado') {
                 throw new RespuestaError({
                     estado: 400,
                     mensajeCliente: 'no_es_miembro',
@@ -116,7 +116,7 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
             if (respuestaError) throw respuestaError
 
         } else {
-            const respuestaError = await verificadorActualizacionProyecto(uidEquipo, uid, proyectoActualizado)
+            const respuestaError = await verificadorActualizacionProyectoServicio(uidEquipo, uid, proyectoActualizado)
             if (respuestaError) throw respuestaError
         }
 
@@ -147,7 +147,7 @@ export const verificarEliminacionProyecto = async (req = request, res = response
         // El solicitante tiene que ser un miembro del proyecto y que sea 
         const miembro = await apiMiembroObtenerMiembro(uidEquipo, solicitante.uidSolicitante)
 
-        if (!miembro) {
+        if (!miembro || miembro.estado === 'eliminado') {
             throw new RespuestaError({
                 estado: 400,
                 mensajeCliente: 'no_es_miembro',
