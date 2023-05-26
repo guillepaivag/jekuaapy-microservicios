@@ -1,0 +1,2 @@
+declare const firebaseFirestoreService: FirebaseFirestore.Firestore;
+export default firebaseFirestoreService;

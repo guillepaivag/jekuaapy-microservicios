@@ -8,7 +8,7 @@ import ProyectosUseCase from "../../../usecases/ProyectosUseCase.js"
 // Use cases objects
 const proyectoUseCase = new ProyectosUseCase(new FirestoreProyectosRepository())
 
-export const verificadorActualizacionProyectoServicio = async (uidEquipo = '', uidProyecto = '', proyectoActualizado) => {
+export const verificadorActualizacionProyectoServicio = async (uidEquipo = '', uidProyecto = '', proyectoActualizado, configuracion = {}) => {
     const data = {}
     
     // ##### Datos requeridos #####
@@ -17,12 +17,12 @@ export const verificadorActualizacionProyectoServicio = async (uidEquipo = '', u
     else data.datosRequeridos = datosRequeridos
 
     // ##### Tipos de datos #####
-    const tiposDeDatos = verificacionTiposDeDatos(proyectoActualizado)
+    const tiposDeDatos = verificacionTiposDeDatos(proyectoActualizado, configuracion)
     if (tiposDeDatos instanceof Error) return tiposDeDatos
     else data.tiposDeDatos = tiposDeDatos
 
     // ##### Datos validos #####
-    const validacionCondicional = await verificacionCondicionalDeDatos(uidEquipo, uidProyecto, proyectoActualizado)
+    const validacionCondicional = await verificacionCondicionalDeDatos(uidEquipo, uidProyecto, proyectoActualizado, configuracion)
     if (validacionCondicional instanceof Error) return validacionCondicional
     else data.validacionCondicional = validacionCondicional
     
@@ -44,7 +44,7 @@ const verificacionDatosRequeridos = (proyectoActualizado) => {
     return data
 }
 
-const verificacionTiposDeDatos = (proyectoActualizado) => {
+const verificacionTiposDeDatos = (proyectoActualizado, configuracion = {}) => {
     const data = {}
     
     if (proyectoActualizado.cantidadMiembros !== undefined && typeof proyectoActualizado.cantidadMiembros !== 'number') 
@@ -59,8 +59,10 @@ const verificacionTiposDeDatos = (proyectoActualizado) => {
     return data
 }
 
-const verificacionCondicionalDeDatos = async (uidEquipo = '', uidProyecto = '', proyectoActualizado) => {
+const verificacionCondicionalDeDatos = async (uidEquipo = '', uidProyecto = '', proyectoActualizado, configuracion = {}) => {
     const data = {}
+
+    const { incrementarCantidadMiembros } = configuracion
     
     // Verificar si el proyecto existe
     const proyecto = await proyectoUseCase.obtenerPorUID(uidEquipo, uidProyecto)
@@ -72,14 +74,16 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', uidProyecto = '', 
             resultado: null
         })
     }
-
-    if (proyectoActualizado.cantidadMiembros && proyectoActualizado.cantidadMiembros < 0) {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'datos_invalidos', 
-            mensajeServidor: 'La [cantidadMiembros] no puede ser menor a 0!', 
-            resultado: null
-        })
+    
+    if (proyectoActualizado.cantidadMiembros) {
+        if ( (!incrementarCantidadMiembros && proyectoActualizado.cantidadMiembros < 0) || (incrementarCantidadMiembros && proyecto.cantidadMiembros+proyectoActualizado.cantidadMiembros < 0) ) {
+            return new RespuestaError({
+                estado: 400, 
+                mensajeCliente: 'datos_invalidos', 
+                mensajeServidor: 'La [cantidadMiembros] no puede ser menor a 0!', 
+                resultado: null
+            })
+        }
     }
 
     if (proyectoActualizado.cantidadElementos && proyectoActualizado.cantidadElementos < 0) {

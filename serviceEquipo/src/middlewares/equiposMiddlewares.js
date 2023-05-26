@@ -38,7 +38,8 @@ export const verificarCreacionEquipo = async (req = request, res = response, nex
         const { equipoNuevoVerificado } = constructorEquipoCreacion(equipoNuevo)
         const { miembroNuevoVerificado } = constructorMiembroEquipoCreacion(equipoNuevoVerificado.responsable, timeOfRequest)
         
-        req.body.dataVerificadorCreacionEquipo = dataVerificadorCreacionEquipo
+        req.body.equipo = dataVerificadorCreacionEquipo.equipo
+
         req.body.equipoNuevoVerificado = equipoNuevoVerificado
         req.body.miembroNuevoVerificado = miembroNuevoVerificado
 
@@ -48,9 +49,13 @@ export const verificarCreacionEquipo = async (req = request, res = response, nex
     }
 }
 
+
+/**
+ * configuracion: {  }
+*/
 export const verificarActualizacionEquipo = async (req = request, res = response, next) => {
     const { params, body } = req
-    const { solicitante, equipoActualizado } = body
+    const { solicitante, equipoActualizado, configuracion } = body
 
     try {
         if (solicitante.tipo === 'usuario') {
@@ -79,12 +84,14 @@ export const verificarActualizacionEquipo = async (req = request, res = response
         // Datos que se actualizan: 
         // [responsable (solo para responsable)], codigo, nombre, descripcion, [cantidadMiembros, cantidadMiembrosPorRol (solo para servicios)]
         const uidUsuarioSolicitante = solicitante.tipo === 'usuario' ? solicitante.uidSolicitante : undefined
-        const dataVerificadorActualizacionEquipo = await verificadorActualizacionEquipo(solicitante.tipo, params.uid, equipoActualizado, uidUsuarioSolicitante)
+        const dataVerificadorActualizacionEquipo = await verificadorActualizacionEquipo(solicitante.tipo, uidUsuarioSolicitante, params.uid, equipoActualizado, configuracion)
         if (dataVerificadorActualizacionEquipo instanceof Error) throw dataVerificadorActualizacionEquipo
 
-        const { equipoActualizadoVerificado } = constructorEquipoActualizacion(equipoActualizado, solicitante)
+        const { equipoActualizadoVerificado } = constructorEquipoActualizacion(solicitante.tipo, equipoActualizado, configuracion)
         
-        req.body.dataVerificadorActualizacionEquipo = dataVerificadorActualizacionEquipo
+        req.body.equipo = dataVerificadorActualizacionEquipo.equipo
+        req.body.equipoPorCodigo = dataVerificadorActualizacionEquipo.equipoPorCodigo
+
         req.body.equipoActualizadoVerificado = equipoActualizadoVerificado
 
         next()

@@ -25,6 +25,7 @@ import { milliseconds_a_timestamp } from "../utils/timestamp.js"
 // Servicios
 import { apiCorreoEnviarAvisoNuevoMiembroEquipo } from "../services/service_correo.js"
 import { apiEquipoActualizarEquipo } from "../services/service_equipo.js"
+import { apiProyectoActualizarProyecto } from "../services/service_proyecto.js"
 
 // Variables
 const miembroEquipoUseCase = new MiembroEquipoUseCase(new FirestoreMiembroEquipoRepository())
@@ -33,23 +34,27 @@ const miembroProyectoUseCase = new MiembroProyectoUseCase(new FirestoreMiembroPr
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { solicitante, equipo, usuarioSolicitado, miembroEquipoVerificado } = body
-        
-        await miembroEquipoUseCase.crear(miembroEquipoVerificado.uidEquipo, miembroEquipoVerificado)
-        if (solicitante.tipo === 'usuario') apiCorreoEnviarAvisoNuevoMiembroEquipo(solicitante.uidSolicitante, usuarioSolicitado.correo, equipo.uid)
+        const { solicitante, usuarioSolicitado, miembroEquipoVerificado } = body
+        const uidEquipo = miembroEquipoVerificado.uidEquipo
 
-        const datosActualizadosEquipo = {
-            cantidadMiembros: equipo.cantidadMiembros,
-            cantidadMiembrosPorRol: JSON.parse( JSON.stringify( equipo.cantidadMiembrosPorRol ) )
+        await miembroEquipoUseCase.crear(uidEquipo, miembroEquipoVerificado)
+        if (solicitante.tipo === 'usuario') apiCorreoEnviarAvisoNuevoMiembroEquipo(solicitante.uidSolicitante, usuarioSolicitado.correo, uidEquipo)
+
+        const configuracion = { 
+            incrementarCantidadMiembros: true, 
+            incrementarCantidadMiembrosPorRol: true 
         }
 
-        datosActualizadosEquipo.cantidadMiembros++
-        miembroEquipoVerificado.roles.includes('propietario') ? datosActualizadosEquipo.cantidadMiembrosPorRol.propietario++ : ''
-        miembroEquipoVerificado.roles.includes('editor') ? datosActualizadosEquipo.cantidadMiembrosPorRol.editor++ : ''
-        miembroEquipoVerificado.roles.includes('visualizador') ? datosActualizadosEquipo.cantidadMiembrosPorRol.visualizador++ : ''
-        miembroEquipoVerificado.roles.includes('estudiante') ? datosActualizadosEquipo.cantidadMiembrosPorRol.estudiante++ : ''
+        const datosActualizadosEquipo = {
+            cantidadMiembros: 1
+        }
 
-        await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
+        miembroEquipoVerificado.roles.includes('propietario') ? datosActualizadosEquipo['cantidadMiembrosPorRol.propietario'] = 1 : ''
+        miembroEquipoVerificado.roles.includes('editor') ? datosActualizadosEquipo['cantidadMiembrosPorRol.editor'] = 1 : ''
+        miembroEquipoVerificado.roles.includes('visualizador') ? datosActualizadosEquipo['cantidadMiembrosPorRol.visualizador'] = 1 : ''
+        miembroEquipoVerificado.roles.includes('estudiante') ? datosActualizadosEquipo['cantidadMiembrosPorRol.estudiante'] = 1 : ''
+
+        await apiEquipoActualizarEquipo(uidEquipo, datosActualizadosEquipo, configuracion)
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -106,34 +111,41 @@ export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
         const { uidEquipo, uidMiembro } = params
-        const { solicitante, equipo, miembroEquipoSolicitado, miembroEquipoVerificado, } = body
+        const { solicitante, miembroEquipoSolicitado, miembroEquipoVerificado, } = body
 
         await miembroEquipoUseCase.actualizar(uidEquipo, uidMiembro, miembroEquipoVerificado)
         
-        const datosActualizadosEquipo = {}
         if (miembroEquipoVerificado.roles && miembroEquipoVerificado.roles.length) {
             const viejosRoles = miembroEquipoSolicitado.roles
             const nuevosRoles = miembroEquipoVerificado.roles
-
-            datosActualizadosEquipo.cantidadMiembrosPorRol = JSON.parse( JSON.stringify( equipo.cantidadMiembrosPorRol ) )
     
-            for (const rolesValidos of listaRolesValidos) {
-                !viejosRoles.includes(rolesValidos) && nuevosRoles.includes(rolesValidos) ? 
-                datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]++ : ''
-
-                viejosRoles.includes(rolesValidos) && !nuevosRoles.includes(rolesValidos) ? 
-                datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]-- : ''
+            const datosActualizadosEquipo = {}
+            const configuracion = { incrementarCantidadMiembrosPorRol: true }
+            for (const rolValido of listaRolesValidos) {
+                if (!viejosRoles.includes(rolValido) && nuevosRoles.includes(rolValido)) 
+                    datosActualizadosEquipo[`cantidadMiembrosPorRol.${rolValido}`] = 1
+                else if (viejosRoles.includes(rolValido) && !nuevosRoles.includes(rolValido)) 
+                    datosActualizadosEquipo[`cantidadMiembrosPorRol.${rolValido}`] = -1
             }
 
-            await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
+            await apiEquipoActualizarEquipo(uidEquipo, datosActualizadosEquipo, configuracion)
         
             if (viejosRoles.includes('estudiante') && !nuevosRoles.includes('estudiante')) {
                 // Eliminar este miembro-estudiante de cada proyecto
-                const listaProyectosAfectados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
+                const miembrosProyectoEliminados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(
+                    uidEquipo, 
+                    uidMiembro, 
+                    milliseconds_a_timestamp(timeOfRequest)
+                )
                 
-                // SERVICE_MIEMBROS-TODO: Disminuir la cantidad de miembros de cada proyecto en -1
-                for (const uidProyectoAfectado of listaProyectosAfectados) {
-                    
+                // Disminuir la cantidad de miembros de cada proyecto en -1
+                for (const miembroProyectoEliminado of miembrosProyectoEliminados) {
+                    apiProyectoActualizarProyecto(
+                        uidEquipo, 
+                        miembroProyectoEliminado.uidProyecto, 
+                        { cantidadMiembros: -1 }, 
+                        { incrementarCantidadMiembros: true }
+                    )
                 }
             }
         }
@@ -143,7 +155,7 @@ export const actualizar = async (req = request, res = response) => {
             estado: 200,
             mensajeCliente: 'Se actualizó la información del usuario de forma correcta.',
             mensajeServidor: 'exito',
-            resultado: { miembroEquipoVerificado, datosActualizadosEquipo }
+            resultado: { miembroEquipoVerificado }
         })
 
         return res.status(respuesta.estado).json(respuesta.getRespuesta())
@@ -163,30 +175,43 @@ export const eliminar = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
         const { uidEquipo, uidMiembro } = params
-        const { solicitante, equipo, miembroEquipoSolicitado } = body
+        const { solicitante, miembroEquipoSolicitado } = body
 
         await miembroEquipoUseCase.eliminar(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
 
         // Disminuir la cantidad de miembros (total y por rol) del equipo
-        const rolesMiembroEquipoSolicitado = miembroEquipoSolicitado.roles
-        const datosActualizadosEquipo = {
-            cantidadMiembros: equipo.cantidadMiembros-1,
-            cantidadMiembrosPorRol: JSON.parse( JSON.stringify( equipo.cantidadMiembrosPorRol ) )
+        const configuracion = { 
+            incrementarCantidadMiembros: true, 
+            incrementarCantidadMiembrosPorRol: true 
         }
 
-        for (const rolesValidos of listaRolesValidos) {
-            rolesMiembroEquipoSolicitado.includes(rolesValidos) ? 
-            datosActualizadosEquipo.cantidadMiembrosPorRol[rolesValidos]-- : ''
+        const datosActualizadosEquipo = {
+            cantidadMiembros: -1
+        }
+
+        for (const rolValido of listaRolesValidos) {
+            const rolesMiembroEquipoSolicitado = miembroEquipoSolicitado.roles
+            if (rolesMiembroEquipoSolicitado.includes(rolValido)) 
+                datosActualizadosEquipo[`cantidadMiembrosPorRol.${rolValido}`] = -1
         }
         
-        await apiEquipoActualizarEquipo(equipo.uid, datosActualizadosEquipo)
+        await apiEquipoActualizarEquipo(uidEquipo, datosActualizadosEquipo, configuracion)
 
         // Eliminar miembro-estudiante de cada proyecto
-        const listaProyectosAfectados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(uidEquipo, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
+        const miembrosProyectoEliminados = await miembroProyectoUseCase.eliminarMimebroProyectoDeTodosSusProyectos(
+            uidEquipo, 
+            uidMiembro, 
+            milliseconds_a_timestamp(timeOfRequest)
+        )
 
-        // SERVICE_MIEMBROS-TODO: Disminuir la cantidad de miembros de cada proyecto en -1
-        for (const uidProyectoAfectado of listaProyectosAfectados) {
-                    
+        // Disminuir la cantidad de miembros de cada proyecto en -1
+        for (const miembroProyectoEliminado of miembrosProyectoEliminados) {
+            apiProyectoActualizarProyecto(
+                uidEquipo, 
+                miembroProyectoEliminado.uidProyecto, 
+                { cantidadMiembros: -1 }, 
+                { incrementarCantidadMiembros: true }
+            )
         }
 
         // Retornar respuesta

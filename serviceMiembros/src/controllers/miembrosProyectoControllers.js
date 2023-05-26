@@ -13,6 +13,7 @@ import MiembroProyectoUseCase from "../usecases/MiembroProyectoUseCase.js"
 
 // // Servicios
 import { apiCorreoEnviarAvisoNuevoMiembroProyecto } from "../services/service_correo.js"
+import { apiProyectoActualizarProyecto } from "../services/service_proyecto.js"
 
 // Variables
 const miembroProyectoUseCase = new MiembroProyectoUseCase(new FirestoreMiembroProyectoRepository())
@@ -20,7 +21,7 @@ const miembroProyectoUseCase = new MiembroProyectoUseCase(new FirestoreMiembroPr
 export const crear = async (req = request, res = response) => {
     try {
         const { params, body } = req
-        const { solicitante, usuarioSolicitado, miembroProyectoVerificado } = body
+        const { solicitante, proyecto, usuarioSolicitado, miembroProyectoVerificado } = body
         
         const uidEquipo = miembroProyectoVerificado.uidEquipo
         const uidProyecto = miembroProyectoVerificado.uidProyecto
@@ -28,10 +29,21 @@ export const crear = async (req = request, res = response) => {
         // Crear miembro de proyecto
         await miembroProyectoUseCase.crear(uidEquipo, uidProyecto, miembroProyectoVerificado)
 
-        // SERVICE_MIEMBROS-TODO: Actualizar la cantidad de miembros en el proyecto
+        // Actualizar la cantidad de miembros en el proyecto
+        apiProyectoActualizarProyecto(
+            uidEquipo, 
+            uidProyecto, 
+            { cantidadMiembros: 1 }, 
+            { incrementarCantidadMiembros: true }
+        )
 
         // Enviar mensaje al miembro-nuevo de bienvenida al proyecto
-        apiCorreoEnviarAvisoNuevoMiembroProyecto(solicitante.uidSolicitante, usuarioSolicitado.correo, uidEquipo, uidProyecto)
+        apiCorreoEnviarAvisoNuevoMiembroProyecto(
+            solicitante.uidSolicitante, 
+            usuarioSolicitado.correo, 
+            uidEquipo, 
+            uidProyecto
+        )
 
         // Retornar respuesta
         const respuesta = new Respuesta({
@@ -87,12 +99,21 @@ export const eliminar = async (req = request, res = response) => {
     try {
         const { params, body, timeOfRequest } = req
         const { uidEquipo, uidProyecto, uidMiembro } = params
-        const { solicitante, equipo, miembroEquipoSolicitado } = body
 
-        await miembroProyectoUseCase.eliminar(uidEquipo, uidProyecto, uidMiembro, milliseconds_a_timestamp(timeOfRequest))
+        await miembroProyectoUseCase.eliminar(
+            uidEquipo, 
+            uidProyecto, 
+            uidMiembro, 
+            milliseconds_a_timestamp(timeOfRequest)
+        )
         
-        // SERVICE_MIEMBROS-TODO: Disminuir la cantidad de miembros en -1, del proyecto solicitado
-        
+        // Disminuir la cantidad de miembros en -1, del proyecto solicitado
+        apiProyectoActualizarProyecto(
+            uidEquipo, 
+            uidProyecto, 
+            { cantidadMiembros: -1 }, 
+            { incrementarCantidadMiembros: true }
+        )
 
         // Retornar respuesta
         const respuesta = new Respuesta({

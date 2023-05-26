@@ -61,25 +61,29 @@ class FirestoreMiembroProyectoRepository {
     }
 
     async eliminarMimebroProyectoDeTodosSusProyectos (uidEquipo = '', uidMiembro = '', fechaEliminacion = null) {
-        const listaProyectosAfectados = []
+        const miembrosEliminados = []
         
         const snapshot = await firebaseFirestoreService
         .collectionGroup(this.collection_name_miembrosProyecto)
         .where('uid', '==', uidMiembro)
         .where('uidEquipo', '==', uidEquipo)
+        .where('estado', '!=', 'eliminado')
         .get()
 
         const docs = snapshot.docs
 
         for (const doc of docs) {
             const miembroProyecto = this._obtenerDeDocumento(doc)
-            if (miembroProyecto.estado !== 'eliminado') {
-                this.eliminar(miembroProyecto.uidEquipo, miembroProyecto.uidProyecto, miembroProyecto.uid, fechaEliminacion)
-                listaProyectosAfectados.push(miembroProyecto.uidProyecto)
-            }
+            this.eliminar(
+                miembroProyecto.uidEquipo, 
+                miembroProyecto.uidProyecto, 
+                miembroProyecto.uid, 
+                fechaEliminacion
+            )
+            miembrosEliminados.push(miembroProyecto)
         }
 
-        return listaProyectosAfectados
+        return miembrosEliminados
     }
 
     _obtenerDeDocumento(doc) {

@@ -103,7 +103,7 @@ export const actualizar = async (req = request, res = response) => {
     try {
         const { params, body } = req
         const { uidEquipo, uid } = params
-        const { solicitante, proyectoActualizado, datosProyectoActualizado, proyectoActualizadoVerificado } = body
+        const { solicitante, proyectoActualizadoVerificado } = body
         
         // Actualizar proyecto
         await proyectosUseCase.actualizar(uidEquipo, uid, proyectoActualizadoVerificado)

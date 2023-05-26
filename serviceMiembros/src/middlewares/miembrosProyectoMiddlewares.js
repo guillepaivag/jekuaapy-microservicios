@@ -65,6 +65,7 @@ export const verificarEliminacionMiembroProyecto = async (req = request, res = r
         const dataVerificadorEliminacionMiembroProyecto = await verificadorEliminacionMiembroProyecto(solicitante.uidSolicitante, uidEquipo, uidProyecto, uidMiembro)
         if (dataVerificadorEliminacionMiembroProyecto instanceof Error) throw dataVerificadorEliminacionMiembroProyecto
 
+        req.body.proyecto = dataVerificadorEliminacionMiembroProyecto.proyecto
         req.body.miembroEquipoSolicitante = dataVerificadorEliminacionMiembroProyecto.miembroEquipoSolicitante
         req.body.miembroProyectoSolicitado = dataVerificadorEliminacionMiembroProyecto.miembroProyectoSolicitado
 

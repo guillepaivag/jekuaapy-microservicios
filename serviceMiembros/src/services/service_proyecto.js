@@ -25,23 +25,23 @@ export const apiProyectoObtenerProyecto = async (uidEquipo = '', tipo = '', valo
     }
 }
 
-// export const apiProyectoActualizarProyecto = async (uid = '', equipoActualizado = {}) => {
-//     // Llamada a la API de correos para enviar una verificacion de correo a un correo
-//     const tokenDeAutenticacionDeServicio = await generarTokenDeServicio()
+export const apiProyectoActualizarProyecto = async (uidEquipo = '', uidProyecto = '', equipoActualizado = {}, configuracion = {}) => {
+    // Llamada a la API de correos para enviar una verificacion de correo a un correo
+    const tokenDeAutenticacionDeServicio = await generarTokenDeServicio()
 
-//     const bodyOfTheRequest = { equipoActualizado }
+    const bodyOfTheRequest = { equipoActualizado, configuracion }
 
-//     const configOfTheRequest = { 
-//         headers: { 
-//             'Content-Type': 'application/json',
-//             'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
-//         } 
-//     }
+    const configOfTheRequest = { 
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${tokenDeAutenticacionDeServicio}`
+        } 
+    }
 
-//     try { 
-//         const response = await api.put(`/equipos/${uid}`, bodyOfTheRequest, configOfTheRequest) 
-//         return response.data.resultado
-//     } catch (error) { 
-//         throw errorHandlerRequest(error, serviceName) 
-//     }
-// }
+    try { 
+        const response = await api.put(`/proyectos/${uidEquipo}/${uidProyecto}`, bodyOfTheRequest, configOfTheRequest) 
+        return response.data.resultado
+    } catch (error) { 
+        throw errorHandlerRequest(error, serviceName) 
+    }
+}

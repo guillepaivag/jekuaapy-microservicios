@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "jekuaapydev1",
-    "dev": "jekuaapydev1"
+    "dev": "jekuaapydev1",
+    "prod": "jekuaa-py"
   },
   "targets": {},
   "etags": {}

@@ -79,6 +79,8 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
     const { uidEquipo, uid } = params
 
     try {
+        const configuracion = body.configuracion ?? {}
+
         if (solicitante.tipo == 'usuario') {
 
             if (!solicitante.authSolicitante.emailVerified) {
@@ -116,12 +118,14 @@ export const verificarActualizacionProyecto = async (req = request, res = respon
             if (respuestaError) throw respuestaError
 
         } else {
-            const respuestaError = await verificadorActualizacionProyectoServicio(uidEquipo, uid, proyectoActualizado)
+            const respuestaError = await verificadorActualizacionProyectoServicio(uidEquipo, uid, proyectoActualizado, configuracion)
             if (respuestaError) throw respuestaError
         }
 
-        const { proyectoActualizadoVerificado } = constructorProyectoActualizacion(solicitante, proyectoActualizado)
+        const { proyectoActualizadoVerificado } = constructorProyectoActualizacion(solicitante, proyectoActualizado, configuracion)
+        
         req.body.proyectoActualizadoVerificado = proyectoActualizadoVerificado
+        req.body.configuracion = configuracion
 
         next()
     } catch (error) {

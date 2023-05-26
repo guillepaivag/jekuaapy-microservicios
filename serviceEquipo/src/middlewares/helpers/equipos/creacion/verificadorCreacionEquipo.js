@@ -9,30 +9,22 @@ import EquipoUseCase from "../../../../usecases/EquipoUseCase.js"
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 
 export const verificadorCreacionEquipo = async (equipoNuevo) => {
-    const data = {}
-    
     // ##### Datos requeridos #####
     const datosRequeridos = verificacionDatosRequeridos(equipoNuevo)
     if (datosRequeridos instanceof Error) return datosRequeridos
-    else data.datosRequeridos = datosRequeridos
 
     // ##### Tipos de datos #####
     const tiposDeDatos = verificacionTiposDeDatos(equipoNuevo)
     if (tiposDeDatos instanceof Error) return tiposDeDatos
-    else data.tiposDeDatos = tiposDeDatos
 
     // ##### Datos validos #####
     const validacionCondicional = await verificacionCondicionalDeDatos(equipoNuevo)
     if (validacionCondicional instanceof Error) return validacionCondicional
-    else data.validacionCondicional = validacionCondicional
     
-    return data
+    return validacionCondicional
 }
 
 const verificacionDatosRequeridos = (equipoNuevo) => {
-    
-    const data = {}
-
     if ( !equipoNuevo ) {
         return new RespuestaError({
             estado: 400, 
@@ -68,20 +60,14 @@ const verificacionDatosRequeridos = (equipoNuevo) => {
             resultado: null
         })
     }
-
-    return data
 }
 
 const verificacionTiposDeDatos = (equipoNuevo) => {
-    const data = {}
-    
     if (typeof equipoNuevo.codigo !== 'string') return TypeError('[codigo] debe ser string')
 
     if (typeof equipoNuevo.nombre !== 'string') return TypeError('[nombre] debe ser string')
 
     if (typeof equipoNuevo.descripcion !== 'string') return TypeError('[descripcion] debe ser string')
-
-    return data
 }
 
 const verificacionCondicionalDeDatos = async (equipoNuevo) => {
@@ -107,7 +93,7 @@ const verificacionCondicionalDeDatos = async (equipoNuevo) => {
     }
 
     const equipo = await equipoUseCase.obtenerPorCodigo(equipoNuevo.codigo)
-    if (equipo) {
+    if (equipo && equipo.estado !== 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'codigo_en_uso', 

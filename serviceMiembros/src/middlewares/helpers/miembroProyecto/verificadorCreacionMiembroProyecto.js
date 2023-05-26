@@ -90,6 +90,28 @@ const verificacionTiposDeDatos = (miembroNuevo = MiembroProyecto.params) => {
 const verificacionCondicionalDeDatos = async (uidSolicitante = '', miembroNuevo = MiembroProyecto.params) => {
     const data = {}
 
+    // Verificar la existencia del equipo
+    const equipo = await apiEquipoObtenerEquipo(miembroNuevo.uidEquipo)
+    if (!equipo || equipo.estado === 'eliminado') {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'no_existe_equipo', 
+            mensajeServidor: 'No existe el equipo.', 
+            resultado: null
+        })
+    }
+
+    // Verificar la existencia del proyecto
+    const proyecto = await apiProyectoObtenerProyecto(miembroNuevo.uidEquipo, 'uid', miembroNuevo.uidProyecto)
+    if (!proyecto || proyecto.estado === 'eliminado') {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'no_existe_proyecto', 
+            mensajeServidor: 'No existe el proyecto.', 
+            resultado: null
+        })
+    }
+
     // Verificar que el usuario sea propietario o editor
     const miembroEquipoSolicitante = await miembroEquipoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, uidSolicitante)
     if (!miembroEquipoSolicitante || miembroEquipoSolicitante.estado !== 'activo' || (!miembroEquipoSolicitante.roles.includes('propietario') && !miembroEquipoSolicitante.roles.includes('editor'))) {
@@ -123,17 +145,6 @@ const verificacionCondicionalDeDatos = async (uidSolicitante = '', miembroNuevo 
         })
     }
 
-    // Verificar la existencia del proyecto
-    const proyecto = await apiProyectoObtenerProyecto(miembroNuevo.uidEquipo, 'uid', miembroNuevo.uidProyecto)
-    if (!proyecto || proyecto.estado === 'eliminado') {
-        return new RespuestaError({
-            estado: 400, 
-            mensajeCliente: 'no_existe_proyecto', 
-            mensajeServidor: 'No existe el proyecto.', 
-            resultado: null
-        })
-    }
-
     // Verificar que el MP no exista en el proyecto
     const miembroProyectoSolicitado = await miembroProyectoUseCase.obtenerPorUID(miembroNuevo.uidEquipo, miembroNuevo.uidProyecto, miembroNuevo.uid)
     if (miembroProyectoSolicitado && miembroProyectoSolicitado.estado !== 'eliminado') {
@@ -145,10 +156,11 @@ const verificacionCondicionalDeDatos = async (uidSolicitante = '', miembroNuevo 
         })
     }
 
+    data.equipo = equipo
+    data.proyecto = proyecto
     data.miembroEquipoSolicitante = miembroEquipoSolicitante
     data.usuarioSolicitado = usuarioSolicitado
     data.miembroEquipoSolicitado = miembroEquipoSolicitado
-    data.proyecto = proyecto
     data.miembroProyectoSolicitado = miembroProyectoSolicitado
     
     return data

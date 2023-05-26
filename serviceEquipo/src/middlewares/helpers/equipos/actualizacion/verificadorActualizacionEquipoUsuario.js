@@ -8,30 +8,23 @@ import EquipoUseCase from "../../../../usecases/EquipoUseCase.js"
 // Use cases objects
 const equipoUseCase = new EquipoUseCase(new FirestoreEquipoRepository())
 
-export const verificadorActualizacionEquipoUsuario = async (uidEquipo = '', equipoActualizado, uidSolicitante) => {
-    const data = {}
-    
+export const verificadorActualizacionEquipoUsuario = async (uidSolicitante, uidEquipo, equipoActualizado) => {
     // ##### Datos requeridos #####
     const datosRequeridos = verificacionDatosRequeridos(equipoActualizado)
     if (datosRequeridos instanceof Error) return datosRequeridos
-    else data.datosRequeridos = datosRequeridos
 
     // ##### Tipos de datos #####
     const tiposDeDatos = verificacionTiposDeDatos(equipoActualizado)
     if (tiposDeDatos instanceof Error) return tiposDeDatos
-    else data.tiposDeDatos = tiposDeDatos
 
     // ##### Datos validos #####
-    const validacionCondicional = await verificacionCondicionalDeDatos(uidEquipo, equipoActualizado, uidSolicitante)
+    const validacionCondicional = await verificacionCondicionalDeDatos(uidSolicitante, uidEquipo, equipoActualizado)
     if (validacionCondicional instanceof Error) return validacionCondicional
-    else data.validacionCondicional = validacionCondicional
     
-    return data
+    return validacionCondicional
 }
 
 const verificacionDatosRequeridos = (equipoActualizado) => {
-    const data = {}
-    
     if (!Object.keys(equipoActualizado).length) {
         return new RespuestaError({
             estado: 400, 
@@ -40,13 +33,9 @@ const verificacionDatosRequeridos = (equipoActualizado) => {
             resultado: null
         })
     }
-
-    return data
 }
 
 const verificacionTiposDeDatos = (equipoActualizado) => {
-    const data = {}
-    
     if (equipoActualizado.responsable && typeof equipoActualizado.responsable !== 'string') 
         return TypeError('[responsable] debe ser string')
     
@@ -58,16 +47,14 @@ const verificacionTiposDeDatos = (equipoActualizado) => {
 
     if (equipoActualizado.descripcion && typeof equipoActualizado.descripcion !== 'string') 
         return TypeError('[descripcion] debe ser string')
-
-    return data
 }
 
-const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado, uidSolicitante) => {
+const verificacionCondicionalDeDatos = async (uidSolicitante, uidEquipo, equipoActualizado) => {
     const data = {}
     
     // Verificar si el equipo existe
     const equipo = await equipoUseCase.obtenerPorUID(uidEquipo)
-    if (!equipo) {
+    if (!equipo || equipo.estado === 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'equipo_no_existe', 
@@ -105,7 +92,7 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', equipoActualizado,
         }
 
         const equipoPorCodigo = await equipoUseCase.obtenerPorCodigo(equipoActualizado.codigo)
-        if (equipoPorCodigo && uidEquipo !== equipoPorCodigo.uid) {
+        if (equipoPorCodigo && equipoPorCodigo.estado !== 'eliminado' && uidEquipo !== equipoPorCodigo.uid) {
             return new RespuestaError({
                 estado: 400, 
                 mensajeCliente: 'codigo_en_uso', 

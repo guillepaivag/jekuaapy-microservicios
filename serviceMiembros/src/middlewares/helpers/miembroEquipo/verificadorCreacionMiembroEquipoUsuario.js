@@ -78,7 +78,7 @@ const verificacionCondicionalDeDatos = async (uidSolicitante, miembroNuevo) => {
 
     // Verificar la existencia del equipo
     const equipo = await apiEquipoObtenerEquipo(miembroNuevo.uidEquipo)
-    if (!equipo) {
+    if (!equipo || equipo.estado === 'eliminado') {
         return new RespuestaError({
             estado: 400, 
             mensajeCliente: 'no_existe_equipo', 
