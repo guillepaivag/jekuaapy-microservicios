@@ -20,7 +20,7 @@ class ProyectosUseCase {
 
   async crear (proyectoNuevo = Proyecto.params) {
 
-    const { uid, uidEquipo, tipoProyecto, nombre, codigo, fotoPerfil, fotoPortada, cantidadMiembros,
+    const { uid, uidEquipo, tipoProyecto, nombre, codigo, fotoPerfil, fotoPortada, cantidadMiembros, cantidadTemas,
         cantidadElementos, cantidadesPorTipoDeElemento, estado, fechaCreacion, fechaEliminacion, } = proyectoNuevo 
 
     const proyecto = new Proyecto({
@@ -32,6 +32,7 @@ class ProyectosUseCase {
         fotoPerfil,
         fotoPortada,
         cantidadMiembros,
+        cantidadTemas,
         cantidadElementos,
         cantidadesPorTipoDeElemento,
         estado,

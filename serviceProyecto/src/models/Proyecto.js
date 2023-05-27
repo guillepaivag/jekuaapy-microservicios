@@ -7,6 +7,7 @@ const paramsObject = {
     fotoPerfil: '',
     fotoPortada: '',
     cantidadMiembros: 0,
+    cantidadTemas: 0,
     cantidadElementos: 0,
     cantidadesPorTipoDeElemento: {},
     estado: 'activo',
@@ -26,6 +27,7 @@ class Proyecto {
             fotoPerfil: { type: 'string', errorMessage: 'must be of string type' },
             fotoPortada: { type: 'string', errorMessage: 'must be of boolean type' },
             cantidadMiembros: { type: 'number', errorMessage: 'must be of string type' },
+            cantidadTemas: { type: 'number', errorMessage: 'must be of string type' },
             cantidadElementos: { type: 'number', errorMessage: 'must be of string type' },
             cantidadesPorTipoDeElemento: { type: 'object', errorMessage: 'must be of boolean type' },
             estado: { type: 'string', errorMessage: 'must be of boolean type' },
@@ -40,7 +42,7 @@ class Proyecto {
     
     constructor (data = paramsObject) {
         const { uid, uidEquipo, tipoProyecto, nombre, codigo, fotoPerfil, fotoPortada, 
-            cantidadMiembros, cantidadElementos, cantidadesPorTipoDeElemento, estado, 
+            cantidadMiembros, cantidadTemas, cantidadElementos, cantidadesPorTipoDeElemento, estado, 
             fechaCreacion, fechaEliminacion } = data
         
         this.uid = uid ? uid : ''
@@ -51,6 +53,7 @@ class Proyecto {
         this.fotoPerfil = fotoPerfil ? fotoPerfil : ''
         this.fotoPortada = fotoPortada ? fotoPortada : ''
         this.cantidadMiembros = cantidadMiembros ? cantidadMiembros : 0
+        this.cantidadTemas = cantidadTemas ? cantidadTemas : 0
         this.cantidadElementos = cantidadElementos ? cantidadElementos : 0
         this.cantidadesPorTipoDeElemento = cantidadesPorTipoDeElemento ? cantidadesPorTipoDeElemento : {}
         this.estado = estado ? estado : 'activo'

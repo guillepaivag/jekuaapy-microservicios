@@ -50,9 +50,12 @@ const verificacionTiposDeDatos = (proyectoActualizado, configuracion = {}) => {
     if (proyectoActualizado.cantidadMiembros !== undefined && typeof proyectoActualizado.cantidadMiembros !== 'number') 
         return TypeError('[cantidadMiembros] debe ser number')
 
+    if (proyectoActualizado.cantidadTemas !== undefined && typeof proyectoActualizado.cantidadTemas !== 'number') 
+        return TypeError('[cantidadTemas] debe ser number')
+
     if (proyectoActualizado.cantidadElementos !== undefined && typeof proyectoActualizado.cantidadElementos !== 'number') 
         return TypeError('[cantidadElementos] debe ser number')
-
+        
     if (proyectoActualizado.cantidadesPorTipoDeElemento !== undefined && typeof proyectoActualizado.cantidadesPorTipoDeElemento !== 'object') 
         return TypeError('[cantidadesPorTipoDeElemento] debe ser object')
 
@@ -84,6 +87,15 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', uidProyecto = '', 
                 resultado: null
             })
         }
+    }
+
+    if (proyectoActualizado.cantidadTemas && proyectoActualizado.cantidadTemas < 0) {
+        return new RespuestaError({
+            estado: 400, 
+            mensajeCliente: 'datos_invalidos', 
+            mensajeServidor: 'La [cantidadTemas] no puede ser menor a 0!', 
+            resultado: null
+        })
     }
 
     if (proyectoActualizado.cantidadElementos && proyectoActualizado.cantidadElementos < 0) {
