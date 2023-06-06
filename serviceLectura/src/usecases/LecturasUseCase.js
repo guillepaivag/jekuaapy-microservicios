@@ -16,12 +16,13 @@ class LecturasUseCase {
 
   async crear (lecturaNuevo = Lectura.params) {
 
-    const { uid, uidEquipo, uidCreador, estado, fechaCreacion, fechaEliminacion, } = lecturaNuevo 
+    const { uid, uidEquipo, uidCreador, nombre, estado, fechaCreacion, fechaEliminacion, } = lecturaNuevo 
 
     const lectura = new Lectura({
         uid,
         uidEquipo,
         uidCreador,
+        nombre,
         estado,
         fechaCreacion,
         fechaEliminacion,

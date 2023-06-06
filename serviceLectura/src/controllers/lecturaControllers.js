@@ -11,7 +11,6 @@ import LecturasUseCase from "../usecases/LecturasUseCase.js"
 // Manejo de errores
 import { errorHandler } from "../helpers/errors/error-handler.js"
 import { milliseconds_a_timestamp } from "../utils/timestamp.js"
-import { apiEquipoActualizarEquipo } from "../services/service_equipo.js"
 
 const lecturasUseCase = new LecturasUseCase(new FirestoreLecturasRepository())
 
@@ -48,9 +47,9 @@ export const crear = async (req = request, res = response) => {
 export const obtener = async (req = request, res = response) => {
     try {
         const { params } = req
-        const { uidEquipo, tipo, valor } = params
+        const { uidEquipo, uidLectura } = params
 
-        let lectura =  await lecturasUseCase.obtenerPorUID(uidEquipo, valor)
+        let lectura =  await lecturasUseCase.obtenerPorUID(uidEquipo, uidLectura)
 
         if (!lectura) {
             throw new RespuestaError({

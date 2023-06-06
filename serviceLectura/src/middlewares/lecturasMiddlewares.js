@@ -24,7 +24,7 @@ export const verificarCreacionLectura = async (req = request, res = response, ne
 
         let respuesta = null
 
-        // El solicitante tiene que ser un miembro del lectura y que sea 
+        // El solicitante tiene que ser un miembro del equipo y que sea 
         const miembro = await apiMiembroObtenerMiembro(lecturaNuevo.uidEquipo, solicitante.uidSolicitante)
 
         if (!miembro || miembro.estado === 'eliminado') {
@@ -50,7 +50,10 @@ export const verificarCreacionLectura = async (req = request, res = response, ne
         if (respuesta instanceof RespuestaError) throw respuesta
 
         lecturaNuevo.fechaCreacion = timeOfRequest
-        const { lecturaNuevoVerificado } = constructorLecturaCreacion(lecturaNuevo)
+        lecturaNuevo.uidCreador = solicitante.uidSolicitante
+        const { lecturaNuevoVerificado } = await constructorLecturaCreacion(lecturaNuevo)
+
+        console.log("lecturaNuevoVerificado",lecturaNuevoVerificado)
 
         req.body.data = respuesta
         req.body.lecturaNuevoVerificado = lecturaNuevoVerificado

@@ -45,11 +45,14 @@ class FirestoreLecturasRepository {
 
         const doc = firebaseFirestoreService.collection(this.collection_name_lectura).doc()
 
+        console.log("lectura", lectura)
+
         await firebaseFirestoreService.collection(this.collection_name_equipos).doc(lectura.uidEquipo)
         .collection(this.collection_name_lectura).doc(doc.id).set({
             uid: doc.id,
             uidEquipo: lectura.uidEquipo,
-            uidCreador: lectura.tipoLectura,
+            uidCreador: lectura.uidCreador,
+            nombre: lectura.nombre,
             estado: lectura.estado,
             fechaCreacion: lectura.fechaCreacion,
             fechaEliminacion: lectura.fechaEliminacion,
@@ -91,6 +94,7 @@ class FirestoreLecturasRepository {
             uid: data.uid,
             uidEquipo: data.uidEquipo,
             uidCreador: data.tipoLectura,
+            nombre: data.nombre,
             estado: data.estado,
             fechaCreacion: data.fechaCreacion,
             fechaEliminacion: data.fechaEliminacion,
