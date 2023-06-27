@@ -26,16 +26,6 @@ export const verificadorCreacionLectura = async (lecturaNuevo) => {
     return respuestaError
 }
 
-export const verificadorUsuarioSolicitante = async (usuarioSolicitante) => {
-    let respuestaError = null
-
-    // ##### Datos requeridos #####
-    respuestaError = verificarUsuarioPermisos(usuarioSolicitante)
-    if (respuestaError) return respuestaError
-
-    return null
-}
-
 const verificacionDatosRequeridos = (lecturaNuevo) => {
 
     if ( !lecturaNuevo ) {

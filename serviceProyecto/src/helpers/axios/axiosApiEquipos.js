@@ -4,7 +4,7 @@ import { errorHandlerAxios } from '../errors/error-handler-axios.js'
 import { generarTokenDeAutenticacionDeServicio } from '../generarTokenDeAutenticacionDeServicio.js'
 
 const serviceName = 'Equipos'
-const apiEquipo = axios.create({ baseURL: config.urlServices.apiEquipo })
+const apiGateway = axios.create({ baseURL: config.services.service_api_gateway })
 
 export const apiEquipoVerificacionEquipo = async (equipo = '') => {
     // Llamada a la API de equipos para enviar una verificacion de equipo a un equipo
@@ -19,7 +19,7 @@ export const apiEquipoVerificacionEquipo = async (equipo = '') => {
     }
 
     try { 
-        const response = await apiEquipo.post('/usuarios/verificarEquipo', bodyOfTheRequest, configOfTheRequest) 
+        const response = await apiGateway.post('/service-equipo/usuarios/verificarEquipo', bodyOfTheRequest, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
         throw errorHandlerAxios(error, serviceName) 

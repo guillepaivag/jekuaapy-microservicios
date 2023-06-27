@@ -4,7 +4,7 @@ import { generarTokenDeServicio } from '../helpers/generarTokenDeServicio.js'
 import { errorHandlerRequest } from '../helpers/errors/error-handler-request.js'
 
 const serviceName = 'service_usuario'
-const apiUsuario = axios.create({ baseURL: config.services[serviceName] })
+const apiGateway = axios.create({ baseURL: config.services.service_api_gateway })
 
 export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
@@ -18,7 +18,7 @@ export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
         }
 
     try { 
-        const response = await apiUsuario.get(`/usuarios/${tipo}/${valor}`, configOfTheRequest) 
+        const response = await apiGateway.get(`/service_usuario/usuarios/${tipo}/${valor}`, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 

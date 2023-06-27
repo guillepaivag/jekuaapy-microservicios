@@ -7,9 +7,9 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "set_prod": "firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:set execution.mode=remote && firebase functions:config:get > config.json && firebase functions:config:get",
-    "set_dev_local": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set execution.mode=local && firebase functions:config:get > config.json && firebase functions:config:get",
-    "set_dev_remote": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:set execution.mode=remote && firebase functions:config:get > config.json && firebase functions:config:get"
+    "set_prod": "firebase use prod && firebase functions:config:set environment.mode=production && firebase functions:config:get > config.json && firebase functions:config:get",
+    "set_dev": "firebase use dev && firebase functions:config:set environment.mode=development && firebase functions:config:get > config.json && firebase functions:config:get",
+    "set_test": "firebase use test && firebase functions:config:set environment.mode=testing && firebase functions:config:get > config.json && firebase functions:config:get"
   },
   "engines": {
     "node": "18"

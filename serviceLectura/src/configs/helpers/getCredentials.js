@@ -7,12 +7,13 @@ const model = {
     }
 }
 
-export const getCredentials = async (isProd = false) => {
+export const getCredentials = async (environment = 'development') => {
     let credentialsJSON = {}
 
-    if (!isProd) credentialsJSON = await import('../../../service_account_dev.json', { assert: { type: "json" } })
-    else credentialsJSON = await import('../../../service_account_prod.json', { assert: { type: "json" } })
-    
+    if (environment === 'testing') credentialsJSON = await import('../../../service_account_test.json', { assert: { type: "json" } })
+    else if((environment === 'production')) credentialsJSON = await import('../../../service_account_prod.json', { assert: { type: "json" } })
+    else credentialsJSON = await import('../../../service_account_dev.json', { assert: { type: "json" } })
+
     model.value = credentialsJSON.default
     return model.value
 }

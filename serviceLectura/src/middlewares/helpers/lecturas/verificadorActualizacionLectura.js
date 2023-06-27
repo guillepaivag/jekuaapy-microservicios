@@ -44,9 +44,6 @@ const verificacionTiposDeDatos = (lecturaActualizado) => {
     if (lecturaActualizado.nombre && typeof lecturaActualizado.nombre !== 'string') 
         return TypeError('[nombre] debe ser string')
 
-    if (lecturaActualizado.codigo && typeof lecturaActualizado.codigo !== 'string') 
-        return TypeError('[codigo] debe ser string')
-
     return null
 }
 
@@ -60,36 +57,6 @@ const verificacionCondicionalDeDatos = async (uidEquipo = '', uidLectura = '', l
             mensajeServidor: 'El lectura no existe.', 
             resultado: null
         })
-    }
-
-    if ( lecturaActualizado.codigo ) {
-        if ( !esCodigo(lecturaActualizado.codigo) ) {
-            return new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'codigo_invalido', 
-                mensajeServidor: '[codigo] no es válido.', 
-                resultado: null
-            })
-        }
-
-        if ( lecturaActualizado.codigo.length > 25 ) {
-            return new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'caracteres_codigo_excedido', 
-                mensajeServidor: '[codigo] solo puede tener hasta 25 caracteres.', 
-                resultado: null
-            })
-        }
-
-        const lectura = await lecturaUseCase.obtenerPorCodigoLectura(uidEquipo, lecturaActualizado.codigo)
-        if (lectura) {
-            return new RespuestaError({
-                estado: 400, 
-                mensajeCliente: 'codigo_en_uso', 
-                mensajeServidor: '[codigo] en uso.', 
-                resultado: null
-            })
-        }
     }
 
     if (lecturaActualizado.nombre) {

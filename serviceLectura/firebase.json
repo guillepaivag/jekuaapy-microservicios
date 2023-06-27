@@ -13,7 +13,7 @@
   ],
   "emulators": {
     "functions": {
-      "port": 7004
+      "port": 7006
     },
     "ui": {
       "enabled": true

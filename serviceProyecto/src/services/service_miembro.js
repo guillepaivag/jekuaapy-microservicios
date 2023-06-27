@@ -4,7 +4,7 @@ import { generarTokenDeServicio } from '../helpers/generarTokenDeServicio.js'
 import { errorHandlerRequest } from '../helpers/errors/error-handler-request.js'
 
 const serviceName = 'service_miembro'
-const apiMiembro = axios.create({ baseURL: config.services[serviceName] })
+const apiGateway = axios.create({ baseURL: config.services.service_api_gateway })
 
 export const apiMiembroObtenerMiembro = async (uidEquipo = '', uidMiembro = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
@@ -18,9 +18,7 @@ export const apiMiembroObtenerMiembro = async (uidEquipo = '', uidMiembro = '') 
         }
 
     try { 
-        console.log("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", apiMiembro, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-        const response = await apiMiembro.get(`/miembrosEquipo/${uidEquipo}/${uidMiembro}`, configOfTheRequest) 
-        console.log('response ---------------------------------------------------',response.data) 
+        const response = await apiGateway.get(`/service_miembro/miembrosEquipo/${uidEquipo}/${uidMiembro}`, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 

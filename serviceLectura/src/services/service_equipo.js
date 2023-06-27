@@ -4,7 +4,7 @@ import { generarTokenDeServicio } from '../helpers/generarTokenDeServicio.js'
 import { errorHandlerRequest } from '../helpers/errors/error-handler-request.js'
 
 const serviceName = 'service_equipo'
-const api = axios.create({ baseURL: config.services[serviceName] })
+const apiGateway = axios.create({ baseURL: config.services.service_api_gateway })
 
 export const apiEquipoObtenerEquipo = async (uid = '') => {
     // Llamada a la API de correos para enviar una verificacion de correo a un correo
@@ -18,7 +18,7 @@ export const apiEquipoObtenerEquipo = async (uid = '') => {
     }
 
     try { 
-        const response = await api.get(`/equipos/${uid}`, configOfTheRequest) 
+        const response = await apiGateway.get(`/service_equipo/equipos/${uid}`, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
@@ -39,7 +39,7 @@ export const apiEquipoActualizarEquipo = async (uid = '', equipoActualizado = {}
     }
 
     try { 
-        const response = await api.put(`/equipos/${uid}`, bodyOfTheRequest, configOfTheRequest) 
+        const response = await apiGateway.put(`/service_equipo/equipos/${uid}`, bodyOfTheRequest, configOfTheRequest) 
         return response.data.resultado
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 

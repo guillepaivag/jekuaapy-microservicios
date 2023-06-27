@@ -1,12 +1,12 @@
 import { request, response } from "express"
-import { verificadorCreacionLectura, verificadorUsuarioSolicitante } from "./helpers/lecturas/verificadorCreacionLectura.js"
+import { verificadorCreacionLectura } from "./helpers/lecturas/verificadorCreacionLectura.js"
 import { constructorLecturaCreacion } from "./helpers/lecturas/constructorLecturaCreacion.js"
 import { verificadorActualizacionLectura } from "./helpers/lecturas/verificadorActualizacionLectura.js"
 import { constructorLecturaActualizacion } from "./helpers/lecturas/constructorLecturaActualizacion.js"
 import RespuestaError from "../models/Respuestas/RespuestaError.js"
 import { verificadorEliminacionLectura } from "./helpers/lecturas/verificadorEliminarLectura.js"
 import { apiMiembroObtenerMiembro } from "../services/service_miembro.js"
-import { verificadorActualizacionLecturaServicio } from "./helpers/lecturas/verificadorActualizacionEquipoServicio.js"
+//import { verificadorActualizacionLecturaServicio } from "./helpers/lecturas/verificadorActualizacionEquipoServicio.js"
 
 export const verificarCreacionLectura = async (req = request, res = response, next) => {
     const { params, body, timeOfRequest } = req
@@ -95,7 +95,7 @@ export const verificarActualizacionLectura = async (req = request, res = respons
                 })
             }
 
-            // El solicitante tiene que ser un miembro del lectura y que sea 
+            // El solicitante tiene que ser un miembro del lectura y que sea editor/propietario
             const miembro = await apiMiembroObtenerMiembro(uidEquipo, solicitante.uidSolicitante)
 
             if (!miembro || miembro.estado === 'eliminado') {
@@ -121,7 +121,7 @@ export const verificarActualizacionLectura = async (req = request, res = respons
             if (respuestaError) throw respuestaError
 
         } else {
-            const respuestaError = await verificadorActualizacionLecturaServicio(uidEquipo, uid, lecturaActualizado, configuracion)
+            //const respuestaError = await verificadorActualizacionLecturaServicio(uidEquipo, uid, lecturaActualizado, configuracion)
             if (respuestaError) throw respuestaError
         }
 

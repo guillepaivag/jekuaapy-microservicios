@@ -1,7 +1,9 @@
 import { bucketsName, bucketsNameParams } from "./configBucketsName.js"
 
-export const getBucketsName = (isProduction = false) => {
-    const tipo = isProduction ? 'prod' : 'devRemote'
+export const getBucketsName = (environment = 'development') => {
+    const tipo = environment === 'production' ? 'prod' :
+    environment === 'development' ? 'dev' :
+    environment === 'testing' ? 'test' : ''
 
     const buckets = {}
     Object.keys(bucketsName)

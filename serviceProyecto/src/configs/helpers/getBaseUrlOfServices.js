@@ -1,8 +1,9 @@
 import { baseUrls, baseUrlsParams } from "./configBaseUrlOfApis.js"
 
-export const getBaseUrlOfServices = (isProduction = false, isRemote = false) => {    
-    const tipoUrl = isProduction ? 'prod' :
-    (!isRemote ? 'devLocal' : 'devRemote')
+export const getBaseUrlOfServices = (environment = 'development') => {    
+    const tipoUrl = environment === 'production' ? 'prod' :
+    environment === 'development' ? 'dev' :
+    environment === 'testing' ? 'test' : ''
     
     const apis = {}
     Object.keys(baseUrls)

@@ -10,6 +10,7 @@ export const estaAutenticado = async (req = request, res = response, next) => {
     req.body.solicitante.authToken = authToken
     
     try {
+        req.body.solicitante.tipo = 'usuario'
 
         const userInfo = await firebaseAuthenticationService.verifyIdToken(authToken)
         req.body.solicitante.uidSolicitante = userInfo.uid

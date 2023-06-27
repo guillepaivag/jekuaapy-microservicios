@@ -19,11 +19,11 @@ app.use((req, res, next) => {
 
 const origin = []
 const urlsProduccion = ['']
-const urlsDesarrolloLocal = ['http://localhost:3000']
-const urlsDesarrolloRemoto = ['']
-config.production ? origin.push(...urlsProduccion) : ''
-!config.production && config.remote ? origin.push(...urlsDesarrolloRemoto) : ''
-!config.production && !config.remote ? origin.push(...urlsDesarrolloLocal) : ''
+const urlsDesarrollo= ['http://localhost:3000']
+const urlsTest= ['']
+config.environment === 'production' ? origin.push(...urlsProduccion) : ''
+config.environment === 'development' ? origin.push(...urlsDesarrollo) : ''
+config.environment === 'test' ? origin.push(...urlsTest) : ''
 
 app.use(cors({
   credentials: true,
