@@ -19,7 +19,7 @@ export const apiEquipoObtenerEquipo = async (uid = '') => {
 
     try { 
         const response = await apiGateway.get(`/service_equipo/equipos/${uid}`, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
     }
@@ -40,7 +40,7 @@ export const apiEquipoActualizarEquipo = async (uid = '', equipoActualizado = {}
 
     try { 
         const response = await apiGateway.put(`/service_equipo/equipos/${uid}`, bodyOfTheRequest, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
     }

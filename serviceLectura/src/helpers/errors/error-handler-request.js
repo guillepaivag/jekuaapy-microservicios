@@ -8,7 +8,7 @@ export const errorHandlerRequest = (error, serviceName = '') => {
             estado: error.response.data.estado, 
             mensajeCliente: error.response.data.mensajeCliente, 
             mensajeServidor: `Error en el servicio: ${serviceName}`, 
-            resultado: error.response.data.resultado
+            resultado: error.response.data.result
         })
     }
 }

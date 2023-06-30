@@ -36,6 +36,14 @@ class Respuesta {
             resultado: this.resultado,
         }
     }
+
+    getRespuestaConFormato() {
+        return {
+            status: this.estado,
+            code: this.mensajeCliente,
+            result: this.resultado,
+        }
+    }
 }
 
 export default Respuesta

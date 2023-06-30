@@ -20,7 +20,7 @@ export const apiEquipoVerificacionEquipo = async (equipo = '') => {
 
     try { 
         const response = await apiGateway.post('/service-equipo/usuarios/verificarEquipo', bodyOfTheRequest, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerAxios(error, serviceName) 
     }

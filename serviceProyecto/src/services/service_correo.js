@@ -25,7 +25,7 @@ export const apiCorreoEnviarAvisoNuevoMiembroEquipo = async (uidUsuarioSolicitan
 
     try { 
         const response = await apiGateway.post(`/service_correo/miembrosEquipo/avisoNuevoMiembroEquipo`, bodyOfTheRequest, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
     }

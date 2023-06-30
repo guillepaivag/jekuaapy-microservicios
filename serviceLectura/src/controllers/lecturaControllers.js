@@ -30,7 +30,7 @@ export const crear = async (req = request, res = response) => {
 
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
        
 
@@ -39,7 +39,7 @@ export const crear = async (req = request, res = response) => {
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -67,14 +67,14 @@ export const obtener = async (req = request, res = response) => {
             resultado: lectura
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - obtener: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -96,14 +96,14 @@ export const actualizar = async (req = request, res = response) => {
             resultado: lecturaActualizadoVerificado
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - actualizar: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -125,14 +125,14 @@ export const eliminar = async (req = request, res = response) => {
             resultado: null
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - eliminar: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }

@@ -46,7 +46,7 @@ export const crear = async (req = request, res = response) => {
             cantidadProyectos: data.equipo.cantidadProyectos + 1
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
        
 
@@ -55,7 +55,7 @@ export const crear = async (req = request, res = response) => {
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -87,14 +87,14 @@ export const obtener = async (req = request, res = response) => {
             resultado: proyecto
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - obtener: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -116,14 +116,14 @@ export const actualizar = async (req = request, res = response) => {
             resultado: proyectoActualizadoVerificado
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - actualizar: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -149,14 +149,14 @@ export const restaurarFotoPerfil = async (req = request, res = response) => {
             resultado: null
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - restaurarFotoPerfil: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -182,14 +182,14 @@ export const restaurarFotoPortada = async (req = request, res = response) => {
             resultado: null
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
 
     } catch (error) {
         console.log('Error - restaurarFotoPortada: ', error)
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }
@@ -216,7 +216,7 @@ export const eliminar = async (req = request, res = response) => {
             resultado: null
         })
 
-        return res.status(respuesta.estado).json(respuesta.getRespuesta())
+        return res.status(respuesta.estado).json(respuesta.getRespuestaConFormato())
         // TODO disminuir la cantidad de proyectos
 
     } catch (error) {
@@ -224,7 +224,7 @@ export const eliminar = async (req = request, res = response) => {
 
         // Manejo de errores
         const respuestaManejada = errorHandler(error)
-        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+        return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 
     }
 }

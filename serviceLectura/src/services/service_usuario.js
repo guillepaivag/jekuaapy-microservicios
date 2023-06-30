@@ -19,7 +19,7 @@ export const apiUsuarioObtenerUsuario = async (tipo = '', valor = '') => {
 
     try { 
         const response = await apiGateway.get(`/service_usuario/usuarios/${tipo}/${valor}`, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
     }

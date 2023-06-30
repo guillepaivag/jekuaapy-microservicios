@@ -41,7 +41,7 @@ app.use('/lecturas', lecturasRoutes)
 app.use((error, req, res, next) => { 
   console.log('Error en middleware: ', error)
   const respuestaManejada = errorHandler(error)
-  return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuesta())
+  return res.status(respuestaManejada.estado).json(respuestaManejada.getRespuestaConFormato())
 })
 
 export default app

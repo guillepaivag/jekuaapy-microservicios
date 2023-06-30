@@ -19,7 +19,7 @@ export const apiMiembroObtenerMiembro = async (uidEquipo = '', uidMiembro = '') 
 
     try { 
         const response = await apiGateway.get(`/service_miembro/miembrosEquipo/${uidEquipo}/${uidMiembro}`, configOfTheRequest) 
-        return response.data.resultado
+        return response.data.result
     } catch (error) { 
         throw errorHandlerRequest(error, serviceName) 
     }
